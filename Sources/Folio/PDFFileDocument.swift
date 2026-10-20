@@ -4,14 +4,16 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 /// A PDF document backed by PDFKit. PDFKit mutates `pdf` in place, so this is a reference document.
-final class PDFFileDocument: ReferenceFileDocument {
+final class PDFFileDocument: NSObject, ReferenceFileDocument, PDFDocumentDelegate {
     static var readableContentTypes: [UTType] { [.pdf] }
 
     let pdf: PDFDocument
 
     /// New documents start with a single blank A4 page.
-    init() {
+    override init() {
         pdf = PDFDocument()
+        super.init()
+        pdf.delegate = self
         pdf.insert(Self.blankPage(), at: 0)
     }
 
@@ -21,6 +23,13 @@ final class PDFFileDocument: ReferenceFileDocument {
             throw CocoaError(.fileReadCorruptFile)
         }
         self.pdf = pdf
+        super.init()
+        pdf.delegate = self
+    }
+
+    /// Loads free text boxes as `FreeTextAnnotation` so Folio can style them.
+    func `class`(forAnnotationType annotationType: String) -> AnyClass {
+        annotationType == "FreeText" ? FreeTextAnnotation.self : PDFAnnotation.self
     }
 
     func snapshot(contentType: UTType) throws -> Data {

@@ -63,9 +63,10 @@ struct AnnotationInspector: View {
                     }
                 }
 
-                if annotation.isFreeText {
-                    Stepper("Taille : \(Int(fontSize.wrappedValue)) pt", value: fontSize, in: 6...96)
-                }
+            }
+
+            if let textBox = annotation as? FreeTextAnnotation {
+                TextFormatSection(viewer: viewer, textBox: textBox)
             }
 
             if annotation.hasEditableText {
@@ -110,21 +111,137 @@ struct AnnotationInspector: View {
         }
     }
 
-    private var fontSize: Binding<CGFloat> {
-        Binding {
-            annotation.font?.pointSize ?? 14
-        } set: { newValue in
-            viewer.update(annotation, actionName: "Taille du texte") { a in
-                a.font = (a.font ?? .systemFont(ofSize: 14)).withSize(newValue)
-            }
-        }
-    }
-
     private var contents: Binding<String> {
         Binding {
             annotation.contents ?? ""
         } set: { newValue in
             viewer.update(annotation, actionName: "Modifier le texte") { $0.contents = newValue }
+        }
+    }
+}
+
+/// Font, emphasis, alignment and background of a free text box.
+private struct TextFormatSection: View {
+    let viewer: ViewerModel
+    let textBox: FreeTextAnnotation
+
+    var body: some View {
+        let _ = viewer.revision
+        Section("Mise en forme") {
+            Picker("Police", selection: family) {
+                ForEach(families, id: \.self) { Text($0).tag($0) }
+            }
+
+            Stepper("Taille : \(Int(fontSize.wrappedValue)) pt", value: fontSize, in: 6...96)
+
+            HStack {
+                Toggle(isOn: trait(.boldFontMask, isOn: textBox.isBold, name: "Gras")) {
+                    Image(systemName: "bold")
+                }
+                .help("Gras")
+                Toggle(isOn: trait(.italicFontMask, isOn: textBox.isItalic, name: "Italique")) {
+                    Image(systemName: "italic")
+                }
+                .help("Italique")
+                Toggle(isOn: decoration(\.isUnderlined, name: "Souligné")) {
+                    Image(systemName: "underline")
+                }
+                .help("Souligné")
+                Toggle(isOn: decoration(\.isStruckThrough, name: "Barré")) {
+                    Image(systemName: "strikethrough")
+                }
+                .help("Barré")
+            }
+            .toggleStyle(.button)
+
+            Picker("Alignement", selection: alignment) {
+                Image(systemName: "text.alignleft").tag(NSTextAlignment.left)
+                Image(systemName: "text.aligncenter").tag(NSTextAlignment.center)
+                Image(systemName: "text.alignright").tag(NSTextAlignment.right)
+            }
+            .pickerStyle(.segmented)
+
+            Toggle("Fond", isOn: hasBackground)
+            if hasBackground.wrappedValue {
+                ColorPicker("Couleur du fond", selection: background, supportsOpacity: true)
+            }
+        }
+    }
+
+    private var currentFont: NSFont { textBox.font ?? .systemFont(ofSize: 14) }
+
+    private var families: [String] {
+        let current = currentFont.familyName ?? "Helvetica"
+        let list = FreeTextAnnotation.fontFamilies
+        return list.contains(current) ? list : [current] + list
+    }
+
+    private func change(_ name: String, _ body: @escaping (FreeTextAnnotation) -> Void) {
+        viewer.update(textBox, actionName: name) { a in
+            guard let box = a as? FreeTextAnnotation else { return }
+            box.adoptFolioStyle()
+            body(box)
+        }
+    }
+
+    private var family: Binding<String> {
+        Binding {
+            currentFont.familyName ?? "Helvetica"
+        } set: { newValue in
+            change("Police") { $0.font = NSFontManager.shared.convert($0.font ?? .systemFont(ofSize: 14), toFamily: newValue) }
+        }
+    }
+
+    private var fontSize: Binding<CGFloat> {
+        Binding {
+            currentFont.pointSize
+        } set: { newValue in
+            change("Taille du texte") { $0.font = ($0.font ?? .systemFont(ofSize: 14)).withSize(newValue) }
+        }
+    }
+
+    private func trait(_ mask: NSFontTraitMask, isOn: Bool, name: String) -> Binding<Bool> {
+        Binding {
+            isOn
+        } set: { on in
+            change(name) { box in
+                let font = box.font ?? .systemFont(ofSize: 14)
+                box.font = on
+                    ? NSFontManager.shared.convert(font, toHaveTrait: mask)
+                    : NSFontManager.shared.convert(font, toNotHaveTrait: mask)
+            }
+        }
+    }
+
+    private func decoration(_ keyPath: ReferenceWritableKeyPath<FreeTextAnnotation, Bool>, name: String) -> Binding<Bool> {
+        Binding {
+            textBox[keyPath: keyPath]
+        } set: { on in
+            change(name) { $0[keyPath: keyPath] = on }
+        }
+    }
+
+    private var alignment: Binding<NSTextAlignment> {
+        Binding {
+            textBox.alignment
+        } set: { newValue in
+            change("Alignement") { $0.alignment = newValue }
+        }
+    }
+
+    private var hasBackground: Binding<Bool> {
+        Binding {
+            textBox.color.alphaComponent > 0
+        } set: { on in
+            change("Fond") { $0.color = on ? NSColor.systemYellow.withAlphaComponent(0.4) : .clear }
+        }
+    }
+
+    private var background: Binding<Color> {
+        Binding {
+            Color(nsColor: textBox.color)
+        } set: { newValue in
+            change("Couleur du fond") { $0.color = NSColor(newValue) }
         }
     }
 }

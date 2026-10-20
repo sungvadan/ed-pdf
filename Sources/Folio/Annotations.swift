@@ -89,13 +89,14 @@ extension PDFAnnotation {
     /// Grows or shrinks a free text box vertically to fit its contents, keeping its top edge.
     func fitFreeTextHeight() {
         guard isFreeText else { return }
-        let text = (contents ?? "") as NSString
+        let text = (self as? FreeTextAnnotation)?.attributedText
+            ?? NSAttributedString(string: contents ?? "", attributes: [.font: font ?? NSFont.systemFont(ofSize: 14)])
+        let inset = FreeTextAnnotation.padding * 2
         let rect = text.boundingRect(
-            with: CGSize(width: bounds.width - 4, height: .greatestFiniteMagnitude),
-            options: [.usesLineFragmentOrigin],
-            attributes: [.font: font ?? NSFont.systemFont(ofSize: 14)]
+            with: CGSize(width: bounds.width - inset, height: .greatestFiniteMagnitude),
+            options: [.usesLineFragmentOrigin, .usesFontLeading]
         )
-        let height = max(ceil(rect.height) + 6, 20)
+        let height = max(ceil(rect.height) + inset + 2, 20)
         bounds = CGRect(x: bounds.minX, y: bounds.maxY - height, width: bounds.width, height: height)
     }
 }
@@ -108,6 +109,8 @@ struct AnnotationState {
     var contents: String?
     var font: NSFont?
     var fontColor: NSColor?
+    var alignment: NSTextAlignment
+    var folioStyle: String?
 
     init(_ annotation: PDFAnnotation) {
         bounds = annotation.bounds
@@ -116,6 +119,8 @@ struct AnnotationState {
         contents = annotation.contents
         font = annotation.font
         fontColor = annotation.fontColor
+        alignment = annotation.alignment
+        folioStyle = (annotation as? FreeTextAnnotation)?.style
     }
 
     func apply(to annotation: PDFAnnotation) {
@@ -129,6 +134,8 @@ struct AnnotationState {
         if annotation.isFreeText {
             annotation.font = font
             annotation.fontColor = fontColor
+            annotation.alignment = alignment
+            (annotation as? FreeTextAnnotation)?.style = folioStyle
         }
     }
 }
@@ -171,7 +178,8 @@ enum AnnotationFactory {
             annotation.contents = ""
             return annotation
         case .text:
-            let annotation = PDFAnnotation(bounds: CGRect(x: p.x, y: p.y - 22, width: 200, height: 22), forType: .freeText, withProperties: nil)
+            let annotation = FreeTextAnnotation(bounds: CGRect(x: p.x, y: p.y - 22, width: 200, height: 22), forType: .freeText, withProperties: nil)
+            annotation.adoptFolioStyle()
             annotation.contents = "Texte"
             annotation.font = NSFont(name: "Helvetica", size: 14) ?? .systemFont(ofSize: 14)
             annotation.fontColor = color

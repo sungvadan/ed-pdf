@@ -13,7 +13,9 @@
 - Barre d'outils : sélection, surligner, souligner, barrer, note, zone de texte, dessin, rectangle, ellipse, ligne, flèche
 - Couleur par outil, épaisseur de trait
 - Sélection (contour pointillé), déplacement, suppression (⌫), Échap → outil sélection
-- Inspecteur : couleur, épaisseur, taille de police, texte / commentaire
+- Inspecteur : couleur, épaisseur, texte / commentaire
+- Mise en forme des zones de texte : police, taille, gras, italique, souligné, barré, alignement, fond
+  (`FreeTextAnnotation` dessine elle-même le texte ; rendu intégré au PDF enregistré, styles gardés dans `/FolioStyle`)
 - Annuler / rétablir (UndoManager → marque le document comme modifié)
 - Reste à faire plus tard : poignées de redimensionnement, remplissage des formes, édition du texte directement sur la page, liste des annotations
 
@@ -27,6 +29,8 @@
 - Signature dessinée/enregistrée, tampon, image
 
 ## ⬜ Étape 5 — Édition de texte & extras
+- Aplatir les annotations (toutes ou la sélection) : les intégrer au contenu de la page pour que leur texte
+  devienne sélectionnable/surlignable et qu'elles ne soient plus modifiables ; option « Exporter aplati »
 - Ajouter du texte, masquer/caviarder (redaction)
 - Édition du texte existant (difficile avec PDFKit : surcouche « effacer + réécrire »)
 - Signets / table des matières, export image, compression, mot de passe
