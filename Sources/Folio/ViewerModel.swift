@@ -44,6 +44,10 @@ final class ViewerModel {
     var tool: AnnotationTool = .select {
         didSet {
             guard tool != oldValue else { return }
+            if oldValue == .editText {
+                pdfView.endTextEditing(commit: true)
+                pdfView.hoverOverlay.isHidden = true
+            }
             if tool != .select { select(nil) }
             pdfView.applyMarkupFromSelection()
         }
@@ -62,6 +66,7 @@ final class ViewerModel {
     /// Temporary documents whose pages were copied into this one. Copied pages share the source's
     /// CoreGraphics data; keeping the sources alive avoids freeing it while pages still use it.
     @ObservationIgnored var retainedSources: [PDFDocument] = []
+    @ObservationIgnored var textLayoutCache: PageTextLayout?
     var selectedAnnotation: PDFAnnotation?
     /// Bumped whenever annotation properties change, so views reading PDFKit objects refresh.
     var revision = 0
@@ -91,6 +96,8 @@ final class ViewerModel {
         observers.append(center.addObserver(forName: .PDFViewScaleChanged, object: pdfView, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated {
                 self?.scale = self?.pdfView.scaleFactor ?? 1
+                // The editor's fonts are sized for one zoom level.
+                self?.pdfView.endTextEditing(commit: true)
                 self?.pdfView.updateSelectionOverlay()
             }
         })

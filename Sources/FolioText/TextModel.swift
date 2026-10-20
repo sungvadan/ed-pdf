@@ -127,22 +127,35 @@ extension PDFiumPage {
         return runs
     }
 
-    /// Text objects whose last character is followed by a space in PDFium's text extraction,
-    /// which tells real word gaps from kerning between glyph runs.
+    /// Text objects followed, on the same line, by a word gap: the next glyph starts more than 15 % of
+    /// the font size after the advance of the object's last glyph ("loose" boxes span the advance).
+    /// This tells real word gaps from kerning between glyph runs or style changes ("2026" + ",").
     private func objectsFollowedBySpace() -> Set<OpaquePointer> {
         guard let textPage else { return [] }
         var result = Set<OpaquePointer>()
-        var lastObject: FPDF_PAGEOBJECT?
+        var last: (object: FPDF_PAGEOBJECT, right: Float, y: Float, size: Double)?
         for index in 0..<Int(FPDFText_CountChars(textPage)) {
             let unicode = FPDFText_GetUnicode(textPage, Int32(index))
-            if unicode == 32 || unicode == 0xA0 || unicode == 9 {
-                if let lastObject { result.insert(lastObject) }
-                continue
+            guard unicode > 32, unicode != 0xA0, let object = FPDFText_GetTextObject(textPage, Int32(index)) else { continue }
+            var box = FS_RECTF()
+            guard FPDFText_GetLooseCharBox(textPage, Int32(index), &box) != 0 else { continue }
+            let size = FPDFText_GetFontSize(textPage, Int32(index))
+            if let previous = last, previous.object != object, abs(box.bottom - previous.y) < Float(previous.size) * 0.5,
+               Double(box.left - previous.right) > 0.15 * effectiveSize(previous.object, fallback: previous.size) {
+                result.insert(previous.object)
             }
-            if unicode == 10 || unicode == 13 { continue }
-            lastObject = FPDFText_GetTextObject(textPage, Int32(index))
+            last = (object, box.right, box.bottom, size)
         }
         return result
+    }
+
+    private func effectiveSize(_ object: FPDF_PAGEOBJECT, fallback: Double) -> Double {
+        var nominal: Float = 0
+        FPDFTextObj_GetFontSize(object, &nominal)
+        var m = FS_MATRIX()
+        FPDFPageObj_GetMatrix(object, &m)
+        let size = Double(nominal) * Double(hypot(m.c, m.d))
+        return size > 0 ? size : fallback
     }
 
     private func collect(_ object: FPDF_PAGEOBJECT, path: [Int], parent: CGAffineTransform, into runs: inout [TextRun]) {

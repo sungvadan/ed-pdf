@@ -14,6 +14,10 @@ final class FolioPDFView: PDFView {
 
     private var drag: Drag?
     private let selectionOverlay = SelectionOverlay()
+    /// Frame around the paragraph under the cursor with the "edit text" tool.
+    let hoverOverlay = SelectionOverlay()
+    /// The open in-place text editor, if any.
+    var textSession: TextEditSession?
     private var observers: [NSObjectProtocol] = []
     /// Form values before the current edit; compared after PDFKit handles a field.
     var formSnapshot: FormState?
@@ -21,12 +25,15 @@ final class FolioPDFView: PDFView {
     override init(frame: NSRect) {
         super.init(frame: frame)
         selectionOverlay.isHidden = true
+        hoverOverlay.isHidden = true
         addSubview(selectionOverlay)
         let center = NotificationCenter.default
         observers.append(center.addObserver(forName: NSView.boundsDidChangeNotification, object: nil, queue: .main) { [weak self] note in
             MainActor.assumeIsolated {
                 guard let self, let clip = note.object as? NSClipView, clip.isDescendant(of: self) else { return }
                 self.updateSelectionOverlay()
+                self.textSession?.layoutEditor()
+                self.hoverOverlay.isHidden = true
             }
         })
         // Text typed in form fields goes through a field editor inside this view.
@@ -50,6 +57,8 @@ final class FolioPDFView: PDFView {
         let color = NSColor(viewer.toolColor)
 
         switch tool {
+        case .editText:
+            handleTextEditClick(event, page: page, point: point)
         case .select:
             if let selected = viewer.selectedAnnotation, let corner = handleCorner(at: convert(event.locationInWindow, from: nil)) {
                 drag = .resize(selected, corner: corner, original: AnnotationState(selected))
@@ -172,7 +181,9 @@ final class FolioPDFView: PDFView {
     override func mouseMoved(with event: NSEvent) {
         super.mouseMoved(with: event)
         guard let tool = viewer?.tool else { return }
-        if tool == .select, let corner = handleCorner(at: convert(event.locationInWindow, from: nil)) {
+        if tool == .editText {
+            updateTextHover(at: convert(event.locationInWindow, from: nil))
+        } else if tool == .select, let corner = handleCorner(at: convert(event.locationInWindow, from: nil)) {
             corner.cursor.set()
         } else if tool.isDrawing || tool == .note || tool == .text {
             NSCursor.crosshair.set()
@@ -284,7 +295,7 @@ enum Corner: CaseIterable {
 }
 
 /// Dashed outline and corner handles around the selected annotation; transparent to clicks.
-private final class SelectionOverlay: NSView {
+final class SelectionOverlay: NSView {
     static let handleHitSize: CGFloat = 18
     private static let margin: CGFloat = 8
     private static let handleSize: CGFloat = 9

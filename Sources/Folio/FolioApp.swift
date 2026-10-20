@@ -2,6 +2,10 @@ import SwiftUI
 
 @main
 struct FolioApp: App {
+    init() {
+        SelfTest.runIfRequested()
+    }
+
     var body: some Scene {
         DocumentGroup(newDocument: { PDFFileDocument() }) { file in
             ContentView(document: file.document)

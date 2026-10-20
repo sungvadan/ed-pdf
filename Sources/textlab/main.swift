@@ -18,6 +18,10 @@ func fail(_ message: String) -> Never {
 switch arguments.count >= 2 ? arguments[1] : "" {
 case "replace": replace()
 case "render": render()
+case "measure":
+    let document = PDFiumDocument(data: FileManager.default.contents(atPath: arguments[2])!)!
+    print(document.page(at: 0)!.debugMeasure(arguments[4], fontName: arguments[3]))
+    exit(0)
 case "analyze": break
 default: fail("usage: textlab analyze|replace|render … (see source)")
 }

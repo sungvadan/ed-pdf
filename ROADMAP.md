@@ -46,4 +46,8 @@
 - ✅ Caviardage : outil « Caviarder » (sur du texte → mots ; ailleurs → rectangle), puis « Appliquer le caviardage » :
   pages reconstruites en image 300 ppp + texte invisible pour les mots non caviardés (`Redaction.swift`)
 - ✅ Signets (onglet de la barre latérale, ⌘B), icône de l'app (`scripts/make-icon.swift`), préférences (nom d'auteur)
-- Édition du texte existant (difficile avec PDFKit : surcouche « effacer + réécrire »)
+- 🚧 Édition du texte existant, comme dans Word (voir `docs/text-editing.md`) :
+  - ✅ Moteur : PDFium + chirurgie des content streams (texte non modifié identique au pixel), polices d'origine ou
+    système équivalentes, styles en ligne conservés, reflux, alignements, vérification avec repli
+  - ✅ Outil « Modifier le texte » : clic dans un paragraphe → édition sur place, ⌘Z
+  - ⬜ Contrôles de style pendant l'édition, ajout de texte natif, déplacer un paragraphe, PDF protégés

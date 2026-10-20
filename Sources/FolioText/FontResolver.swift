@@ -3,20 +3,43 @@ import CoreText
 import CPDFium
 import Foundation
 
-/// A font usable for new text in a document, with the advance widths needed for line layout.
-struct ResolvedFont {
+/// A font usable for new text in a document.
+final class ResolvedFont {
     let handle: FPDF_FONT
-    /// Advance of a character for a 1 pt font size, or nil if unknown.
-    let advance: (Character) -> CGFloat?
-    /// Fallback advance (1 pt) when a character was never seen.
-    let averageAdvance: CGFloat
     let description: String
     /// The font has a space glyph. Otherwise (e.g. subsets made by Chrome) words are written as separate
     /// objects and the gap stands for the space.
-    var writesSpaces = true
+    let writesSpaces: Bool
+    private let document: FPDF_DOCUMENT
+    /// A character with ink, used as a right-hand marker when measuring.
+    private let marker: String
+    private var cache: [Substring: CGFloat] = [:]
 
+    init(handle: FPDF_FONT, document: FPDF_DOCUMENT, marker: Character, description: String, writesSpaces: Bool = true) {
+        self.handle = handle
+        self.document = document
+        self.marker = String(marker)
+        self.description = description
+        self.writesSpaces = writesSpaces
+    }
+
+    /// Exact advance width, as PDF readers lay the text out: PDFium bounds stop at the last glyph's ink,
+    /// so the width of `text` is right(text + marker) − right(marker).
     func width(of text: Substring, size: CGFloat) -> CGFloat {
-        text.reduce(0) { $0 + (advance($1) ?? averageAdvance) } * size
+        guard !text.isEmpty else { return 0 }
+        if let cached = cache[text] { return cached * size }
+        let unit = (inkRight(String(text) + marker) - inkRight(marker)) / 1000
+        cache[text] = unit
+        return unit * size
+    }
+
+    private func inkRight(_ text: String) -> CGFloat {
+        guard let object = FPDFPageObj_CreateTextObj(document, handle, 1000) else { return 0 }
+        defer { FPDFPageObj_Destroy(object) }
+        _ = withWideString(text) { FPDFText_SetText(object, $0) }
+        var left: Float = 0, bottom: Float = 0, right: Float = 0, top: Float = 0
+        FPDFPageObj_GetBounds(object, &left, &bottom, &right, &top)
+        return CGFloat(right)
     }
 }
 
@@ -26,7 +49,7 @@ final class FontResolver {
     private let document: PDFiumDocument
     private let page: PDFiumPage
     private var systemFonts: [String: ResolvedFont] = [:]
-    private lazy var learned: (advances: [String: [Character: CGFloat]], coverage: [String: Set<Character>]) = learnAdvances()
+    private lazy var coverage: [String: Set<Character>] = learnCoverage()
 
     init(page: PDFiumPage) {
         self.document = page.document
@@ -35,23 +58,17 @@ final class FontResolver {
 
     /// Characters seen in the page text for each font, i.e. the glyphs an embedded subset surely has.
     func knownCharacters(of font: FontInfo) -> Set<Character> {
-        learned.coverage[font.baseName] ?? []
+        coverage[font.baseName] ?? []
     }
 
     /// The original embedded font, if it can encode every character of `text`.
     func embedded(_ handle: FPDF_FONT, info: FontInfo, for text: String) -> ResolvedFont? {
-        let known = learned.advances[info.baseName] ?? [:]
+        let coverage = knownCharacters(of: info)
         let needed = Set(text.filter { !$0.isNewline })
-        guard !known.isEmpty, needed.isSubset(of: knownCharacters(of: info).union([" "])) else { return nil }
-        let average = known.values.sorted()[known.count / 2]
-        let space = known[" "] ?? average * 0.5
-        return ResolvedFont(
-            handle: handle,
-            advance: { $0 == " " ? space : known[$0] },
-            averageAdvance: average,
-            description: "\(info.postScriptName) (embedded)",
-            writesSpaces: knownCharacters(of: info).contains(" ")
-        )
+        guard !coverage.isEmpty, needed.isSubset(of: coverage.union([" "])),
+              let marker = ["o", "n", "e", "a", "x", "0"].first(where: coverage.contains) ?? coverage.first(where: { $0.isLetter || $0.isNumber }) else { return nil }
+        return ResolvedFont(handle: handle, document: document.handle, marker: marker,
+                            description: "\(info.postScriptName) (embedded)", writesSpaces: coverage.contains(" "))
     }
 
     /// A system font matching `info` as closely as possible, embedded into the document once.
@@ -64,13 +81,7 @@ final class FontResolver {
             FPDFText_LoadFont(document.handle, bytes.bindMemory(to: UInt8.self).baseAddress, UInt32(data.count), FPDF_FONT_TRUETYPE, 1)
         }
         guard let handle else { return nil }
-        let unit = CTFontCreateCopyWithAttributes(ctFont, 1, nil, nil)
-        let resolved = ResolvedFont(
-            handle: handle,
-            advance: { Self.advance(of: $0, in: unit) },
-            averageAdvance: Self.advance(of: "n", in: unit) ?? 0.5,
-            description: "\(name) (system)"
-        )
+        let resolved = ResolvedFont(handle: handle, document: document.handle, marker: "o", description: "\(name) (system)")
         systemFonts[name] = resolved
         return resolved
     }
@@ -124,70 +135,28 @@ final class FontResolver {
         return names.filter { !$0.isEmpty }
     }
 
-    private static func advance(of character: Character, in font: CTFont) -> CGFloat? {
-        let utf16 = Array(String(character).utf16)
-        var glyphs = [CGGlyph](repeating: 0, count: utf16.count)
-        guard CTFontGetGlyphsForCharacters(font, utf16, &glyphs, utf16.count), glyphs[0] != 0 else { return nil }
-        var advance = CGSize.zero
-        CTFontGetAdvancesForGlyphs(font, .horizontal, glyphs, &advance, 1)
-        return advance.width
-    }
+    // MARK: Coverage
 
-    // MARK: Learning advances from the page
-
-    /// Per font, the advance (1 pt) of each character, measured between consecutive characters of the
-    /// page text, and every character drawn with it (the glyphs an embedded subset surely contains).
-    private func learnAdvances() -> (advances: [String: [Character: CGFloat]], coverage: [String: Set<Character>]) {
-        guard let textPage = page.textPage else { return ([:], [:]) }
-        var samples: [String: [Character: [CGFloat]]] = [:]
+    /// Per font, every character actually drawn on the page with it: the glyphs an embedded subset surely contains.
+    private func learnCoverage() -> [String: Set<Character>] {
+        guard let textPage = page.textPage else { return [:] }
         var coverage: [String: Set<Character>] = [:]
-        var objectInfo: [OpaquePointer: (name: String, size: Double)] = [:]
-        func info(_ object: FPDF_PAGEOBJECT) -> (name: String, size: Double) {
-            if let cached = objectInfo[object] { return cached }
-            var nominal: Float = 0
-            FPDFTextObj_GetFontSize(object, &nominal)
-            var m = FS_MATRIX()
-            FPDFPageObj_GetMatrix(object, &m)
-            // The text matrix may carry the size (e.g. "1 Tf" with a 12× matrix).
-            let result = (utf8String { FPDFFont_GetBaseFontName(FPDFTextObj_GetFont(object), $0, $1) },
-                          Double(nominal) * Double(hypot(m.c, m.d)))
-            objectInfo[object] = result
-            return result
-        }
-        let count = Int(FPDFText_CountChars(textPage))
-        var previous: (object: FPDF_PAGEOBJECT, character: Character, x: Double, y: Double, size: Double)?
-
-        for index in 0..<count {
-            guard let scalar = Unicode.Scalar(FPDFText_GetUnicode(textPage, Int32(index))),
-                  let object = FPDFText_GetTextObject(textPage, Int32(index)) else { previous = nil; continue }
-            var x = 0.0, y = 0.0
-            FPDFText_GetCharOrigin(textPage, Int32(index), &x, &y)
-            let (name, size) = info(object)
-            let character = Character(scalar)
+        var names: [OpaquePointer: String] = [:]
+        for index in 0..<Int(FPDFText_CountChars(textPage)) {
             // Spaces generated by the text extraction are not glyphs of the font.
-            if !character.isNewline, FPDFText_IsGenerated(textPage, Int32(index)) != 1 {
-                coverage[name, default: []].insert(character)
-            }
-
-            // The loose box spans the character's advance; works even for glyphs drawn one per object.
-            var box = FS_RECTF()
-            if size > 0, character != " ", FPDFText_GetLooseCharBox(textPage, Int32(index), &box) != 0, box.right > box.left {
-                samples[name, default: [:]][character, default: []].append(CGFloat(Double(box.right - box.left) / size))
-            } else if let p = previous, p.object == object, abs(p.y - y) < 0.01, x > p.x, p.size > 0 {
-                samples[name, default: [:]][p.character, default: []].append(CGFloat((x - p.x) / p.size))
-            }
-            // Generated characters (synthetic spaces/line breaks) have no object of their own position.
-            previous = character.isNewline ? nil : (object, character, x, y, size)
+            guard FPDFText_IsGenerated(textPage, Int32(index)) != 1,
+                  let scalar = Unicode.Scalar(FPDFText_GetUnicode(textPage, Int32(index))),
+                  let object = FPDFText_GetTextObject(textPage, Int32(index)) else { continue }
+            let character = Character(scalar)
+            guard !character.isNewline else { continue }
+            let name = names[object] ?? {
+                let name = utf8String { FPDFFont_GetBaseFontName(FPDFTextObj_GetFont(object), $0, $1) }
+                names[object] = name
+                return name
+            }()
+            coverage[name, default: []].insert(character)
         }
-
-        let advances = samples.mapValues { perCharacter in
-            perCharacter.mapValues { values in
-                let sorted = values.sorted()
-                // Kerning and justification only widen gaps: lean on the lower values.
-                return sorted[sorted.count / 4]
-            }
-        }
-        return (advances, coverage)
+        return coverage
     }
 
     // MARK: Font data
@@ -276,5 +245,26 @@ final class FontResolver {
         }
         output.append(bodies)
         return output
+    }
+}
+
+/// Fonts for showing editable text on screen.
+public enum TextDisplay {
+    /// The installed font closest to a style (the same one used when the PDF's font cannot be reused).
+    public static func font(for style: RunStyle, size: CGFloat) -> CTFont {
+        let font = FontResolver.closestSystemFont(to: style.font, bold: style.bold ?? style.font.isBold, italic: style.italic ?? style.font.isItalic)
+        return CTFontCreateCopyWithAttributes(font, size, nil, nil)
+    }
+}
+
+// MARK: - Diagnostics
+
+extension PDFiumPage {
+    /// Width of `text` with the embedded font of the first run named `fontName`.
+    public func debugMeasure(_ text: String, fontName: String) -> String {
+        guard let run = textRuns().first(where: { $0.font.baseName == fontName || $0.font.postScriptName == fontName }),
+              let object = FPDFPage_GetObject(handle, Int32(run.path[0])), let font = FPDFTextObj_GetFont(object),
+              let resolved = FontResolver(page: self).embedded(font, info: run.font, for: text) else { return "font not found or text not covered" }
+        return String(format: "width %.2f at %.1f pt", Double(resolved.width(of: Substring(text), size: run.fontSize)), Double(run.fontSize))
     }
 }

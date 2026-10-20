@@ -18,4 +18,7 @@
   - Pages remplacées par des pages d'un document temporaire (aplatir, caviarder, insérer) : garder ce document dans `retainedSources`.
   - Tests manuels hors UI : compiler les fichiers concernés avec `swiftc` dans un dossier temporaire (pas de cible de test pour l'instant).
   - `AnnotationViews.swift` : barre d'outils d'annotation et inspecteur.
+- Édition du texte : module `Sources/FolioText` (PDFium + parseur PDF maison), outil `textlab`, conception et pièges dans
+  `docs/text-editing.md` — À LIRE avant d'y toucher. Tests : `swift scripts/make-fixtures.swift && scripts/textlab-suite.sh`
+  et `Folio --selftest-edit`.
 - Avancement et étapes suivantes : voir `ROADMAP.md` (avancer une étape à la fois, commiter à la fin de chacune).

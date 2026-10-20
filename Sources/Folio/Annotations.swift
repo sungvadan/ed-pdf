@@ -3,7 +3,7 @@ import PDFKit
 import SwiftUI
 
 enum AnnotationTool: String, CaseIterable, Identifiable {
-    case select, highlight, underline, strikeOut, note, text, ink, rectangle, ellipse, line, arrow, redact
+    case select, editText, highlight, underline, strikeOut, note, text, ink, rectangle, ellipse, line, arrow, redact
 
     var id: Self { self }
 
@@ -21,6 +21,7 @@ enum AnnotationTool: String, CaseIterable, Identifiable {
         case .line: "Ligne"
         case .arrow: "Flèche"
         case .redact: "Caviarder"
+        case .editText: "Modifier le texte"
         }
     }
 
@@ -38,6 +39,7 @@ enum AnnotationTool: String, CaseIterable, Identifiable {
         case .line: "line.diagonal"
         case .arrow: "arrow.up.right"
         case .redact: "rectangle.inset.filled"
+        case .editText: "character.cursor.ibeam"
         }
     }
 
@@ -46,7 +48,7 @@ enum AnnotationTool: String, CaseIterable, Identifiable {
         case .select: .accentColor
         case .highlight, .note: .yellow
         case .underline: .blue
-        case .text, .redact: .black
+        case .text, .redact, .editText: .black
         case .strikeOut, .ink, .rectangle, .ellipse, .line, .arrow: .red
         }
     }
@@ -54,7 +56,7 @@ enum AnnotationTool: String, CaseIterable, Identifiable {
     var isTextMarkup: Bool { [.highlight, .underline, .strikeOut].contains(self) }
     var isDrawing: Bool { [.ink, .rectangle, .ellipse, .line, .arrow].contains(self) }
     var usesLineWidth: Bool { isDrawing }
-    var usesColor: Bool { self != .select && self != .redact }
+    var usesColor: Bool { ![.select, .redact, .editText].contains(self) }
 }
 
 extension PDFAnnotation {
@@ -296,6 +298,7 @@ extension ViewerModel {
     func add(_ annotation: PDFAnnotation, to page: PDFPage, actionName: String = "Ajouter une annotation") {
         annotation.userName = AppSettings.authorName
         page.addAnnotation(annotation)
+        revision += 1
         undoManager?.registerUndo(withTarget: self) { model in
             MainActor.assumeIsolated { model.remove(annotation, actionName: actionName) }
         }
@@ -306,6 +309,7 @@ extension ViewerModel {
         guard let page = annotation.page else { return }
         if selectedAnnotation === annotation { select(nil) }
         page.removeAnnotation(annotation)
+        revision += 1
         undoManager?.registerUndo(withTarget: self) { model in
             MainActor.assumeIsolated { model.add(annotation, to: page, actionName: actionName) }
         }

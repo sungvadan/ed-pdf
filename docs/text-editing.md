@@ -27,8 +27,9 @@ swift scripts/make-fixtures.swift            # PDF de test dans build/fixtures
 - `TextModel.swift` : runs → lignes (même ligne de base, coupure aux gouttières de colonnes) → blocs (paragraphes :
   taille proche, interlignage régulier, recouvrement horizontal). Testé : lettre, deux colonnes justifiées, titres,
   gras en ligne, couleurs.
-- `FontResolver.swift` : police embarquée réutilisée si elle contient tous les caractères (couverture et largeurs
-  apprises depuis le texte de la page, taille **effective** = Tf × échelle de la matrice) ; sinon même police
+- `FontResolver.swift` : police embarquée réutilisée si elle contient tous les caractères (couverture apprise depuis le
+  texte de la page ; largeurs **exactes** mesurées par PDFium : droite(texte + « o ») − droite(« o »), car les bornes d'un
+  objet s'arrêtent à l'encre du dernier glyphe ; taille **effective** = Tf × échelle de la matrice) ; sinon même police
   système (PostScript exact, puis famille + traits), sinon Times/Arial/Courier selon la classe. Les polices système
   sont reconstruites en sfnt autonome depuis leurs tables CoreText (gère les .ttc). TrueType (`glyf`) uniquement.
 - `BlockWriter.swift` : mise en page gloutonne par mots avec segments stylés (le gras en ligne reste gras),
@@ -56,8 +57,10 @@ Résultat : 0 pixel différent hors du paragraphe édité (lettre, colonnes just
 ### Pièges rencontrés (et réglés)
 
 - Taille effective = Tf × échelle de la matrice (CoreText écrit `1 Tf` avec une matrice ×12).
-- Largeurs des caractères des polices embarquées : boîte « loose » PDFium (= avance), indispensable pour Chrome qui
-  dessine les glyphes un par un.
+- Largeurs : ni les écarts entre caractères (crénage) ni les boîtes « loose » ne sont exacts (erreur cumulée visible au
+  changement de style) → mesure par objet temporaire PDFium (voir ci-dessus), écart < 0,3 pt sur 80 caractères.
+- Espace entre deux runs : écart géométrique (boîte loose du dernier glyphe → glyphe suivant) > 15 % de la taille ;
+  l'extraction PDFium invente une espace à chaque changement de police (« 2026 , »).
 - Couverture d'une police embarquée : caractères réellement dessinés (`FPDFText_IsGenerated` exclu). Les sous-ensembles
   Chrome n'ont **pas de glyphe espace** → mots en objets séparés, l'écart fait l'espace.
 - Polices système incorporées par PDFium : sa ToUnicode choisit parfois U+00A0 pour l'espace ou U+00AD pour « - »
@@ -76,8 +79,14 @@ XObjects, texte tourné : lecture seule.
 
 ## Étapes suivantes
 
-- C. (prochaine session) UI : outil « Modifier le texte » : survol = cadre des paragraphes, clic = NSTextView posé exactement sur le
-  paragraphe (polices système équivalentes, attribut de style d'origine par caractère pour la saisie), validation
-  → édition → remplacement de page annulable. Barre/inspecteur : police, taille, gras, italique, couleur.
+- C. ✅ UI (`Sources/Folio/TextEditing.swift`) : outil « Modifier le texte » ; survol = cadre du paragraphe ; clic =
+  NSTextView posé sur le paragraphe (première ligne de base alignée, police d'affichage = `TextDisplay.font`, attribut
+  `.folioRunStyle` par caractère → la saisie hérite du style) ; étiquette police · taille ; clic ailleurs / changement
+  d'outil / zoom = validation, Échap = annulation ; validation = `TextEditor.replace` + `applyPages` (⌘Z).
+  Mise en page analysée une fois par révision (`ViewerModel.textLayout(for:)`).
+  Auto-test sans UI du vrai code de l'app : `build/Folio.app/Contents/MacOS/Folio --selftest-edit in.pdf "trouver" "remplacer" out.pdf`
+  (`FOLIO_SNAPSHOT=x.png` capture l'éditeur).
+- C2. À faire : contrôles de style pendant l'édition (police, taille, gras, italique, couleur — `RunStyle.bold/italic`
+  existent déjà côté moteur), nouveau paragraphe de texte « natif », déplacer/redimensionner un paragraphe.
 - D. Robustesse : textes dans les Form XObjects, pages pivotées, texte tourné, polices Type3/CFF (OTF), sous-ensemble
   des polices système incorporées (taille du fichier), césure, listes, PDF à xref streams.
