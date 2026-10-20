@@ -1,0 +1,9 @@
+module CPDFium [system] {
+    header "../../Vendor/pdfium/include/fpdfview.h"
+    header "../../Vendor/pdfium/include/fpdf_edit.h"
+    header "../../Vendor/pdfium/include/fpdf_text.h"
+    header "../../Vendor/pdfium/include/fpdf_save.h"
+    header "../../Vendor/pdfium/include/fpdf_transformpage.h"
+    link "pdfium"
+    export *
+}
