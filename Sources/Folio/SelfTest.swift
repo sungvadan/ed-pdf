@@ -58,15 +58,18 @@ enum SelfTest {
         session.textView.insertText(replacement, replacementRange: range)
 
         viewer.pdfView.endTextEditing(commit: true)
-        let edited = TextEditor.normalized(document.page(at: 0)?.string ?? "")
-        guard edited.contains(replacement), !edited.contains(find) || replacement.contains(find) else { fail("page text after edit: \(edited.prefix(300))") }
+        // Ligatures and spaces are folded: PDFKit may return "ﬃ" for "ffi".
+        let edited = TextEditor.compact(document.page(at: 0)?.string ?? "")
+        guard edited.contains(TextEditor.compact(replacement)) else { fail("page text after edit: \(edited.prefix(300))") }
         print("edit: OK")
         guard let data = document.dataRepresentation() else { fail("save") }
         try? data.write(to: URL(fileURLWithPath: output))
 
         undo.undo()
-        let undone = TextEditor.normalized(document.page(at: 0)?.string ?? "")
-        guard undone.contains(find) else { fail("undo did not restore the text") }
+        let undone = TextEditor.compact(document.page(at: 0)?.string ?? "")
+        guard undone.contains(TextEditor.compact(find)), !undone.contains(TextEditor.compact(replacement)) || find.contains(replacement) else {
+            fail("undo did not restore the text")
+        }
         print("undo: OK")
         exit(0)
     }
