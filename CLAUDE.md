@@ -14,6 +14,8 @@
   - `PageOperations.swift` / `PageSidebar.swift` : gestion des pages. Toute modification de structure passe par `applyPages(_:actionName:)` (état cible complet, undo = état précédent). Ne pas utiliser `exchangePage` (plante sur les pages issues d'images) ; une page copiée garde `page.document` de l'original → utiliser `doc.index(for:)`.
   - `ImageAnnotation` (Stamp), `Signatures.swift` (signatures, tampons, placement), `Forms.swift` (instantanés des champs pour l'undo ; `FolioPDFView.commitFormChange()`).
   - `SendExport.swift` : export pour envoi. Aplatir = redessiner chaque page dans un `CGContext` PDF avec `rotation = 0` puis réappliquer la rotation (dessiner une page pivotée la déforme).
+  - `Redaction.swift` : position des caractères = `page.selection(for: NSRange(i,1)).bounds` (ne PAS utiliser `characterBounds(at:)`, décalé après chaque saut de ligne). Les PDF produits par `cupsfilter` ont des métriques fausses : tester avec un PDF généré par CoreText.
+  - Pages remplacées par des pages d'un document temporaire (aplatir, caviarder, insérer) : garder ce document dans `retainedSources`.
   - Tests manuels hors UI : compiler les fichiers concernés avec `swiftc` dans un dossier temporaire (pas de cible de test pour l'instant).
   - `AnnotationViews.swift` : barre d'outils d'annotation et inspecteur.
 - Avancement et étapes suivantes : voir `ROADMAP.md` (avancer une étape à la fois, commiter à la fin de chacune).

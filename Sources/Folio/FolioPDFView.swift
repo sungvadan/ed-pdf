@@ -77,6 +77,19 @@ final class FolioPDFView: PDFView {
             viewer.add(annotation, to: page, actionName: tool.label)
             viewer.tool = .select
             viewer.select(annotation)
+        case .redact:
+            viewer.select(nil)
+            // Over text: select words to redact; elsewhere: drag a rectangle.
+            let probe = CGRect(x: point.x - 1, y: point.y - 1, width: 2, height: 2)
+            if let text = page.selection(for: probe)?.string, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                super.mouseDown(with: event)
+                applyMarkupFromSelection()
+            } else {
+                window?.makeFirstResponder(self)
+                let mark = Redactor.mark(bounds: CGRect(origin: point, size: .zero))
+                page.addAnnotation(mark)
+                drag = .create(mark, page, points: [point])
+            }
         case .ink, .rectangle, .ellipse, .line, .arrow:
             window?.makeFirstResponder(self)
             viewer.select(nil)
@@ -183,9 +196,13 @@ final class FolioPDFView: PDFView {
     // MARK: Helpers
 
     func applyMarkupFromSelection() {
-        guard let viewer, viewer.tool.isTextMarkup, let selection = currentSelection,
+        guard let viewer, viewer.tool.isTextMarkup || viewer.tool == .redact, let selection = currentSelection,
               !(selection.string ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
-        viewer.addMarkup(for: selection)
+        if viewer.tool == .redact {
+            viewer.addRedactionMarks(for: selection)
+        } else {
+            viewer.addMarkup(for: selection)
+        }
         clearSelection()
     }
 

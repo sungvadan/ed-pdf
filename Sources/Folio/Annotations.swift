@@ -3,7 +3,7 @@ import PDFKit
 import SwiftUI
 
 enum AnnotationTool: String, CaseIterable, Identifiable {
-    case select, highlight, underline, strikeOut, note, text, ink, rectangle, ellipse, line, arrow
+    case select, highlight, underline, strikeOut, note, text, ink, rectangle, ellipse, line, arrow, redact
 
     var id: Self { self }
 
@@ -20,6 +20,7 @@ enum AnnotationTool: String, CaseIterable, Identifiable {
         case .ellipse: "Ellipse"
         case .line: "Ligne"
         case .arrow: "Flèche"
+        case .redact: "Caviarder"
         }
     }
 
@@ -36,6 +37,7 @@ enum AnnotationTool: String, CaseIterable, Identifiable {
         case .ellipse: "circle"
         case .line: "line.diagonal"
         case .arrow: "arrow.up.right"
+        case .redact: "rectangle.inset.filled"
         }
     }
 
@@ -44,7 +46,7 @@ enum AnnotationTool: String, CaseIterable, Identifiable {
         case .select: .accentColor
         case .highlight, .note: .yellow
         case .underline: .blue
-        case .text: .black
+        case .text, .redact: .black
         case .strikeOut, .ink, .rectangle, .ellipse, .line, .arrow: .red
         }
     }
@@ -52,20 +54,22 @@ enum AnnotationTool: String, CaseIterable, Identifiable {
     var isTextMarkup: Bool { [.highlight, .underline, .strikeOut].contains(self) }
     var isDrawing: Bool { [.ink, .rectangle, .ellipse, .line, .arrow].contains(self) }
     var usesLineWidth: Bool { isDrawing }
+    var usesColor: Bool { self != .select && self != .redact }
 }
 
 extension PDFAnnotation {
     var subtype: String { type ?? "" }
     var isTextMarkup: Bool { ["Highlight", "Underline", "StrikeOut"].contains(subtype) }
     var isFreeText: Bool { subtype == "FreeText" }
-    var hasStroke: Bool { ["Ink", "Square", "Circle", "Line"].contains(subtype) }
+    var hasStroke: Bool { ["Ink", "Square", "Circle", "Line"].contains(subtype) && !isRedactionMark }
     var hasEditableText: Bool { ["FreeText", "Text"].contains(subtype) || isTextMarkup }
     /// Links, form widgets and popups are not handled by the annotation tools.
     var isUserEditable: Bool { !["Link", "Widget", "Popup"].contains(subtype) }
     var isMovable: Bool { isUserEditable && !isTextMarkup }
 
     var displayName: String {
-        switch subtype {
+        if isRedactionMark { return "Zone à caviarder" }
+        return switch subtype {
         case "Highlight": "Surlignage"
         case "Underline": "Soulignement"
         case "StrikeOut": "Texte barré"
@@ -251,6 +255,8 @@ enum AnnotationFactory {
             path.lineCapStyle = .round
             path.lineJoinStyle = .round
             annotation.add(path)
+        case .redact:
+            return Redactor.mark(bounds: boundingRect([first, last]))
         case .rectangle, .ellipse:
             let rect = boundingRect([first, last])
             annotation = PDFAnnotation(bounds: rect, forType: tool == .rectangle ? .square : .circle, withProperties: nil)

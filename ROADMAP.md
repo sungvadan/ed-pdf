@@ -34,7 +34,6 @@
 - Images (`ImageAnnotation`, PNG conservé dans `/FolioImage`)
 - Redimensionnement : 4 poignées d'angle avec curseur dédié + largeur/hauteur dans l'inspecteur (proportions conservées pour signatures, dessins et images)
 - Plus tard : signature tapée au clavier, création de champs de formulaire, signature numérique (certificat)
-- Plus tard : réglage du nom d'auteur des annotations (préférences)
 
 ## ⬜ Étape 5 — Édition de texte & extras
 - ✅ « Exporter pour envoi… » (⇧⌘E, bouton avion) : copie aplatie (texte conservé, liens web gardés),
@@ -44,7 +43,7 @@
 - ✅ Ouverture des PDF protégés (écran de déverrouillage ; le mot de passe est conservé à l'enregistrement)
 - ✅ Aplatir dans le document ouvert (pages sélectionnées ou tout), annulable — menu Pages / clic droit
 - ✅ Exporter en images (PNG/JPEG, 72/150/300 ppp, toutes les pages ou la sélection)
-- Ajouter du texte, masquer/caviarder (redaction)
+- ✅ Caviardage : outil « Caviarder » (sur du texte → mots ; ailleurs → rectangle), puis « Appliquer le caviardage » :
+  pages reconstruites en image 300 ppp + texte invisible pour les mots non caviardés (`Redaction.swift`)
+- ✅ Signets (onglet de la barre latérale, ⌘B), icône de l'app (`scripts/make-icon.swift`), préférences (nom d'auteur)
 - Édition du texte existant (difficile avec PDFKit : surcouche « effacer + réécrire »)
-- Signets / table des matières
-- Icône de l'app, préférences (nom d'auteur…)

@@ -18,7 +18,7 @@ struct AnnotationBar: View {
             .labelsHidden()
             .fixedSize()
 
-            if viewer.tool != .select {
+            if viewer.tool.usesColor {
                 ColorPicker("Couleur", selection: $viewer.toolColor, supportsOpacity: false)
                     .labelsHidden()
                     .help("Couleur de l'outil")
@@ -35,6 +35,17 @@ struct AnnotationBar: View {
             }
 
             Spacer()
+
+            if viewer.redactionMarkCount > 0 {
+                Button {
+                    viewer.applyRedactions()
+                } label: {
+                    Label("Appliquer le caviardage (\(viewer.redactionMarkCount))", systemImage: "checkmark.shield")
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.red)
+                .help("Supprimer définitivement le contenu des zones marquées")
+            }
 
             InsertMenus(viewer: viewer)
         }
@@ -120,7 +131,13 @@ struct AnnotationInspector: View {
         let _ = viewer.revision
         Form {
             Section(annotation.displayName) {
-                ColorPicker("Couleur", selection: color, supportsOpacity: false)
+                if annotation.isRedactionMark {
+                    Text("Le contenu de cette zone sera supprimé lorsque vous appliquerez le caviardage.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                } else {
+                    ColorPicker("Couleur", selection: color, supportsOpacity: false)
+                }
 
                 if annotation.hasStroke {
                     LabeledContent("Épaisseur") {
