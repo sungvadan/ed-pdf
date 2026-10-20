@@ -80,6 +80,9 @@ struct ViewerCommands: Commands {
                 Button("Dernière page") { viewer?.lastPage() }
                     .keyboardShortcut(.downArrow, modifiers: .command)
                 Divider()
+                Button("Ajouter un signet") { viewer?.addBookmark() }
+                    .keyboardShortcut("b")
+                Divider()
                 Button("Résultat suivant") { viewer?.nextResult() }
                     .keyboardShortcut("g")
                 Button("Résultat précédent") { viewer?.previousResult() }

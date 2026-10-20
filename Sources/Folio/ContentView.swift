@@ -22,7 +22,7 @@ struct ContentView: View {
 
     private var editor: some View {
         NavigationSplitView {
-            PageSidebar(viewer: viewer)
+            Sidebar(viewer: viewer)
                 .navigationSplitViewColumnWidth(min: 140, ideal: 170, max: 260)
         } detail: {
             PDFCanvas(viewer: viewer, document: document.pdf)
