@@ -15,18 +15,3 @@ struct PDFCanvas: NSViewRepresentable {
         viewer.attach(document)
     }
 }
-
-/// Native page thumbnails bound to the viewer's PDFView.
-struct ThumbnailSidebar: NSViewRepresentable {
-    let viewer: ViewerModel
-
-    func makeNSView(context: Context) -> PDFThumbnailView {
-        let view = PDFThumbnailView()
-        view.pdfView = viewer.pdfView
-        view.thumbnailSize = CGSize(width: 120, height: 160)
-        view.backgroundColor = .clear
-        return view
-    }
-
-    func updateNSView(_ view: PDFThumbnailView, context: Context) {}
-}

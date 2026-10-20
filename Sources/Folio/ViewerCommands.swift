@@ -35,6 +35,28 @@ struct ViewerCommands: Commands {
             .disabled(viewer == nil)
         }
 
+        CommandMenu("Pages") {
+            Group {
+                Button("Pivoter à gauche") { viewer?.rotate(viewer?.targetPages ?? [], by: -90) }
+                    .keyboardShortcut("l")
+                Button("Pivoter à droite") { viewer?.rotate(viewer?.targetPages ?? [], by: 90) }
+                    .keyboardShortcut("r")
+                Divider()
+                Button("Dupliquer") { viewer?.duplicatePages(viewer?.targetPages ?? []) }
+                    .keyboardShortcut("d")
+                Button("Insérer une page vierge") { viewer?.insertBlankPage() }
+                    .keyboardShortcut("n", modifiers: [.command, .option])
+                Button("Insérer depuis un fichier…") { viewer?.chooseFilesToInsert() }
+                    .keyboardShortcut("i", modifiers: [.command, .option])
+                Button("Extraire…") { viewer?.extractPages() }
+                    .keyboardShortcut("e", modifiers: [.command, .option])
+                Divider()
+                Button("Supprimer") { viewer?.deletePages(viewer?.targetPages ?? []) }
+                    .keyboardShortcut(.delete, modifiers: [.command, .option])
+            }
+            .disabled(viewer == nil)
+        }
+
         CommandMenu("Aller") {
             Group {
                 Button("Page précédente") { viewer?.previousPage() }

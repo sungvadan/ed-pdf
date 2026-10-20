@@ -11,5 +11,6 @@
   - `FolioPDFView` : sous-classe de PDFView qui route la souris vers l'outil actif (dessin, déplacement, surlignage).
   - `Annotations.swift` : outils, `AnnotationFactory`, édition avec undo (`add`/`remove`/`update`/`registerChange` sur ViewerModel). Toute modification passe par ces méthodes pour être annulable et marquer le document modifié. Pour forcer le redessin PDFKit : `annotation.refresh()` (retire/rajoute).
   - `FreeTextAnnotation` : sous-classe chargée pour toutes les FreeText via `PDFDocumentDelegate.class(forAnnotationType:)` (délégué = `PDFFileDocument`). Dessine elle-même le texte si `/FolioStyle` est présent, sinon rendu natif.
+  - `PageOperations.swift` / `PageSidebar.swift` : gestion des pages. Toute modification de structure passe par `applyPages(_:actionName:)` (état cible complet, undo = état précédent). Ne pas utiliser `exchangePage` (plante sur les pages issues d'images) ; une page copiée garde `page.document` de l'original → utiliser `doc.index(for:)`.
   - `AnnotationViews.swift` : barre d'outils d'annotation et inspecteur.
 - Avancement et étapes suivantes : voir `ROADMAP.md` (avancer une étape à la fois, commiter à la fin de chacune).

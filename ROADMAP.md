@@ -19,10 +19,13 @@
 - Annuler / rétablir (UndoManager → marque le document comme modifié)
 - Reste à faire plus tard : poignées de redimensionnement, remplissage des formes, édition du texte directement sur la page, liste des annotations
 
-## ⬜ Étape 3 — Gestion des pages
-- Pivoter, supprimer, dupliquer, réordonner (glisser-déposer dans les vignettes)
-- Insérer une page vierge ou depuis un autre PDF / une image
-- Fusionner des PDF, extraire des pages
+## ✅ Étape 3 — Gestion des pages
+- Barre latérale SwiftUI : sélection multiple, glisser-déposer pour réordonner, menu contextuel
+- Pivoter (⌘L / ⌘R), supprimer (⌥⌘⌫ ou ⌫ dans la barre latérale), dupliquer (⌘D)
+- Insérer une page vierge (⌥⌘N), des PDF / images (⌥⌘I ou glisser des fichiers dans la barre latérale) → fusion
+- Extraire les pages sélectionnées dans un nouveau PDF (⌥⌘E)
+- Tout est annulable
+- Plus tard : agrandir la taille des vignettes, glisser des pages vers le Finder / une autre fenêtre
 
 ## ⬜ Étape 4 — Formulaires & signature
 - Remplissage des champs de formulaire

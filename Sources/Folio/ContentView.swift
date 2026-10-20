@@ -7,7 +7,7 @@ struct ContentView: View {
 
     var body: some View {
         NavigationSplitView {
-            ThumbnailSidebar(viewer: viewer)
+            PageSidebar(viewer: viewer)
                 .navigationSplitViewColumnWidth(min: 140, ideal: 170, max: 260)
         } detail: {
             PDFCanvas(viewer: viewer, document: document.pdf)
@@ -54,6 +54,13 @@ struct ContentView: View {
         }
 
         ToolbarItemGroup {
+            ControlGroup {
+                Button { viewer.rotate(viewer.targetPages, by: -90) } label: { Image(systemName: "rotate.left") }
+                    .help("Pivoter à gauche")
+                Button { viewer.rotate(viewer.targetPages, by: 90) } label: { Image(systemName: "rotate.right") }
+                    .help("Pivoter à droite")
+            }
+
             Picker("Affichage", selection: $viewer.layout) {
                 ForEach(PageLayout.allCases) { Text($0.rawValue).tag($0) }
             }

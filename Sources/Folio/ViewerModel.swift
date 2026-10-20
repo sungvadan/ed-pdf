@@ -26,7 +26,9 @@ final class ViewerModel {
     let pdfView = FolioPDFView(frame: .zero)
 
     private(set) var pageIndex = 0
-    private(set) var pageCount = 0
+    var pageCount = 0
+    var pages: [PDFPage] = []
+    var selectedPages: Set<PDFPage> = []
     private(set) var scale: CGFloat = 1
 
     var layout: PageLayout = .continuous {
@@ -86,15 +88,15 @@ final class ViewerModel {
     func attach(_ document: PDFDocument) {
         guard pdfView.document !== document else { return }
         pdfView.document = document
+        syncPages()
         syncPage()
     }
 
     private func syncPage() {
-        guard let doc = pdfView.document else { return }
-        pageCount = doc.pageCount
-        if let page = pdfView.currentPage {
-            pageIndex = doc.index(for: page)
-        }
+        guard let doc = pdfView.document, let page = pdfView.currentPage else { return }
+        pageIndex = doc.index(for: page)
+        // Follow scrolling in the sidebar unless the page is part of a multi-selection.
+        if !selectedPages.contains(page) { selectedPages = [page] }
     }
 
     // MARK: Navigation
