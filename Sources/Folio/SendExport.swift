@@ -142,6 +142,7 @@ extension ViewerModel {
               let snapshot = SendExporter.snapshot(of: document, password: documentPassword) else { return NSSound.beep() }
         let indexes = targets.compactMap { pages.firstIndex(of: $0) }
         guard !indexes.isEmpty, let flat = SendExporter.flattened(snapshot, indexes: indexes) else { return NSSound.beep() }
+        retainedSources.append(flat)
         var result = pages
         for (k, index) in indexes.enumerated() {
             if let page = flat.page(at: k)?.copy() as? PDFPage { result[index] = page }

@@ -59,6 +59,9 @@ final class ViewerModel {
     var sidebarMode = SidebarMode.pages
     /// Password used to unlock an encrypted document, needed to make working copies of it.
     @ObservationIgnored var documentPassword: String?
+    /// Temporary documents whose pages were copied into this one. Copied pages share the source's
+    /// CoreGraphics data; keeping the sources alive avoids freeing it while pages still use it.
+    @ObservationIgnored var retainedSources: [PDFDocument] = []
     var selectedAnnotation: PDFAnnotation?
     /// Bumped whenever annotation properties change, so views reading PDFKit objects refresh.
     var revision = 0

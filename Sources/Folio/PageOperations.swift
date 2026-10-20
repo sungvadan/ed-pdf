@@ -116,9 +116,11 @@ extension ViewerModel {
     // MARK: Files
 
     /// Pages from PDFs and images; PDF pages are copied so the source documents are untouched.
-    static func pages(fromFiles urls: [URL]) -> [PDFPage] {
+    /// Source documents are kept alive alongside their copied pages (see `retainedSources`).
+    func pages(fromFiles urls: [URL]) -> [PDFPage] {
         urls.flatMap { url -> [PDFPage] in
             if let doc = PDFDocument(url: url) {
+                retainedSources.append(doc)
                 return (0..<doc.pageCount).compactMap { doc.page(at: $0)?.copy() as? PDFPage }
             }
             if let image = NSImage(contentsOf: url), let page = PDFPage(image: image) {
@@ -129,7 +131,7 @@ extension ViewerModel {
     }
 
     func insertFiles(_ urls: [URL], at index: Int) {
-        let newPages = Self.pages(fromFiles: urls)
+        let newPages = pages(fromFiles: urls)
         guard !newPages.isEmpty else { return NSSound.beep() }
         insert(newPages, at: index, actionName: "Insérer des pages")
     }
