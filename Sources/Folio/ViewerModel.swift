@@ -1,5 +1,7 @@
+import AppKit
 import Observation
 import PDFKit
+import SwiftUI
 
 enum PageLayout: String, CaseIterable, Identifiable {
     case single = "Page unique"
@@ -21,7 +23,7 @@ enum PageLayout: String, CaseIterable, Identifiable {
 @MainActor
 @Observable
 final class ViewerModel {
-    let pdfView = PDFView()
+    let pdfView = FolioPDFView(frame: .zero)
 
     private(set) var pageIndex = 0
     private(set) var pageCount = 0
@@ -35,9 +37,32 @@ final class ViewerModel {
     private(set) var searchResults: [PDFSelection] = []
     private(set) var searchIndex = 0
 
+    // MARK: Annotation state
+
+    var tool: AnnotationTool = .select {
+        didSet {
+            guard tool != oldValue else { return }
+            if tool != .select { select(nil) }
+            pdfView.applyMarkupFromSelection()
+        }
+    }
+
+    var toolColors: [AnnotationTool: Color] = [:]
+    var lineWidth: CGFloat = 2
+    var selectedAnnotation: PDFAnnotation?
+    /// Bumped whenever annotation properties change, so views reading PDFKit objects refresh.
+    var revision = 0
+
+    @ObservationIgnored weak var undoManager: UndoManager?
     @ObservationIgnored private var observers: [NSObjectProtocol] = []
 
+    var toolColor: Color {
+        get { toolColors[tool] ?? tool.defaultColor }
+        set { toolColors[tool] = newValue }
+    }
+
     init() {
+        pdfView.viewer = self
         pdfView.autoScales = true
         pdfView.displayMode = layout.displayMode
         pdfView.displaysPageBreaks = true
@@ -45,10 +70,16 @@ final class ViewerModel {
 
         let center = NotificationCenter.default
         observers.append(center.addObserver(forName: .PDFViewPageChanged, object: pdfView, queue: .main) { [weak self] _ in
-            MainActor.assumeIsolated { self?.syncPage() }
+            MainActor.assumeIsolated {
+                self?.syncPage()
+                self?.pdfView.updateSelectionOverlay()
+            }
         })
         observers.append(center.addObserver(forName: .PDFViewScaleChanged, object: pdfView, queue: .main) { [weak self] _ in
-            MainActor.assumeIsolated { self?.scale = self?.pdfView.scaleFactor ?? 1 }
+            MainActor.assumeIsolated {
+                self?.scale = self?.pdfView.scaleFactor ?? 1
+                self?.pdfView.updateSelectionOverlay()
+            }
         })
     }
 

@@ -3,6 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @ObservedObject var document: PDFFileDocument
     @State private var viewer = ViewerModel()
+    @Environment(\.undoManager) private var undoManager
 
     var body: some View {
         NavigationSplitView {
@@ -11,7 +12,17 @@ struct ContentView: View {
         } detail: {
             PDFCanvas(viewer: viewer, document: document.pdf)
                 .ignoresSafeArea(edges: .bottom)
+                .safeAreaInset(edge: .top, spacing: 0) { AnnotationBar(viewer: viewer) }
         }
+        .inspector(isPresented: inspectorShown) {
+            if let annotation = viewer.selectedAnnotation {
+                AnnotationInspector(viewer: viewer, annotation: annotation)
+                    .id(ObjectIdentifier(annotation))
+                    .inspectorColumnWidth(min: 220, ideal: 260, max: 360)
+            }
+        }
+        .onAppear { viewer.undoManager = undoManager }
+        .onChange(of: undoManager) { _, manager in viewer.undoManager = manager }
         .toolbar { toolbar }
         .searchable(text: $viewer.searchText, placement: .toolbar, prompt: "Rechercher")
         .onSubmit(of: .search) { viewer.search() }
@@ -20,6 +31,14 @@ struct ContentView: View {
         }
         .focusedSceneValue(\.viewer, viewer)
         .frame(minWidth: 700, minHeight: 500)
+    }
+
+    private var inspectorShown: Binding<Bool> {
+        Binding {
+            viewer.selectedAnnotation != nil
+        } set: { shown in
+            if !shown { viewer.select(nil) }
+        }
     }
 
     @ToolbarContentBuilder

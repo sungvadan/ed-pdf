@@ -9,12 +9,13 @@
 - Navigation entre pages, indicateur « page x / n »
 - Recherche plein texte avec surlignage et résultat suivant/précédent (⌘G / ⇧⌘G)
 
-## ⬜ Étape 2 — Annotations
-- Surligner / souligner / barrer le texte sélectionné (couleurs)
-- Notes (post-it), zones de texte libres
-- Dessin à main levée (encre), formes (rectangle, ellipse, ligne, flèche)
-- Sélection / déplacement / suppression d'annotations, panneau de propriétés
+## ✅ Étape 2 — Annotations
+- Barre d'outils : sélection, surligner, souligner, barrer, note, zone de texte, dessin, rectangle, ellipse, ligne, flèche
+- Couleur par outil, épaisseur de trait
+- Sélection (contour pointillé), déplacement, suppression (⌫), Échap → outil sélection
+- Inspecteur : couleur, épaisseur, taille de police, texte / commentaire
 - Annuler / rétablir (UndoManager → marque le document comme modifié)
+- Reste à faire plus tard : poignées de redimensionnement, remplissage des formes, édition du texte directement sur la page, liste des annotations
 
 ## ⬜ Étape 3 — Gestion des pages
 - Pivoter, supprimer, dupliquer, réordonner (glisser-déposer dans les vignettes)
