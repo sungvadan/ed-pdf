@@ -78,7 +78,8 @@ public struct ParagraphGeometry {
         let first = block.lines[0]
         let left = block.lines.map(\.bounds.minX).min() ?? first.bounds.minX
         origin = CGPoint(x: left, y: first.baseline)
-        width = block.bounds.width
+        // A single line (title, label…) grows to the right instead of wrapping.
+        width = block.lines.count == 1 ? .greatestFiniteMagnitude : block.bounds.width
         leading = block.leading
         alignment = Self.alignment(of: block)
     }
@@ -102,6 +103,8 @@ public enum TextEditError: Error {
     case notEditable
     case fontUnavailable(String)
     case writeFailed
+    /// The written text does not read back as expected, even with system fonts.
+    case verificationFailed(expected: String, found: String)
 }
 
 /// Replaces a paragraph's text objects with newly laid-out text.
@@ -112,6 +115,11 @@ public final class BlockWriter {
     public var avoidEmbeddedFonts = false
     /// One line per used font, for diagnostics.
     public private(set) var fontReport: [String] = []
+    /// Leave the original objects in place and append the new ones at the end of the page, so PDFium
+    /// writes them to a new content stream and keeps the original streams byte-identical.
+    var keepsOriginalObjects = false
+    /// Number of text objects created by the last replacement.
+    private(set) var createdObjectCount = 0
 
     public init(page: PDFiumPage) {
         self.page = page
@@ -150,11 +158,16 @@ public final class BlockWriter {
             created += emit(line, baseline: baseline, geometry: geometry, fonts: resolved)
         }
 
-        for (offset, object) in created.enumerated() {
-            guard FPDFPage_InsertObjectAtIndex(page.handle, object, insertIndex + offset) != 0 else { throw TextEditError.writeFailed }
-        }
-        for object in objects where FPDFPage_RemoveObject(page.handle, object) != 0 {
-            FPDFPageObj_Destroy(object)
+        createdObjectCount = created.count
+        if keepsOriginalObjects {
+            created.forEach { FPDFPage_InsertObject(page.handle, $0) }
+        } else {
+            for (offset, object) in created.enumerated() {
+                guard FPDFPage_InsertObjectAtIndex(page.handle, object, insertIndex + offset) != 0 else { throw TextEditError.writeFailed }
+            }
+            for object in objects where FPDFPage_RemoveObject(page.handle, object) != 0 {
+                FPDFPageObj_Destroy(object)
+            }
         }
         guard page.generateContent() else { throw TextEditError.writeFailed }
     }
@@ -274,23 +287,50 @@ public final class BlockWriter {
         var objects: [FPDF_PAGEOBJECT] = []
         for piece in pieces {
             let font = fonts[piece.style]!
-            // Justified text is written word by word so spaces can stretch.
-            let chunks: [Substring] = extraPerSpace > 0 ? piece.text.split(separator: " ", omittingEmptySubsequences: false) : [piece.text]
-            for (index, chunk) in chunks.enumerated() {
-                if !chunk.isEmpty, let object = makeText(String(chunk), style: piece.style, font: font, at: CGPoint(x: x, y: baseline)) {
+            let size = piece.style.fontSize
+            // Justified lines stretch their spaces, so they are written word by word, as are fonts
+            // without a space glyph. Otherwise a style run is one object, spaces included.
+            guard extraPerSpace > 0 || !font.writesSpaces else {
+                if let object = makeText(String(piece.text), style: piece.style, font: font, at: CGPoint(x: x, y: baseline)) {
                     objects.append(object)
                 }
-                x += font.width(of: chunk, size: piece.style.fontSize)
-                if chunks.count > 1, index < chunks.count - 1 {
-                    x += font.width(of: " ", size: piece.style.fontSize) + extraPerSpace
+                x += piece.width
+                continue
+            }
+            for token in Self.wordsWithTrailingSpaces(piece.text) {
+                let spaces = token.reversed().prefix { $0 == " " }.count
+                let word = token.dropLast(spaces)
+                let written = font.writesSpaces ? token : word
+                if !word.isEmpty, let object = makeText(String(written), style: piece.style, font: font, at: CGPoint(x: x, y: baseline)) {
+                    objects.append(object)
                 }
+                x += font.width(of: token, size: size) + CGFloat(spaces) * extraPerSpace
             }
         }
         return objects
     }
 
+    /// "a  b c" → ["a  ", "b ", "c"]; leading spaces form their own token.
+    static func wordsWithTrailingSpaces(_ text: Substring) -> [Substring] {
+        var tokens: [Substring] = []
+        var start = text.startIndex
+        var index = text.startIndex
+        while index < text.endIndex {
+            let next = text.index(after: index)
+            if text[index] == " ", next < text.endIndex, text[next] != " " {
+                tokens.append(text[start..<next])
+                start = next
+            }
+            index = next
+        }
+        if start < text.endIndex { tokens.append(text[start...]) }
+        return tokens
+    }
+
     private func makeText(_ text: String, style: RunStyle, font: ResolvedFont, at origin: CGPoint) -> FPDF_PAGEOBJECT? {
-        guard let object = FPDFPageObj_CreateTextObj(page.document.handle, font.handle, Float(style.fontSize)) else { return nil }
+        // Fonts embedded by Folio map each glyph from one character only (see FontResolver.uniqueCmap).
+        let text = text.replacingOccurrences(of: "\u{00A0}", with: " ").replacingOccurrences(of: "\u{00AD}", with: "")
+        guard !text.isEmpty, let object = FPDFPageObj_CreateTextObj(page.document.handle, font.handle, Float(style.fontSize)) else { return nil }
         guard withWideString(text, { FPDFText_SetText(object, $0) }) != 0 else {
             FPDFPageObj_Destroy(object)
             return nil
@@ -312,12 +352,9 @@ extension TextBlock {
         for (lineIndex, line) in lines.enumerated() {
             for (runIndex, run) in line.runs.enumerated() {
                 var text = run.text
-                if runIndex > 0 {
-                    let previous = line.runs[runIndex - 1]
-                    if run.bounds.minX - previous.bounds.maxX > min(previous.fontSize, run.fontSize) * 0.15,
-                       !(segments.last?.text.hasSuffix(" ") ?? true), !text.hasPrefix(" ") {
-                        text = " " + text
-                    }
+                if runIndex > 0, line.runs[runIndex - 1].followedBySpace,
+                   !(segments.last?.text.hasSuffix(" ") ?? true), !text.hasPrefix(" ") {
+                    text = " " + text
                 }
                 segments.append(StyledSegment(text: text, style: RunStyle(run: run)))
             }

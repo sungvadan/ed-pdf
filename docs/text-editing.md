@@ -34,34 +34,49 @@ swift scripts/make-fixtures.swift            # PDF de test dans build/fixtures
 - `BlockWriter.swift` : mise en page gloutonne par mots avec segments stylés (le gras en ligne reste gras),
   alignements gauche/centre/droite/justifié (justifié = un objet par mot), interlignage d'origine.
 
-## Problème découvert → étape B (à faire)
+## Étape B (faite) : chirurgie des content streams
 
-`FPDFPage_GenerateContent` réécrit **tout** le content stream modifié en `Tj` simples : il perd les ajustements
-`TJ` (crénage) et l'espacement des mots des textes **non modifiés** (vu sur `colonnes.pdf` : justification cassée
-dans le paragraphe voisin). Inacceptable sur des PDF Word/Acrobat.
+`FPDFPage_GenerateContent` réécrit tout un content stream modifié en `Tj` simples et perd le crénage `TJ`/l'espacement
+des textes **non modifiés**. Si on ne fait qu'**ajouter** des objets, PDFium garde les streams d'origine octet pour
+octet et écrit le nouveau texte dans un stream ajouté. D'où `TextEditor.replace` :
 
-Vérifié : si on **ajoute seulement** des objets, PDFium garde les streams d'origine **octet pour octet** et écrit les
-nouveaux objets dans un stream ajouté à la fin de `/Contents`.
+1. PDFium ajoute les nouveaux objets (sans supprimer les anciens) → sauvegarde intermédiaire.
+2. `PDFFile` (parseur maison : xref classiques et compressées, object streams, Flate + prédicteurs PNG) retrouve
+   la page et ses content streams.
+3. `ContentSurgery` tokenise (BI/ID/EI gérés), suit q/Q, BT/ET, Tf, Tz et les repositionnements, liste les
+   opérateurs Tj/TJ/'/" ; le k-ième qui affiche au moins un caractère = k-ième objet texte PDFium (nombres vérifiés,
+   sinon erreur). Les opérateurs du paragraphe sont supprimés ; si un opérateur conservé suit dans le même BT sans
+   repositionnement, le premier supprimé devient `[n] TJ` (déplacement identique, sans dessin, Tlm inchangé).
+4. Mise à jour incrémentale (stream Flate + xref + trailer /Prev).
+5. Vérification avec **PDFKit** (`page.string` contient le nouveau texte) ; sinon nouvel essai avec polices système ;
+   sinon `TextEditError.verificationFailed` (on ne produit jamais un PDF faux).
 
-Plan étape B :
-1. PDFium : insérer les nouveaux objets (sans supprimer les anciens), `GenerateContent`, sauver → D1.
-2. Parseur PDF maison (sortie PDFium : xref classique, pas d'object streams — prévoir xref streams/ObjStm pour
-   la lecture plus tard) : trouver la page, ses content streams d'origine, décoder (Flate).
-3. Tokeniser le content stream (gérer BI/ID/EI), suivre q/Q/cm, BT/ET, Tf, Tz, Td/TD/Tm/T*, et lister les opérateurs
-   d'affichage (Tj, TJ, ', ") dans l'ordre. Le k-ième correspond au k-ième objet texte PDFium de premier niveau
-   (vérifier que les nombres concordent, sinon refuser l'édition).
-4. Supprimer les opérateurs du paragraphe édité. Si un opérateur conservé suit dans le même BT sans
-   repositionnement, remplacer le premier supprimé par `[n] TJ` (déplacement sans dessin : n = −tx·1000/(Tfs·Th),
-   tx = déplacement jusqu'au début de l'opérateur conservé exprimé dans l'espace texte via la matrice PDFium
-   = Tm×CTM). Ne pas insérer de `Tm` (cela changerait la matrice de ligne Tlm utilisée par T*/Td).
-   `'` → `T*`, `aw ac (s) "` → `aw Tw ac Tc T*`.
-5. Écrire une mise à jour incrémentale (nouvel objet stream Flate pour chaque stream modifié, xref, trailer /Prev).
-6. Vérifier : relire avec PDFium, le nouveau texte est présent et l'ancien absent ; rendu des autres paragraphes
-   identique (comparaison de pixels hors zone éditée).
+Résultat : 0 pixel différent hors du paragraphe édité (lettre, colonnes justifiées, facture Chrome).
+
+### Pièges rencontrés (et réglés)
+
+- Taille effective = Tf × échelle de la matrice (CoreText écrit `1 Tf` avec une matrice ×12).
+- Largeurs des caractères des polices embarquées : boîte « loose » PDFium (= avance), indispensable pour Chrome qui
+  dessine les glyphes un par un.
+- Couverture d'une police embarquée : caractères réellement dessinés (`FPDFText_IsGenerated` exclu). Les sous-ensembles
+  Chrome n'ont **pas de glyphe espace** → mots en objets séparés, l'écart fait l'espace.
+- Polices système incorporées par PDFium : sa ToUnicode choisit parfois U+00A0 pour l'espace ou U+00AD pour « - »
+  (glyphe partagé) → on reconstruit la `cmap` (format 12) avec un seul caractère par glyphe, hors caractères de contrôle.
+- PDFKit colle les mots séparés seulement par un écart à certains changements de police → on écrit de vrais espaces
+  dès que la police en a un (y compris en justifié : un objet par mot avec son espace).
+- Les espaces entre runs se déduisent de l'extraction PDFium (`followedBySpace`), pas des boîtes d'encre.
+
+Tests : `swift scripts/make-fixtures.swift` puis `scripts/textlab-suite.sh` (facture.pdf : générée par Chrome sans
+fenêtre depuis `build/fixtures/facture.html`, voir l'historique de session ou régénérer avec
+`"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --no-pdf-header-footer --print-to-pdf=…`).
+
+Limites connues : un paragraphe qui grandit peut chevaucher le contenu suivant ; documents chiffrés et xref compressées
+en sortie PDFium non gérés par l'écriture incrémentale (PDFium écrit des xref classiques, OK) ; texte dans les Form
+XObjects, texte tourné : lecture seule.
 
 ## Étapes suivantes
 
-- C. UI : outil « Modifier le texte » : survol = cadre des paragraphes, clic = NSTextView posé exactement sur le
+- C. (prochaine session) UI : outil « Modifier le texte » : survol = cadre des paragraphes, clic = NSTextView posé exactement sur le
   paragraphe (polices système équivalentes, attribut de style d'origine par caractère pour la saisie), validation
   → édition → remplacement de page annulable. Barre/inspecteur : police, taille, gras, italique, couleur.
 - D. Robustesse : textes dans les Form XObjects, pages pivotées, texte tourné, polices Type3/CFF (OTF), sous-ensemble

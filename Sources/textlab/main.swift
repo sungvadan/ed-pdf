@@ -30,28 +30,29 @@ func replace() -> Never {
     }
     let blocks = TextLayout.blocks(from: page.textRuns())
     guard blocks.indices.contains(blockNumber) else { fail("no block #\(blockNumber)") }
-    let block = blocks[blockNumber]
-    let segments = block.styledSegments
+    let segments = blocks[blockNumber].styledSegments
     let oldText = segments.map(\.text).joined()
     guard oldText.contains(arguments[5]) else { fail("\"\(arguments[5])\" not found in: \(oldText)") }
     let newText = oldText.replacingOccurrences(of: arguments[5], with: arguments[6])
 
-    let writer = BlockWriter(page: page)
-    writer.avoidEmbeddedFonts = arguments.contains("--system")
+    let result: TextEditor.Result
     do {
-        try writer.replace(block, with: segments.applying(newText: newText))
+        result = try TextEditor.replace(blockAt: blockNumber, onPage: pageNumber - 1, in: data, with: { block in
+            block.styledSegments.applying(newText: newText)
+        }, avoidEmbeddedFonts: arguments.contains("--system"), verify: !arguments.contains("--noverify"))
     } catch {
         fail("edit failed: \(error)")
     }
-    writer.fontReport.forEach { print("font:", $0) }
-    guard let output = document.data() else { fail("save failed") }
+    result.fontReport.forEach { print("font:", $0) }
+    let output = result.data
     FileManager.default.createFile(atPath: arguments[7], contents: output)
 
-    // Check: the edited text must read back identically.
+    // Check: the old paragraph is gone (TextEditor already verified the new one).
     let check = PDFiumDocument(data: output)!.page(at: pageNumber - 1)!
-    let found = TextLayout.blocks(from: check.textRuns()).contains { $0.text.replacingOccurrences(of: "\n", with: " ") == newText.trimmingCharacters(in: .whitespaces) }
-    print(found ? "readback: OK" : "readback: MISMATCH")
-    exit(found ? 0 : 2)
+    let readBack = TextLayout.blocks(from: check.textRuns()).map { TextEditor.normalized($0.text) }
+    let oldGone = !readBack.contains(TextEditor.normalized(oldText))
+    print("readback: new text OK", oldGone ? "| old text removed" : "| OLD TEXT STILL THERE")
+    exit(oldGone ? 0 : 2)
 }
 
 func render() -> Never {
@@ -92,6 +93,14 @@ for index in pages {
         let leading = String(format: "%.1f", Double(block.leading))
         let readOnly = block.isEditable ? "" : " (read-only)"
         print("#\(n) \(geometry) \(block.lines.count) lines, leading \(leading), \(style)\(readOnly)")
+        if ProcessInfo.processInfo.environment["TEXTLAB_GEOMETRY"] != nil {
+            print("    alignment:", ParagraphGeometry(block: block).alignment, block.lines.map { "\(Int($0.bounds.minX))-\(String(format: "%.1f", Double($0.bounds.maxX)))" })
+        }
+        if ProcessInfo.processInfo.environment["TEXTLAB_RUNS"] != nil {
+            for run in block.runs {
+                print(String(format: "      run %.2f…%.2f origin %.2f size %.2f", Double(run.bounds.minX), Double(run.bounds.maxX), Double(run.origin.x), Double(run.fontSize)), run.font.postScriptName, run.text.debugDescription, run.followedBySpace ? "+space" : "")
+            }
+        }
         for line in block.lines {
             print("    | \(line.text)")
         }

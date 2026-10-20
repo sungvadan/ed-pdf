@@ -49,6 +49,8 @@ public struct TextRun {
     public var bounds: CGRect
     /// Text space to page space, including the font size scale applied by the text matrix.
     public var matrix: CGAffineTransform
+    /// PDFium's text extraction puts a space (real or generated) right after this run.
+    public var followedBySpace = false
     /// Font size as written in the PDF (Tf).
     public var nominalSize: CGFloat
     public var font: FontInfo
@@ -99,6 +101,16 @@ public struct TextBlock {
 // MARK: - Reading text objects
 
 extension PDFiumPage {
+    /// Top-level text objects in page order (including whitespace-only ones): page index and matrix (Tm × CTM).
+    func topLevelTextObjects() -> [(index: Int, matrix: CGAffineTransform)] {
+        (0..<Int(FPDFPage_CountObjects(handle))).compactMap { index in
+            guard let object = FPDFPage_GetObject(handle, Int32(index)), FPDFPageObj_GetType(object) == FPDF_PAGEOBJ_TEXT else { return nil }
+            var m = FS_MATRIX()
+            FPDFPageObj_GetMatrix(object, &m)
+            return (index, CGAffineTransform(m))
+        }
+    }
+
     public func textRuns() -> [TextRun] {
         var runs: [TextRun] = []
         for index in 0..<Int(FPDFPage_CountObjects(handle)) {
@@ -106,7 +118,31 @@ extension PDFiumPage {
                 collect(object, path: [index], parent: .identity, into: &runs)
             }
         }
+        let spaced = objectsFollowedBySpace()
+        for i in runs.indices where runs[i].path.count == 1 {
+            if let object = FPDFPage_GetObject(handle, Int32(runs[i].path[0])), spaced.contains(object) {
+                runs[i].followedBySpace = true
+            }
+        }
         return runs
+    }
+
+    /// Text objects whose last character is followed by a space in PDFium's text extraction,
+    /// which tells real word gaps from kerning between glyph runs.
+    private func objectsFollowedBySpace() -> Set<OpaquePointer> {
+        guard let textPage else { return [] }
+        var result = Set<OpaquePointer>()
+        var lastObject: FPDF_PAGEOBJECT?
+        for index in 0..<Int(FPDFText_CountChars(textPage)) {
+            let unicode = FPDFText_GetUnicode(textPage, Int32(index))
+            if unicode == 32 || unicode == 0xA0 || unicode == 9 {
+                if let lastObject { result.insert(lastObject) }
+                continue
+            }
+            if unicode == 10 || unicode == 13 { continue }
+            lastObject = FPDFText_GetTextObject(textPage, Int32(index))
+        }
+        return result
     }
 
     private func collect(_ object: FPDF_PAGEOBJECT, path: [Int], parent: CGAffineTransform, into runs: inout [TextRun]) {
@@ -211,12 +247,8 @@ public enum TextLayout {
     private static func makeLine(_ runs: [TextRun]) -> TextLine {
         var text = ""
         for (index, run) in runs.enumerated() {
-            if index > 0 {
-                let previous = runs[index - 1]
-                let gap = run.bounds.minX - previous.bounds.maxX
-                if gap > min(previous.fontSize, run.fontSize) * 0.15, !text.hasSuffix(" "), !run.text.hasPrefix(" ") {
-                    text += " "
-                }
+            if index > 0, runs[index - 1].followedBySpace, !text.hasSuffix(" "), !run.text.hasPrefix(" ") {
+                text += " "
             }
             text += run.text
         }

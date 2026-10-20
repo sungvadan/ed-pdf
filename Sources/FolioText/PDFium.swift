@@ -62,6 +62,8 @@ public final class PDFiumPage {
         FPDF_ClosePage(handle)
     }
 
+    var objectCount: Int { Int(FPDFPage_CountObjects(handle)) }
+
     /// Rewrites the page content stream after objects were changed, added or removed.
     @discardableResult
     public func generateContent() -> Bool {
