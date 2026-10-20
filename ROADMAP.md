@@ -32,7 +32,7 @@
 - Signatures dessinées (tracé vectoriel Ink) ou capturées sur papier (caméra, image, iPhone) avec extraction de l'encre sur fond transparent (`SignatureExtractor`), mémorisées (UserDefaults)
 - Tampons : Approuvé, Rejeté, Confidentiel, Brouillon, Payé, date du jour + tampons personnalisés mémorisés (texte, couleur)
 - Images (`ImageAnnotation`, PNG conservé dans `/FolioImage`)
-- Poignée de redimensionnement (coin bas-droit) pour toutes les annotations déplaçables
+- Redimensionnement : 4 poignées d'angle avec curseur dédié + largeur/hauteur dans l'inspecteur (proportions conservées pour signatures, dessins et images)
 - Plus tard : signature tapée au clavier ou importée, création de champs de formulaire, signature numérique (certificat)
 
 ## ⬜ Étape 5 — Édition de texte & extras

@@ -9,7 +9,7 @@ final class FolioPDFView: PDFView {
         /// A drawing in progress: the temporary annotation and the points collected so far.
         case create(PDFAnnotation, PDFPage, points: [CGPoint])
         case move(PDFAnnotation, start: CGPoint, original: AnnotationState)
-        case resize(PDFAnnotation, original: AnnotationState)
+        case resize(PDFAnnotation, corner: Corner, original: AnnotationState)
     }
 
     private var drag: Drag?
@@ -51,9 +51,8 @@ final class FolioPDFView: PDFView {
 
         switch tool {
         case .select:
-            if let selected = viewer.selectedAnnotation, selected.page === page, selected.isMovable,
-               resizeHandle(of: selected).contains(point) {
-                drag = .resize(selected, original: AnnotationState(selected))
+            if let selected = viewer.selectedAnnotation, let corner = handleCorner(at: convert(event.locationInWindow, from: nil)) {
+                drag = .resize(selected, corner: corner, original: AnnotationState(selected))
             } else if let annotation = page.annotation(at: point), annotation.subtype == "Widget" {
                 viewer.select(nil)
                 if formSnapshot == nil, let document { formSnapshot = FormState(document) }
@@ -105,18 +104,27 @@ final class FolioPDFView: PDFView {
             annotation.bounds = original.bounds.offsetBy(dx: point.x - start.x, dy: point.y - start.y)
             annotation.refresh()
             updateSelectionOverlay()
-        case .resize(let annotation, let original):
+        case .resize(let annotation, let corner, let original):
             guard let page = annotation.page else { return }
             let point = convert(convert(event.locationInWindow, from: nil), to: page)
-            let top = original.bounds.maxY, left = original.bounds.minX
-            var width = max(point.x - left, 8), height = max(top - point.y, 8)
+            // The opposite corner stays put; the dragged corner never crosses it.
+            let old = original.bounds
+            let anchor = corner.opposite.point(in: old)
+            var width = max(abs(point.x - anchor.x), 8), height = max(abs(point.y - anchor.y), 8)
             if AnnotationState.keepsAspectRatio(annotation) {
-                height = width * original.bounds.height / max(original.bounds.width, 1)
+                let scale = max(width / max(old.width, 1), height / max(old.height, 1))
+                width = old.width * scale
+                height = old.height * scale
             } else if annotation.isFreeText {
                 width = max(width, 30)
-                height = original.bounds.height
+                height = old.height
             }
-            original.apply(resizedTo: CGRect(x: left, y: top - height, width: width, height: height), to: annotation)
+            let rect = CGRect(
+                x: corner.isRight ? anchor.x : anchor.x - width,
+                y: corner.isTop ? anchor.y : anchor.y - height,
+                width: width, height: height
+            )
+            original.apply(resizedTo: rect, to: annotation)
             annotation.refresh()
             updateSelectionOverlay()
         }
@@ -141,7 +149,7 @@ final class FolioPDFView: PDFView {
             if annotation.bounds != original.bounds {
                 viewer?.registerChange(of: annotation, from: original, actionName: "Déplacer")
             }
-        case .resize(let annotation, let original):
+        case .resize(let annotation, _, let original):
             if annotation.bounds != original.bounds {
                 viewer?.registerChange(of: annotation, from: original, actionName: "Redimensionner")
             }
@@ -151,7 +159,9 @@ final class FolioPDFView: PDFView {
     override func mouseMoved(with event: NSEvent) {
         super.mouseMoved(with: event)
         guard let tool = viewer?.tool else { return }
-        if tool.isDrawing || tool == .note || tool == .text {
+        if tool == .select, let corner = handleCorner(at: convert(event.locationInWindow, from: nil)) {
+            corner.cursor.set()
+        } else if tool.isDrawing || tool == .note || tool == .text {
             NSCursor.crosshair.set()
         } else if tool.isTextMarkup {
             NSCursor.iBeam.set()
@@ -193,10 +203,15 @@ final class FolioPDFView: PDFView {
         }
     }
 
-    /// Bottom-right corner handle of an annotation, in page space.
-    private func resizeHandle(of annotation: PDFAnnotation) -> CGRect {
-        let size = 10 / max(scaleFactor, 0.01)
-        return CGRect(x: annotation.bounds.maxX - size / 2, y: annotation.bounds.minY - size / 2, width: size, height: size)
+    /// The resize handle of the selected annotation under `location` (view space), if any.
+    private func handleCorner(at location: CGPoint) -> Corner? {
+        guard let annotation = viewer?.selectedAnnotation, annotation.isMovable, let page = annotation.page else { return nil }
+        let rect = convert(annotation.bounds, from: page)
+        let hit = SelectionOverlay.handleHitSize
+        return Corner.allCases.first { corner in
+            let p = corner.point(in: rect)
+            return CGRect(x: p.x - hit / 2, y: p.y - hit / 2, width: hit, height: hit).contains(location)
+        }
     }
 
     func updateSelectionOverlay() {
@@ -207,9 +222,7 @@ final class FolioPDFView: PDFView {
         if subviews.last !== selectionOverlay {
             addSubview(selectionOverlay, positioned: .above, relativeTo: nil)
         }
-        selectionOverlay.frame = convert(annotation.bounds, from: page).insetBy(dx: -3, dy: -3)
-        selectionOverlay.showsHandle = annotation.isMovable
-        selectionOverlay.isHidden = false
+        selectionOverlay.show(around: convert(annotation.bounds, from: page), handles: annotation.isMovable)
     }
 
     private func pagePoint(for event: NSEvent) -> (PDFPage, CGPoint)? {
@@ -219,42 +232,84 @@ final class FolioPDFView: PDFView {
     }
 }
 
-/// Dashed outline drawn around the selected annotation; transparent to clicks.
+enum Corner: CaseIterable {
+    case bottomLeft, bottomRight, topLeft, topRight
+
+    var isRight: Bool { self == .bottomRight || self == .topRight }
+    var isTop: Bool { self == .topLeft || self == .topRight }
+
+    var opposite: Corner {
+        switch self {
+        case .bottomLeft: .topRight
+        case .bottomRight: .topLeft
+        case .topLeft: .bottomRight
+        case .topRight: .bottomLeft
+        }
+    }
+
+    /// The corner of `rect` in a y-up space (page space, or this unflipped view).
+    func point(in rect: CGRect) -> CGPoint {
+        CGPoint(x: isRight ? rect.maxX : rect.minX, y: isTop ? rect.maxY : rect.minY)
+    }
+
+    var cursor: NSCursor {
+        if #available(macOS 15.0, *) {
+            let position: NSCursor.FrameResizePosition = switch self {
+            case .bottomLeft: .bottomLeft
+            case .bottomRight: .bottomRight
+            case .topLeft: .topLeft
+            case .topRight: .topRight
+            }
+            return .frameResize(position: position, directions: .all)
+        }
+        return .crosshair
+    }
+}
+
+/// Dashed outline and corner handles around the selected annotation; transparent to clicks.
 private final class SelectionOverlay: NSView {
+    static let handleHitSize: CGFloat = 18
+    private static let margin: CGFloat = 8
+    private static let handleSize: CGFloat = 9
+
+    private let border = CAShapeLayer()
+    private let handles = Corner.allCases.map { _ in CALayer() }
+
     override init(frame: NSRect) {
         super.init(frame: frame)
         wantsLayer = true
-        let border = CAShapeLayer()
         border.strokeColor = NSColor.controlAccentColor.cgColor
         border.fillColor = nil
         border.lineWidth = 1.5
         border.lineDashPattern = [4, 3]
         layer?.addSublayer(border)
-        handle.backgroundColor = NSColor.controlAccentColor.cgColor
-        handle.borderColor = NSColor.white.cgColor
-        handle.borderWidth = 1
-        layer?.addSublayer(handle)
-    }
-
-    private let handle = CALayer()
-    /// Whether the bottom-right resize handle is shown.
-    var showsHandle = true {
-        didSet { handle.isHidden = !showsHandle }
+        for handle in handles {
+            handle.backgroundColor = NSColor.white.cgColor
+            handle.borderColor = NSColor.controlAccentColor.cgColor
+            handle.borderWidth = 1.5
+            handle.cornerRadius = 2
+            layer?.addSublayer(handle)
+        }
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) is not supported") }
 
-    override func layout() {
-        super.layout()
-        (layer?.sublayers?.first as? CAShapeLayer)?.path = CGPath(rect: bounds.insetBy(dx: 1, dy: 1), transform: nil)
+    /// Positions the outline around `rect` (superview space) with handles centered on its corners.
+    func show(around rect: CGRect, handles showsHandles: Bool) {
+        let margin = Self.margin
+        frame = rect.insetBy(dx: -margin, dy: -margin)
+        let inner = CGRect(x: margin, y: margin, width: rect.width, height: rect.height)
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        handle.frame = CGRect(x: bounds.maxX - 8, y: 0, width: 8, height: 8)
+        border.path = CGPath(rect: inner.insetBy(dx: -3, dy: -3), transform: nil)
+        let size = Self.handleSize
+        for (corner, handle) in zip(Corner.allCases, handles) {
+            let p = corner.point(in: inner)
+            handle.frame = CGRect(x: p.x - size / 2, y: p.y - size / 2, width: size, height: size)
+            handle.isHidden = !showsHandles
+        }
         CATransaction.commit()
-    }
-
-    override var frame: NSRect {
-        didSet { needsLayout = true }
+        isHidden = false
     }
 
     override func hitTest(_ point: NSPoint) -> NSView? { nil }

@@ -130,6 +130,10 @@ struct AnnotationInspector: View {
 
             }
 
+            if annotation.isMovable {
+                SizeSection(viewer: viewer, annotation: annotation)
+            }
+
             if let textBox = annotation as? FreeTextAnnotation {
                 TextFormatSection(viewer: viewer, textBox: textBox)
             }
@@ -307,6 +311,64 @@ private struct TextFormatSection: View {
             Color(nsColor: textBox.color)
         } set: { newValue in
             change("Couleur du fond") { $0.color = NSColor(newValue) }
+        }
+    }
+}
+
+/// Width and height in points; the top-left corner stays in place.
+private struct SizeSection: View {
+    let viewer: ViewerModel
+    let annotation: PDFAnnotation
+
+    var body: some View {
+        let _ = viewer.revision
+        Section("Taille") {
+            dimension("Largeur", value: annotation.bounds.width) { width in
+                let ratio = annotation.bounds.height / max(annotation.bounds.width, 1)
+                return CGSize(width: width, height: keepsRatio ? width * ratio : annotation.bounds.height)
+            }
+            if annotation.isFreeText {
+                LabeledContent("Hauteur", value: "\(Int(annotation.bounds.height.rounded())) pt (auto)")
+            } else {
+                dimension("Hauteur", value: annotation.bounds.height) { height in
+                    let ratio = annotation.bounds.width / max(annotation.bounds.height, 1)
+                    return CGSize(width: keepsRatio ? height * ratio : annotation.bounds.width, height: height)
+                }
+            }
+            if keepsRatio {
+                Text("Les proportions sont conservées.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    private var keepsRatio: Bool { AnnotationState.keepsAspectRatio(annotation) }
+
+    private func dimension(_ label: String, value: CGFloat, size: @escaping (CGFloat) -> CGSize) -> some View {
+        let binding = Binding<Double> {
+            Double(value.rounded())
+        } set: { newValue in
+            resize(to: size(max(CGFloat(newValue), 8)))
+        }
+        return LabeledContent(label) {
+            HStack(spacing: 4) {
+                TextField(label, value: binding, format: .number.precision(.fractionLength(0)))
+                    .labelsHidden()
+                    .multilineTextAlignment(.trailing)
+                    .frame(width: 60)
+                Text("pt").foregroundStyle(.secondary)
+                Stepper(label, value: binding, in: 8...5000, step: 5)
+                    .labelsHidden()
+            }
+        }
+    }
+
+    private func resize(to size: CGSize) {
+        let old = annotation.bounds
+        guard abs(size.width - old.width) > 0.5 || abs(size.height - old.height) > 0.5 else { return }
+        viewer.update(annotation, actionName: "Redimensionner") { a in
+            AnnotationState(a).apply(resizedTo: CGRect(x: old.minX, y: old.maxY - size.height, width: size.width, height: size.height), to: a)
         }
     }
 }
