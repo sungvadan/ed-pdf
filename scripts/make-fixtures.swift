@@ -57,3 +57,39 @@ makePDF("colonnes.pdf", pages: [{ _ in
             .draw(in: CGRect(x: 60 + CGFloat(column) * 250, y: 380, width: 225, height: 360))
     }
 }])
+
+// 3. Invoice printed by Chrome (CID fonts without space glyph, one object per glyph run) — if Chrome is installed.
+let chrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+let invoiceHTML = output.appendingPathComponent("facture.html")
+try! #"""
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><style>
+@page { size: A4; margin: 2cm; }
+body { font-family: Arial, sans-serif; font-size: 11pt; color: #222; }
+h1 { font-size: 20pt; color: #1a3d7c; margin: 0 0 8pt; }
+p { line-height: 1.35; text-align: justify; }
+.total { font-weight: bold; font-size: 13pt; }
+.small { font-size: 8pt; color: #666; }
+td, th { padding: 4pt 10pt; border-bottom: 1px solid #ccc; text-align: left; }
+</style></head><body>
+<h1>Facture n° FA-2026-0312</h1>
+<p>Client : <b>Société Exemple SARL</b>, 45 avenue de la République, 69003 Lyon.</p>
+<p>Conformément à notre devis du 2 octobre 2026, nous vous prions de trouver ci-dessous le détail des prestations réalisées au cours du mois de septembre. Le règlement est attendu sous trente jours à compter de la date d'émission de la présente facture, par virement bancaire.</p>
+<table><tr><th>Désignation</th><th>Quantité</th><th>Prix unitaire</th><th>Total</th></tr>
+<tr><td>Développement application</td><td>12 jours</td><td>650,00 €</td><td>7 800,00 €</td></tr>
+<tr><td>Maintenance</td><td>1 mois</td><td>400,00 €</td><td>400,00 €</td></tr></table>
+<p class="total">Total TTC : 9 840,00 €</p>
+<p class="small">En cas de retard de paiement, une pénalité égale à trois fois le taux d'intérêt légal sera appliquée, ainsi qu'une indemnité forfaitaire de 40 € pour frais de recouvrement.</p>
+</body></html>
+"""#.write(to: invoiceHTML, atomically: true, encoding: .utf8)
+if FileManager.default.isExecutableFile(atPath: chrome) {
+    let process = Process()
+    process.executableURL = URL(fileURLWithPath: chrome)
+    process.arguments = ["--headless=new", "--disable-gpu", "--no-pdf-header-footer",
+                         "--print-to-pdf=\(output.appendingPathComponent("facture.pdf").path)", invoiceHTML.absoluteString]
+    process.standardError = FileHandle.nullDevice
+    try! process.run()
+    process.waitUntilExit()
+    print("Wrote build/fixtures/facture.pdf (Chrome)")
+} else {
+    print("Chrome absent : facture.pdf non générée")
+}
