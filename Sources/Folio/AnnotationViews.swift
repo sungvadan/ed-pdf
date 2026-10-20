@@ -49,6 +49,7 @@ struct AnnotationBar: View {
 private struct InsertMenus: View {
     let viewer: ViewerModel
     private let store = SignatureStore.shared
+    private let stampStore = CustomStampStore.shared
 
     var body: some View {
         HStack(spacing: 8) {
@@ -77,6 +78,21 @@ private struct InsertMenus: View {
             Menu {
                 ForEach(Stamp.allCases) { stamp in
                     Button(stamp.label) { viewer.placeStamp(stamp) }
+                }
+                if !stampStore.stamps.isEmpty {
+                    Divider()
+                    ForEach(stampStore.stamps) { stamp in
+                        Button(stamp.text) { viewer.placeStamp(text: stamp.text, color: stamp.color) }
+                    }
+                }
+                Divider()
+                Button("Nouveau tampon…") { viewer.showsStampEditor = true }
+                if !stampStore.stamps.isEmpty {
+                    Menu("Supprimer un tampon") {
+                        ForEach(stampStore.stamps) { stamp in
+                            Button(stamp.text) { stampStore.remove(stamp) }
+                        }
+                    }
                 }
             } label: {
                 Label("Tampon", systemImage: "seal")

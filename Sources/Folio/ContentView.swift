@@ -27,6 +27,12 @@ struct ContentView: View {
                 viewer.placeSignature(signature)
             }
         }
+        .sheet(isPresented: $viewer.showsStampEditor) {
+            CustomStampEditor { stamp in
+                CustomStampStore.shared.add(stamp)
+                viewer.placeStamp(text: stamp.text, color: stamp.color)
+            }
+        }
         .onAppear { viewer.undoManager = undoManager }
         .onChange(of: undoManager) { _, manager in viewer.undoManager = manager }
         .toolbar { toolbar }

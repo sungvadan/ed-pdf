@@ -30,7 +30,7 @@
 ## ✅ Étape 4 — Formulaires & signature
 - Remplissage des champs (natif PDFKit) rendu annulable et détecté comme modification (`FormState`)
 - Signatures dessinées, mémorisées (UserDefaults), placées comme tracé vectoriel (Ink)
-- Tampons : Approuvé, Rejeté, Confidentiel, Brouillon, Payé, date du jour (zones de texte encadrées)
+- Tampons : Approuvé, Rejeté, Confidentiel, Brouillon, Payé, date du jour + tampons personnalisés mémorisés (texte, couleur)
 - Images (`ImageAnnotation`, PNG conservé dans `/FolioImage`)
 - Poignée de redimensionnement (coin bas-droit) pour toutes les annotations déplaçables
 - Plus tard : signature tapée au clavier ou importée, création de champs de formulaire, signature numérique (certificat)

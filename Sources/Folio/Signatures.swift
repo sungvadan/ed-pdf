@@ -160,6 +160,102 @@ enum Stamp: CaseIterable, Identifiable {
     }
 }
 
+/// A stamp defined by the user.
+struct CustomStamp: Codable, Identifiable, Equatable {
+    var id = UUID()
+    var text: String
+    /// sRGB components, alpha last.
+    var rgba: [CGFloat]
+
+    init(text: String, color: NSColor) {
+        self.text = text
+        let c = color.usingColorSpace(.sRGB) ?? .systemRed
+        rgba = [c.redComponent, c.greenComponent, c.blueComponent, c.alphaComponent]
+    }
+
+    var color: NSColor {
+        guard rgba.count == 4 else { return .systemRed }
+        return NSColor(srgbRed: rgba[0], green: rgba[1], blue: rgba[2], alpha: rgba[3])
+    }
+}
+
+/// Saved custom stamps, persisted in user defaults.
+@MainActor
+@Observable
+final class CustomStampStore {
+    static let shared = CustomStampStore()
+    private static let defaultsKey = "customStamps"
+
+    private(set) var stamps: [CustomStamp] = []
+
+    private init() {
+        if let data = UserDefaults.standard.data(forKey: Self.defaultsKey),
+           let saved = try? JSONDecoder().decode([CustomStamp].self, from: data) {
+            stamps = saved
+        }
+    }
+
+    func add(_ stamp: CustomStamp) {
+        stamps.append(stamp)
+        save()
+    }
+
+    func remove(_ stamp: CustomStamp) {
+        stamps.removeAll { $0.id == stamp.id }
+        save()
+    }
+
+    private func save() {
+        if let data = try? JSONEncoder().encode(stamps) {
+            UserDefaults.standard.set(data, forKey: Self.defaultsKey)
+        }
+    }
+}
+
+/// Sheet where the user creates a custom stamp.
+struct CustomStampEditor: View {
+    let onDone: (CustomStamp) -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var text = ""
+    @State private var color = Color.red
+
+    private var trimmed: String { text.trimmingCharacters(in: .whitespacesAndNewlines) }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Nouveau tampon").font(.headline)
+
+            Form {
+                TextField("Texte", text: $text, prompt: Text("Ex. : VU ET VÉRIFIÉ"))
+                ColorPicker("Couleur", selection: $color, supportsOpacity: false)
+            }
+
+            Text(trimmed.isEmpty ? "APERÇU" : trimmed.uppercased())
+                .font(.custom("Helvetica-Bold", size: 20))
+                .foregroundStyle(color)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .overlay(Rectangle().stroke(color, lineWidth: 2.5))
+                .frame(maxWidth: .infinity)
+                .opacity(trimmed.isEmpty ? 0.3 : 1)
+
+            HStack {
+                Spacer()
+                Button("Annuler", role: .cancel) { dismiss() }
+                    .keyboardShortcut(.cancelAction)
+                Button("Enregistrer et placer") {
+                    onDone(CustomStamp(text: trimmed.uppercased(), color: NSColor(color)))
+                    dismiss()
+                }
+                .keyboardShortcut(.defaultAction)
+                .disabled(trimmed.isEmpty)
+            }
+        }
+        .padding(20)
+        .frame(width: 380)
+    }
+}
+
 // MARK: - Placing signatures, stamps and images
 
 extension ViewerModel {
@@ -204,12 +300,16 @@ extension ViewerModel {
     }
 
     func placeStamp(_ stamp: Stamp) {
+        placeStamp(text: stamp.text, color: stamp.color)
+    }
+
+    func placeStamp(text: String, color: NSColor) {
         guard let (page, center) = visibleCenter else { return }
         let annotation = FreeTextAnnotation(bounds: .zero, forType: .freeText, withProperties: nil)
         annotation.adoptFolioStyle()
-        annotation.contents = stamp.text
+        annotation.contents = text
         annotation.font = NSFont(name: "Helvetica-Bold", size: 20) ?? .boldSystemFont(ofSize: 20)
-        annotation.fontColor = stamp.color
+        annotation.fontColor = color
         annotation.color = .clear
         annotation.alignment = .center
         annotation.border = AnnotationFactory.border(2.5)
