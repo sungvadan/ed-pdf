@@ -9,23 +9,34 @@ final class FolioPDFView: PDFView {
         /// A drawing in progress: the temporary annotation and the points collected so far.
         case create(PDFAnnotation, PDFPage, points: [CGPoint])
         case move(PDFAnnotation, start: CGPoint, original: AnnotationState)
+        case resize(PDFAnnotation, original: AnnotationState)
     }
 
     private var drag: Drag?
     private let selectionOverlay = SelectionOverlay()
-    private var clipObserver: NSObjectProtocol?
+    private var observers: [NSObjectProtocol] = []
+    /// Form values before the current edit; compared after PDFKit handles a field.
+    var formSnapshot: FormState?
 
     override init(frame: NSRect) {
         super.init(frame: frame)
         selectionOverlay.isHidden = true
         addSubview(selectionOverlay)
-        clipObserver = NotificationCenter.default.addObserver(
-            forName: NSView.boundsDidChangeNotification, object: nil, queue: .main
-        ) { [weak self] note in
+        let center = NotificationCenter.default
+        observers.append(center.addObserver(forName: NSView.boundsDidChangeNotification, object: nil, queue: .main) { [weak self] note in
             MainActor.assumeIsolated {
                 guard let self, let clip = note.object as? NSClipView, clip.isDescendant(of: self) else { return }
                 self.updateSelectionOverlay()
             }
+        })
+        // Text typed in form fields goes through a field editor inside this view.
+        for name in [NSText.didChangeNotification, NSText.didEndEditingNotification] {
+            observers.append(center.addObserver(forName: name, object: nil, queue: .main) { [weak self] note in
+                MainActor.assumeIsolated {
+                    guard let self, let view = note.object as? NSView, view.isDescendant(of: self) else { return }
+                    self.commitFormChange()
+                }
+            })
         }
     }
 
@@ -40,7 +51,15 @@ final class FolioPDFView: PDFView {
 
         switch tool {
         case .select:
-            if let annotation = page.annotation(at: point), annotation.isUserEditable {
+            if let selected = viewer.selectedAnnotation, selected.page === page, selected.isMovable,
+               resizeHandle(of: selected).contains(point) {
+                drag = .resize(selected, original: AnnotationState(selected))
+            } else if let annotation = page.annotation(at: point), annotation.subtype == "Widget" {
+                viewer.select(nil)
+                if formSnapshot == nil, let document { formSnapshot = FormState(document) }
+                super.mouseDown(with: event)
+                commitFormChange()
+            } else if let annotation = page.annotation(at: point), annotation.isUserEditable {
                 window?.makeFirstResponder(self)
                 viewer.select(annotation)
                 if annotation.isMovable {
@@ -86,6 +105,20 @@ final class FolioPDFView: PDFView {
             annotation.bounds = original.bounds.offsetBy(dx: point.x - start.x, dy: point.y - start.y)
             annotation.refresh()
             updateSelectionOverlay()
+        case .resize(let annotation, let original):
+            guard let page = annotation.page else { return }
+            let point = convert(convert(event.locationInWindow, from: nil), to: page)
+            let top = original.bounds.maxY, left = original.bounds.minX
+            var width = max(point.x - left, 8), height = max(top - point.y, 8)
+            if AnnotationState.keepsAspectRatio(annotation) {
+                height = width * original.bounds.height / max(original.bounds.width, 1)
+            } else if annotation.isFreeText {
+                width = max(width, 30)
+                height = original.bounds.height
+            }
+            original.apply(resizedTo: CGRect(x: left, y: top - height, width: width, height: height), to: annotation)
+            annotation.refresh()
+            updateSelectionOverlay()
         }
     }
 
@@ -107,6 +140,10 @@ final class FolioPDFView: PDFView {
         case .move(let annotation, _, let original):
             if annotation.bounds != original.bounds {
                 viewer?.registerChange(of: annotation, from: original, actionName: "Déplacer")
+            }
+        case .resize(let annotation, let original):
+            if annotation.bounds != original.bounds {
+                viewer?.registerChange(of: annotation, from: original, actionName: "Redimensionner")
             }
         }
     }
@@ -142,6 +179,26 @@ final class FolioPDFView: PDFView {
         clearSelection()
     }
 
+    /// Compares form values with the last snapshot and records any edit for undo.
+    func commitFormChange() {
+        guard let document, let viewer else { return }
+        let current = FormState(document)
+        guard let before = formSnapshot else {
+            formSnapshot = current
+            return
+        }
+        if current != before {
+            viewer.registerFormChange(from: before, to: current)
+            formSnapshot = current
+        }
+    }
+
+    /// Bottom-right corner handle of an annotation, in page space.
+    private func resizeHandle(of annotation: PDFAnnotation) -> CGRect {
+        let size = 10 / max(scaleFactor, 0.01)
+        return CGRect(x: annotation.bounds.maxX - size / 2, y: annotation.bounds.minY - size / 2, width: size, height: size)
+    }
+
     func updateSelectionOverlay() {
         guard let annotation = viewer?.selectedAnnotation, let page = annotation.page else {
             selectionOverlay.isHidden = true
@@ -151,6 +208,7 @@ final class FolioPDFView: PDFView {
             addSubview(selectionOverlay, positioned: .above, relativeTo: nil)
         }
         selectionOverlay.frame = convert(annotation.bounds, from: page).insetBy(dx: -3, dy: -3)
+        selectionOverlay.showsHandle = annotation.isMovable
         selectionOverlay.isHidden = false
     }
 
@@ -172,6 +230,16 @@ private final class SelectionOverlay: NSView {
         border.lineWidth = 1.5
         border.lineDashPattern = [4, 3]
         layer?.addSublayer(border)
+        handle.backgroundColor = NSColor.controlAccentColor.cgColor
+        handle.borderColor = NSColor.white.cgColor
+        handle.borderWidth = 1
+        layer?.addSublayer(handle)
+    }
+
+    private let handle = CALayer()
+    /// Whether the bottom-right resize handle is shown.
+    var showsHandle = true {
+        didSet { handle.isHidden = !showsHandle }
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) is not supported") }
@@ -179,6 +247,10 @@ private final class SelectionOverlay: NSView {
     override func layout() {
         super.layout()
         (layer?.sublayers?.first as? CAShapeLayer)?.path = CGPath(rect: bounds.insetBy(dx: 1, dy: 1), transform: nil)
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        handle.frame = CGRect(x: bounds.maxX - 8, y: 0, width: 8, height: 8)
+        CATransaction.commit()
     }
 
     override var frame: NSRect {

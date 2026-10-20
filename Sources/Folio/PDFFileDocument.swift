@@ -27,9 +27,13 @@ final class PDFFileDocument: NSObject, ReferenceFileDocument, PDFDocumentDelegat
         pdf.delegate = self
     }
 
-    /// Loads free text boxes as `FreeTextAnnotation` so Folio can style them.
+    /// Loads free text boxes and stamps as Folio's subclasses so they keep their custom rendering.
     func `class`(forAnnotationType annotationType: String) -> AnyClass {
-        annotationType == "FreeText" ? FreeTextAnnotation.self : PDFAnnotation.self
+        switch annotationType {
+        case "FreeText": FreeTextAnnotation.self
+        case "Stamp": ImageAnnotation.self
+        default: PDFAnnotation.self
+        }
     }
 
     func snapshot(contentType: UTType) throws -> Data {

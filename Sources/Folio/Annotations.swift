@@ -75,6 +75,8 @@ extension PDFAnnotation {
         case "Square": "Rectangle"
         case "Circle": "Ellipse"
         case "Line": "Ligne"
+        case "Stamp": "Image"
+        case "Widget": "Champ de formulaire"
         default: subtype
         }
     }
@@ -111,6 +113,9 @@ struct AnnotationState {
     var fontColor: NSColor?
     var alignment: NSTextAlignment
     var folioStyle: String?
+    var paths: [NSBezierPath]?
+    var startPoint: CGPoint
+    var endPoint: CGPoint
 
     init(_ annotation: PDFAnnotation) {
         bounds = annotation.bounds
@@ -121,6 +126,9 @@ struct AnnotationState {
         fontColor = annotation.fontColor
         alignment = annotation.alignment
         folioStyle = (annotation as? FreeTextAnnotation)?.style
+        paths = annotation.paths?.compactMap { $0.copy() as? NSBezierPath }
+        startPoint = annotation.startPoint
+        endPoint = annotation.endPoint
     }
 
     func apply(to annotation: PDFAnnotation) {
@@ -137,6 +145,42 @@ struct AnnotationState {
             annotation.alignment = alignment
             (annotation as? FreeTextAnnotation)?.style = folioStyle
         }
+        if annotation.subtype == "Ink", let paths {
+            annotation.paths?.forEach { annotation.remove($0) }
+            paths.forEach { annotation.add($0.copy() as! NSBezierPath) }
+        }
+        if annotation.subtype == "Line" {
+            annotation.startPoint = startPoint
+            annotation.endPoint = endPoint
+        }
+    }
+
+    /// Applies this state scaled into `rect` (top-left anchored), redrawing ink and lines to fit.
+    func apply(resizedTo rect: CGRect, to annotation: PDFAnnotation) {
+        let sx = rect.width / max(bounds.width, 1), sy = rect.height / max(bounds.height, 1)
+        let transform = AffineTransform(scaleByX: sx, byY: sy)
+        annotation.bounds = rect
+        switch annotation.subtype {
+        case "Ink":
+            annotation.paths?.forEach { annotation.remove($0) }
+            for path in paths ?? [] {
+                let scaled = path.copy() as! NSBezierPath
+                scaled.transform(using: transform)
+                annotation.add(scaled)
+            }
+        case "Line":
+            annotation.startPoint = CGPoint(x: startPoint.x * sx, y: startPoint.y * sy)
+            annotation.endPoint = CGPoint(x: endPoint.x * sx, y: endPoint.y * sy)
+        case "FreeText":
+            annotation.fitFreeTextHeight()
+        default:
+            break
+        }
+    }
+
+    /// Ink drawings and images keep their aspect ratio when resized.
+    static func keepsAspectRatio(_ annotation: PDFAnnotation) -> Bool {
+        ["Ink", "Stamp"].contains(annotation.subtype)
     }
 }
 

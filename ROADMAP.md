@@ -27,9 +27,13 @@
 - Tout est annulable
 - Plus tard : agrandir la taille des vignettes, glisser des pages vers le Finder / une autre fenêtre
 
-## ⬜ Étape 4 — Formulaires & signature
-- Remplissage des champs de formulaire
-- Signature dessinée/enregistrée, tampon, image
+## ✅ Étape 4 — Formulaires & signature
+- Remplissage des champs (natif PDFKit) rendu annulable et détecté comme modification (`FormState`)
+- Signatures dessinées, mémorisées (UserDefaults), placées comme tracé vectoriel (Ink)
+- Tampons : Approuvé, Rejeté, Confidentiel, Brouillon, Payé, date du jour (zones de texte encadrées)
+- Images (`ImageAnnotation`, PNG conservé dans `/FolioImage`)
+- Poignée de redimensionnement (coin bas-droit) pour toutes les annotations déplaçables
+- Plus tard : signature tapée au clavier ou importée, création de champs de formulaire, signature numérique (certificat)
 
 ## ⬜ Étape 5 — Édition de texte & extras
 - Aplatir les annotations (toutes ou la sélection) : les intégrer au contenu de la page pour que leur texte

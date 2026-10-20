@@ -59,6 +59,12 @@ final class FreeTextAnnotation: PDFAnnotation {
             color.setFill()
             bounds.fill()
         }
+        if let lineWidth = border?.lineWidth, lineWidth > 0 {
+            (fontColor ?? .black).setStroke()
+            let frame = NSBezierPath(rect: bounds.insetBy(dx: lineWidth / 2, dy: lineWidth / 2))
+            frame.lineWidth = lineWidth
+            frame.stroke()
+        }
         attributedText.draw(in: bounds.insetBy(dx: Self.padding, dy: Self.padding))
         NSGraphicsContext.restoreGraphicsState()
     }

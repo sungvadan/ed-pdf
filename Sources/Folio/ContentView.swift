@@ -21,6 +21,12 @@ struct ContentView: View {
                     .inspectorColumnWidth(min: 220, ideal: 260, max: 360)
             }
         }
+        .sheet(isPresented: $viewer.showsSignaturePad) {
+            SignaturePad { signature in
+                SignatureStore.shared.add(signature)
+                viewer.placeSignature(signature)
+            }
+        }
         .onAppear { viewer.undoManager = undoManager }
         .onChange(of: undoManager) { _, manager in viewer.undoManager = manager }
         .toolbar { toolbar }

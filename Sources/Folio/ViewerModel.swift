@@ -51,6 +51,7 @@ final class ViewerModel {
 
     var toolColors: [AnnotationTool: Color] = [:]
     var lineWidth: CGFloat = 2
+    var showsSignaturePad = false
     var selectedAnnotation: PDFAnnotation?
     /// Bumped whenever annotation properties change, so views reading PDFKit objects refresh.
     var revision = 0

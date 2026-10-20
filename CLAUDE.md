@@ -12,5 +12,7 @@
   - `Annotations.swift` : outils, `AnnotationFactory`, édition avec undo (`add`/`remove`/`update`/`registerChange` sur ViewerModel). Toute modification passe par ces méthodes pour être annulable et marquer le document modifié. Pour forcer le redessin PDFKit : `annotation.refresh()` (retire/rajoute).
   - `FreeTextAnnotation` : sous-classe chargée pour toutes les FreeText via `PDFDocumentDelegate.class(forAnnotationType:)` (délégué = `PDFFileDocument`). Dessine elle-même le texte si `/FolioStyle` est présent, sinon rendu natif.
   - `PageOperations.swift` / `PageSidebar.swift` : gestion des pages. Toute modification de structure passe par `applyPages(_:actionName:)` (état cible complet, undo = état précédent). Ne pas utiliser `exchangePage` (plante sur les pages issues d'images) ; une page copiée garde `page.document` de l'original → utiliser `doc.index(for:)`.
+  - `ImageAnnotation` (Stamp), `Signatures.swift` (signatures, tampons, placement), `Forms.swift` (instantanés des champs pour l'undo ; `FolioPDFView.commitFormChange()`).
+  - Tests manuels hors UI : compiler les fichiers concernés avec `swiftc` dans un dossier temporaire (pas de cible de test pour l'instant).
   - `AnnotationViews.swift` : barre d'outils d'annotation et inspecteur.
 - Avancement et étapes suivantes : voir `ROADMAP.md` (avancer une étape à la fois, commiter à la fin de chacune).

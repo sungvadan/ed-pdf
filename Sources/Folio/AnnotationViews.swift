@@ -36,13 +36,61 @@ struct AnnotationBar: View {
 
             Spacer()
 
-            Text(viewer.tool.label)
-                .foregroundStyle(.secondary)
+            InsertMenus(viewer: viewer)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
         .background(.bar)
         .overlay(alignment: .bottom) { Divider() }
+    }
+}
+
+/// Signature, stamp and image insertion.
+private struct InsertMenus: View {
+    let viewer: ViewerModel
+    private let store = SignatureStore.shared
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Menu {
+                ForEach(store.signatures) { signature in
+                    Button {
+                        viewer.placeSignature(signature)
+                    } label: {
+                        Image(nsImage: signature.preview())
+                    }
+                }
+                if !store.signatures.isEmpty { Divider() }
+                Button("Nouvelle signature…") { viewer.showsSignaturePad = true }
+                if !store.signatures.isEmpty {
+                    Menu("Supprimer une signature") {
+                        ForEach(store.signatures) { signature in
+                            Button { store.remove(signature) } label: { Image(nsImage: signature.preview()) }
+                        }
+                    }
+                }
+            } label: {
+                Label("Signer", systemImage: "signature")
+            }
+            .help("Signature")
+
+            Menu {
+                ForEach(Stamp.allCases) { stamp in
+                    Button(stamp.label) { viewer.placeStamp(stamp) }
+                }
+            } label: {
+                Label("Tampon", systemImage: "seal")
+            }
+            .help("Tampon")
+
+            Button {
+                viewer.chooseImageToPlace()
+            } label: {
+                Label("Image", systemImage: "photo")
+            }
+            .help("Placer une image")
+        }
+        .fixedSize()
     }
 }
 
