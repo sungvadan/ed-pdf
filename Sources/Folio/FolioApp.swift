@@ -8,6 +8,7 @@ struct FolioApp: App {
         }
         .commands {
             ViewerCommands()
+            ImportFromDevicesCommands()
         }
     }
 }

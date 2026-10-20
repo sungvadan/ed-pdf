@@ -3,12 +3,22 @@ import Observation
 import PDFKit
 import SwiftUI
 
-/// A hand-drawn signature: strokes in a y-up space whose bounding box starts at the origin.
+/// A saved signature: either strokes drawn in Folio (y-up space, bounding box at the origin)
+/// or a transparent PNG extracted from paper.
 struct Signature: Codable, Identifiable, Equatable {
     var id = UUID()
     var strokes: [[CGPoint]]
+    var imagePNG: Data?
+
+    var image: NSImage? { imagePNG.flatMap(NSImage.init(data:)) }
+
+    init(imagePNG: Data) {
+        strokes = []
+        self.imagePNG = imagePNG
+    }
 
     var size: CGSize {
+        if let image { return image.size }
         let all = strokes.flatMap { $0 }
         return CGSize(width: all.map(\.x).max() ?? 0, height: all.map(\.y).max() ?? 0)
     }
@@ -24,7 +34,12 @@ struct Signature: Codable, Identifiable, Equatable {
         let size = self.size
         let scale = height / max(size.height, 1)
         let imageSize = CGSize(width: max(size.width * scale, 1) + 4, height: height + 4)
-        let image = NSImage(size: imageSize, flipped: false) { _ in
+        let source = self.image
+        let image = NSImage(size: imageSize, flipped: false) { rect in
+            if let source {
+                source.draw(in: rect.insetBy(dx: 2, dy: 2))
+                return true
+            }
             NSColor.labelColor.setStroke()
             for stroke in strokes {
                 let path = NSBezierPath()
@@ -275,6 +290,12 @@ extension ViewerModel {
     func placeSignature(_ signature: Signature, width: CGFloat = 180) {
         guard let (page, center) = visibleCenter else { return }
         let size = signature.size
+        if let image = signature.image {
+            let height = width * size.height / max(size.width, 1)
+            let rect = CGRect(x: center.x - width / 2, y: center.y - height / 2, width: width, height: height)
+            place(ImageAnnotation(image: image, bounds: rect), on: page, actionName: "Signature")
+            return
+        }
         let scale = width / max(size.width, 1)
         let lineWidth: CGFloat = 1.5
         let rect = CGRect(

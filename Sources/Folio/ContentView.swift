@@ -27,6 +27,12 @@ struct ContentView: View {
                 viewer.placeSignature(signature)
             }
         }
+        .sheet(isPresented: $viewer.showsSignatureCapture) {
+            SignatureCaptureSheet { signature in
+                SignatureStore.shared.add(signature)
+                viewer.placeSignature(signature)
+            }
+        }
         .sheet(isPresented: $viewer.showsStampEditor) {
             CustomStampEditor { stamp in
                 CustomStampStore.shared.add(stamp)

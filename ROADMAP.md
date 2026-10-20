@@ -29,7 +29,7 @@
 
 ## ✅ Étape 4 — Formulaires & signature
 - Remplissage des champs (natif PDFKit) rendu annulable et détecté comme modification (`FormState`)
-- Signatures dessinées, mémorisées (UserDefaults), placées comme tracé vectoriel (Ink)
+- Signatures dessinées (tracé vectoriel Ink) ou capturées sur papier (caméra, image, iPhone) avec extraction de l'encre sur fond transparent (`SignatureExtractor`), mémorisées (UserDefaults)
 - Tampons : Approuvé, Rejeté, Confidentiel, Brouillon, Payé, date du jour + tampons personnalisés mémorisés (texte, couleur)
 - Images (`ImageAnnotation`, PNG conservé dans `/FolioImage`)
 - Poignée de redimensionnement (coin bas-droit) pour toutes les annotations déplaçables

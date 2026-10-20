@@ -63,6 +63,7 @@ private struct InsertMenus: View {
                 }
                 if !store.signatures.isEmpty { Divider() }
                 Button("Nouvelle signature…") { viewer.showsSignaturePad = true }
+                Button("Depuis le papier (caméra ou image)…") { viewer.showsSignatureCapture = true }
                 if !store.signatures.isEmpty {
                     Menu("Supprimer une signature") {
                         ForEach(store.signatures) { signature in
