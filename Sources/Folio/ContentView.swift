@@ -33,6 +33,9 @@ struct ContentView: View {
                 viewer.placeSignature(signature)
             }
         }
+        .sheet(isPresented: $viewer.showsSendExport) {
+            SendExportSheet(viewer: viewer)
+        }
         .sheet(isPresented: $viewer.showsStampEditor) {
             CustomStampEditor { stamp in
                 CustomStampStore.shared.add(stamp)
@@ -72,6 +75,9 @@ struct ContentView: View {
         }
 
         ToolbarItemGroup {
+            Button { viewer.showsSendExport = true } label: { Image(systemName: "paperplane") }
+                .help("Exporter pour envoi")
+
             ControlGroup {
                 Button { viewer.rotate(viewer.targetPages, by: -90) } label: { Image(systemName: "rotate.left") }
                     .help("Pivoter à gauche")

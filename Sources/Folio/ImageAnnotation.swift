@@ -17,9 +17,9 @@ final class ImageAnnotation: PDFAnnotation {
         return cachedImage
     }
 
-    convenience init(image: NSImage, bounds: CGRect) {
+    convenience init(image: NSImage, bounds: CGRect, maxPixels: CGFloat = ImageAnnotation.maxPixels) {
         self.init(bounds: bounds, forType: .stamp, withProperties: nil)
-        let scaled = Self.downscaled(image)
+        let scaled = Self.downscaled(image, maxPixels: maxPixels)
         if let png = scaled.pngData {
             setValue(png.base64EncodedString(), forAnnotationKey: Self.imageKey)
         }
@@ -34,19 +34,35 @@ final class ImageAnnotation: PDFAnnotation {
         NSGraphicsContext.restoreGraphicsState()
     }
 
-    private static func downscaled(_ image: NSImage) -> NSImage {
-        let size = image.size
+    private static func downscaled(_ image: NSImage, maxPixels: CGFloat) -> NSImage {
+        let size = image.pixelSize
         let scale = min(1, maxPixels / max(size.width, size.height, 1))
         guard scale < 1 else { return image }
-        let target = CGSize(width: size.width * scale, height: size.height * scale)
-        return NSImage(size: target, flipped: false) { rect in
-            image.draw(in: rect)
-            return true
-        }
+        // Draw into a bitmap of exact pixel size so the result does not depend on the screen scale.
+        let width = Int(size.width * scale), height = Int(size.height * scale)
+        guard let rep = NSBitmapImageRep(
+            bitmapDataPlanes: nil, pixelsWide: width, pixelsHigh: height, bitsPerSample: 8, samplesPerPixel: 4,
+            hasAlpha: true, isPlanar: false, colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0
+        ) else { return image }
+        NSGraphicsContext.saveGraphicsState()
+        NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: rep)
+        image.draw(in: CGRect(x: 0, y: 0, width: width, height: height))
+        NSGraphicsContext.restoreGraphicsState()
+        let result = NSImage(size: CGSize(width: width, height: height))
+        result.addRepresentation(rep)
+        return result
     }
 }
 
 extension NSImage {
+    /// Size in pixels of the best bitmap representation, falling back to the point size.
+    var pixelSize: CGSize {
+        let pixels = representations.map { CGSize(width: $0.pixelsWide, height: $0.pixelsHigh) }
+            .filter { $0.width > 0 && $0.height > 0 }
+            .max { $0.width < $1.width }
+        return pixels ?? size
+    }
+
     var pngData: Data? {
         guard let tiff = tiffRepresentation, let rep = NSBitmapImageRep(data: tiff) else { return nil }
         return rep.representation(using: .png, properties: [:])

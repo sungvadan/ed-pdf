@@ -54,6 +54,7 @@ final class ViewerModel {
     var showsSignaturePad = false
     var showsSignatureCapture = false
     var showsStampEditor = false
+    var showsSendExport = false
     var selectedAnnotation: PDFAnnotation?
     /// Bumped whenever annotation properties change, so views reading PDFKit objects refresh.
     var revision = 0

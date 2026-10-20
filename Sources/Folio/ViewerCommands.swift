@@ -16,6 +16,12 @@ struct ViewerCommands: Commands {
     @FocusedValue(\.viewer) private var viewer
 
     var body: some Commands {
+        CommandGroup(after: .importExport) {
+            Button("Exporter pour envoi…") { viewer?.showsSendExport = true }
+                .keyboardShortcut("e", modifiers: [.command, .shift])
+                .disabled(viewer == nil)
+        }
+
         CommandGroup(after: .toolbar) {
             Divider()
             Group {

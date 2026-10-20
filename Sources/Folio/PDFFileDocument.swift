@@ -4,16 +4,15 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 /// A PDF document backed by PDFKit. PDFKit mutates `pdf` in place, so this is a reference document.
-final class PDFFileDocument: NSObject, ReferenceFileDocument, PDFDocumentDelegate {
+final class PDFFileDocument: ReferenceFileDocument {
     static var readableContentTypes: [UTType] { [.pdf] }
 
     let pdf: PDFDocument
 
     /// New documents start with a single blank A4 page.
-    override init() {
+    init() {
         pdf = PDFDocument()
-        super.init()
-        pdf.delegate = self
+        pdf.delegate = AnnotationClassProvider.shared
         pdf.insert(Self.blankPage(), at: 0)
     }
 
@@ -23,17 +22,7 @@ final class PDFFileDocument: NSObject, ReferenceFileDocument, PDFDocumentDelegat
             throw CocoaError(.fileReadCorruptFile)
         }
         self.pdf = pdf
-        super.init()
-        pdf.delegate = self
-    }
-
-    /// Loads free text boxes and stamps as Folio's subclasses so they keep their custom rendering.
-    func `class`(forAnnotationType annotationType: String) -> AnyClass {
-        switch annotationType {
-        case "FreeText": FreeTextAnnotation.self
-        case "Stamp": ImageAnnotation.self
-        default: PDFAnnotation.self
-        }
+        pdf.delegate = AnnotationClassProvider.shared
     }
 
     func snapshot(contentType: UTType) throws -> Data {
@@ -54,5 +43,19 @@ final class PDFFileDocument: NSObject, ReferenceFileDocument, PDFDocumentDelegat
             return true
         }
         return PDFPage(image: image) ?? PDFPage()
+    }
+}
+
+/// Loads free text boxes and stamps as Folio's subclasses so they keep their custom rendering.
+/// PDFDocument holds its delegate weakly, hence the shared instance.
+final class AnnotationClassProvider: NSObject, PDFDocumentDelegate {
+    static let shared = AnnotationClassProvider()
+
+    func `class`(forAnnotationType annotationType: String) -> AnyClass {
+        switch annotationType {
+        case "FreeText": FreeTextAnnotation.self
+        case "Stamp": ImageAnnotation.self
+        default: PDFAnnotation.self
+        }
     }
 }

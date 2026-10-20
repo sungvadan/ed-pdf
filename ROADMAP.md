@@ -33,11 +33,14 @@
 - Tampons : Approuvé, Rejeté, Confidentiel, Brouillon, Payé, date du jour + tampons personnalisés mémorisés (texte, couleur)
 - Images (`ImageAnnotation`, PNG conservé dans `/FolioImage`)
 - Redimensionnement : 4 poignées d'angle avec curseur dédié + largeur/hauteur dans l'inspecteur (proportions conservées pour signatures, dessins et images)
-- Plus tard : signature tapée au clavier ou importée, création de champs de formulaire, signature numérique (certificat)
+- Plus tard : signature tapée au clavier, création de champs de formulaire, signature numérique (certificat)
+- Plus tard : réglage du nom d'auteur des annotations (préférences)
 
 ## ⬜ Étape 5 — Édition de texte & extras
-- Aplatir les annotations (toutes ou la sélection) : les intégrer au contenu de la page pour que leur texte
-  devienne sélectionnable/surlignable et qu'elles ne soient plus modifiables ; option « Exporter aplati »
+- ✅ « Exporter pour envoi… » (⇧⌘E, bouton avion) : copie aplatie (texte conservé, liens web gardés),
+  images réduites à 600 px, nom d'auteur retiré, données `/FolioImage` retirées — l'original n'est pas modifié
+  (`SendExport.swift`). Limites : signets et liens internes perdus en mode aplati
+- Aplatir dans le document ouvert (toutes les annotations ou la sélection)
 - Ajouter du texte, masquer/caviarder (redaction)
 - Édition du texte existant (difficile avec PDFKit : surcouche « effacer + réécrire »)
 - Signets / table des matières, export image, compression, mot de passe
