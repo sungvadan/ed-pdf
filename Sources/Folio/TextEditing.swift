@@ -257,19 +257,47 @@ extension ViewerModel {
             select(nil)
             applyPages(newPages, actionName: "Modifier le texte")
         } catch {
+            let log = Self.logFailure(error, segments: segments)
             let alert = NSAlert()
             alert.messageText = "Le texte n'a pas pu être modifié"
             alert.informativeText = Self.explain(error) + " Le document n'a pas été changé."
+                + (log.map { "\n\nDétails : \($0.path)" } ?? "")
             alert.runModal()
         }
     }
 
+    /// Appends the failure to ~/Library/Logs/Folio/text-edit.log, to send with a bug report.
+    private static func logFailure(_ error: Error, segments: [StyledSegment]) -> URL? {
+        guard let logs = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first?
+            .appendingPathComponent("Logs/Folio") else { return nil }
+        try? FileManager.default.createDirectory(at: logs, withIntermediateDirectories: true)
+        let url = logs.appendingPathComponent("text-edit.log")
+        let fonts = Set(segments.map { "\($0.style.font.baseName) \(String(format: "%.1f", Double($0.style.fontSize)))pt embedded=\($0.style.font.isEmbedded)" })
+        var entry = "=== \(Date.now.formatted(.iso8601))\nerror: \(error)\nfonts: \(fonts.sorted().joined(separator: "; "))\n"
+        if case TextEditError.verificationFailed(let expected, let found) = error {
+            let missing = TextEditor.missingCharacters(expected: expected, found: found)
+            entry += "missing: \(missing.unicodeScalars.map { String(format: "U+%04X", $0.value) }.joined(separator: " "))\n"
+        }
+        entry += "\n"
+        if let handle = try? FileHandle(forWritingTo: url) {
+            handle.seekToEndOfFile()
+            handle.write(Data(entry.utf8))
+            try? handle.close()
+        } else {
+            try? Data(entry.utf8).write(to: url)
+        }
+        return url
+    }
+
     private static func explain(_ error: Error) -> String {
         switch error {
+        case TextEditError.verificationFailed(let expected, let found):
+            let missing = TextEditor.missingCharacters(expected: expected, found: found)
+            return missing.isEmpty
+                ? "Folio n'a pas pu écrire ce texte fidèlement avec les polices disponibles."
+                : "Aucune police disponible ne contient ces caractères : « \(missing.map(String.init).joined(separator: " ")) »."
         case PDFFileError.unsupported(let what) where what.contains("chiffré"):
             return "La modification du texte n'est pas encore possible sur un document protégé par mot de passe."
-        case TextEditError.verificationFailed:
-            return "Folio n'a pas pu écrire ce texte fidèlement avec les polices disponibles."
         case TextEditError.notEditable:
             return "Ce paragraphe ne peut pas être modifié (texte pivoté ou imbriqué)."
         case is TextSurgeryError, is PDFFileError:

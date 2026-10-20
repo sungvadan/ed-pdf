@@ -1,6 +1,5 @@
 import CoreGraphics
 import Foundation
-import PDFKit
 
 /// Rewrites a paragraph of a PDF and returns the new file.
 ///
@@ -13,23 +12,24 @@ public enum TextEditor {
         public var fontReport: [String]
     }
 
-    /// Edits, then reads the page back with PDFKit (what search and copy use): if the new text does not
-    /// extract exactly (some embedded subsets map characters to look-alike glyphs, e.g. "-" to a soft
-    /// hyphen), retries with system fonts only.
+    /// Edits, then reads back the text objects just written: if a character does not come back
+    /// (glyph missing, or mapped to a look-alike such as "-" → soft hyphen by some embedded subsets),
+    /// retries with system fonts only, and refuses the edit if that fails too.
     public static func replace(
         blockAt blockIndex: Int, onPage pageIndex: Int, in data: Data, password: String? = nil,
         with makeSegments: (TextBlock) -> [StyledSegment], avoidEmbeddedFonts: Bool = false, verify: Bool = true
     ) throws -> Result {
         var expected = ""
-        let result = try write(blockAt: blockIndex, onPage: pageIndex, in: data, password: password, with: { block in
-            let segments = makeSegments(block)
+        let (result, created) = try write(blockAt: blockIndex, onPage: pageIndex, in: data, password: password, with: { block in
+            let segments = makeSegments(block).map { StyledSegment(text: withoutLigatures($0.text), style: $0.style) }
             expected = segments.map(\.text).joined()
             return segments
         }, avoidEmbeddedFonts: avoidEmbeddedFonts)
-        let found = pageText(result.data, pageIndex: pageIndex, password: password)
-        if !verify || found.contains(normalized(expected)) { return result }
+        let found = writtenText(result.data, pageIndex: pageIndex, password: password, created: created)
+        if !verify || compact(found) == compact(expected) { return result }
         if !avoidEmbeddedFonts {
-            return try replace(blockAt: blockIndex, onPage: pageIndex, in: data, password: password, with: makeSegments, avoidEmbeddedFonts: true)
+            return try replace(blockAt: blockIndex, onPage: pageIndex, in: data, password: password, with: makeSegments,
+                               avoidEmbeddedFonts: true, verify: verify)
         }
         throw TextEditError.verificationFailed(expected: expected, found: found)
     }
@@ -40,17 +40,41 @@ public enum TextEditor {
             .components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }.joined(separator: " ")
     }
 
-    /// The page text as PDFKit extracts it, normalized.
-    static func pageText(_ data: Data, pageIndex: Int, password: String?) -> String {
-        guard let document = PDFDocument(data: data) else { return "" }
-        if document.isLocked, let password { document.unlock(withPassword: password) }
-        return normalized(document.page(at: pageIndex)?.string ?? "")
+    /// Characters only: compatibility forms folded (ligatures, no-break spaces), whitespace dropped.
+    /// Soft hyphens are kept, so a "-" read back as U+00AD still counts as a difference.
+    public static func compact(_ text: String) -> String {
+        String(text.precomposedStringWithCompatibilityMapping.unicodeScalars.filter { !CharacterSet.whitespacesAndNewlines.contains($0) })
+    }
+
+    /// Characters of `expected` that did not come back in `found`.
+    public static func missingCharacters(expected: String, found: String) -> String {
+        var remaining = Array(compact(found))
+        var missing: [Character] = []
+        for character in compact(expected) {
+            if let index = remaining.firstIndex(of: character) { remaining.remove(at: index) } else if !missing.contains(character) { missing.append(character) }
+        }
+        return String(missing)
+    }
+
+    /// "ﬁ" → "fi" etc.: ligature code points from the original text are written as plain letters.
+    static func withoutLigatures(_ text: String) -> String {
+        String(text.unicodeScalars.flatMap { scalar -> [Unicode.Scalar] in
+            (0xFB00...0xFB06).contains(scalar.value)
+                ? Array(String(scalar).precomposedStringWithCompatibilityMapping.unicodeScalars) : [scalar]
+        }.map(Character.init))
+    }
+
+    /// Text of the objects written by the edit: the last `created` objects of the page, in writing order.
+    static func writtenText(_ data: Data, pageIndex: Int, password: String?, created: Int) -> String {
+        guard let page = PDFiumDocument(data: data, password: password)?.page(at: pageIndex) else { return "" }
+        let firstNew = page.objectCount - created
+        return page.textRuns().filter { $0.path[0] >= firstNew }.map(\.text).joined(separator: " ")
     }
 
     private static func write(
         blockAt blockIndex: Int, onPage pageIndex: Int, in data: Data, password: String?,
         with makeSegments: (TextBlock) -> [StyledSegment], avoidEmbeddedFonts: Bool
-    ) throws -> Result {
+    ) throws -> (Result, created: Int) {
         guard let document = PDFiumDocument(data: data, password: password), let page = document.page(at: pageIndex) else {
             throw TextEditError.writeFailed
         }
@@ -84,6 +108,6 @@ public enum TextEditor {
         let output = try file.incrementalUpdate(replacingStreams: Dictionary(uniqueKeysWithValues: edited.map {
             (streamNumbers[$0.key], Data($0.value))
         }))
-        return Result(data: output, fontReport: writer.fontReport)
+        return (Result(data: output, fontReport: writer.fontReport), writer.createdObjectCount)
     }
 }

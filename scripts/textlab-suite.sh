@@ -24,5 +24,9 @@ facture.pdf|2|trente jours|vingt jours|f5
 facture.pdf|10|7 800,00 €|8 125,50 €|f3
 facture.pdf|1|Société Exemple SARL|Société Durand & Fils|f4
 facture.pdf|16|trois fois|deux fois|f6
+divers.pdf|0|officiel|officiel et efficace|d1
+divers.pdf|2|Jean Dupont|Jeanne Dupuis-Martin|d2
+divers.pdf|7|30 €|45 € ✓|d3
+divers.pdf|4|Paris|Paris ✓ ★|d4
 CASES
 echo "$pass réussis, $fail échoués"

@@ -6,7 +6,7 @@ import Foundation
 public struct RunStyle: Hashable {
     public static func == (lhs: RunStyle, rhs: RunStyle) -> Bool {
         lhs.font == rhs.font && abs(lhs.fontSize - rhs.fontSize) < 0.01 && lhs.color == rhs.color
-            && lhs.bold == rhs.bold && lhs.italic == rhs.italic
+            && lhs.bold == rhs.bold && lhs.italic == rhs.italic && lhs.fallbackFont == rhs.fallbackFont
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -15,6 +15,7 @@ public struct RunStyle: Hashable {
         hasher.combine(color)
         hasher.combine(bold)
         hasher.combine(italic)
+        hasher.combine(fallbackFont)
     }
 
     public var font: FontInfo
@@ -26,6 +27,8 @@ public struct RunStyle: Hashable {
     /// Requested emphasis; nil keeps the font's own.
     public var bold: Bool?
     public var italic: Bool?
+    /// Installed font used for characters the main font lacks (set by the writer).
+    var fallbackFont: String?
 
     public init(font: FontInfo, fontSize: CGFloat, color: TextColor, sourcePath: [Int]? = nil, bold: Bool? = nil, italic: Bool? = nil) {
         self.font = font
@@ -150,6 +153,8 @@ public final class BlockWriter {
             fontReport.append("\(style.font.postScriptName) → \(font.description)")
         }
 
+        let segments = withFallbackFonts(segments, fonts: &resolved)
+
         // Layout, then create the new objects.
         let lines = layout(segments, fonts: resolved, width: geometry.width)
         var created: [FPDF_PAGEOBJECT] = []
@@ -170,6 +175,31 @@ public final class BlockWriter {
             }
         }
         guard page.generateContent() else { throw TextEditError.writeFailed }
+    }
+
+    /// Splits off characters the chosen font lacks and assigns them an installed font that has them.
+    private func withFallbackFonts(_ segments: [StyledSegment], fonts resolved: inout [RunStyle: ResolvedFont]) -> [StyledSegment] {
+        var result: [StyledSegment] = []
+        for segment in segments {
+            let font = resolved[segment.style]!
+            for character in segment.text {
+                var style = segment.style
+                if !character.isWhitespace, !font.covers(character) {
+                    let base = TextDisplay.font(for: segment.style, size: 12)
+                    if let fallback = fonts.fallback(for: character, near: base) {
+                        style.fallbackFont = fallback.name
+                        resolved[style] = fallback.font
+                        fontReport.append("\(character) → \(fallback.name) (fallback)")
+                    }
+                }
+                if let last = result.last, last.style == style {
+                    result[result.count - 1].text.append(character)
+                } else {
+                    result.append(StyledSegment(text: String(character), style: style))
+                }
+            }
+        }
+        return result
     }
 
     // MARK: Layout
@@ -356,6 +386,8 @@ extension TextBlock {
                    !(segments.last?.text.hasSuffix(" ") ?? true), !text.hasPrefix(" ") {
                     text = " " + text
                 }
+                // Runs ending and starting with a space would double it.
+                if text.hasPrefix(" "), segments.last?.text.hasSuffix(" ") == true { text.removeFirst() }
                 segments.append(StyledSegment(text: text, style: RunStyle(run: run)))
             }
             // Lines of a paragraph are joined with a space; the writer re-wraps them.

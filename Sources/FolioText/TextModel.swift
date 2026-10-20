@@ -263,7 +263,7 @@ public enum TextLayout {
             if index > 0, runs[index - 1].followedBySpace, !text.hasSuffix(" "), !run.text.hasPrefix(" ") {
                 text += " "
             }
-            text += run.text
+            text += text.hasSuffix(" ") && run.text.hasPrefix(" ") ? String(run.text.dropFirst()) : run.text
         }
         let bounds = runs.dropFirst().reduce(runs[0].bounds) { $0.union($1.bounds) }
         let baseline = runs.map(\.origin.y).sorted()[runs.count / 2]

@@ -58,6 +58,20 @@ makePDF("colonnes.pdf", pages: [{ _ in
     }
 }])
 
+// 3. Miscellaneous: ligatures (Hoefler Text), label/value pairs on the same lines, special characters.
+makePDF("divers.pdf", pages: [{ _ in
+    NSAttributedString(string: "Le fichier officiel définit les affiliations : efficacité, réflexion, offre spéciale.", attributes: [
+        .font: font("Hoefler Text", 14), .ligature: 1,
+    ]).draw(in: CGRect(x: 60, y: 740, width: 475, height: 60))
+    for (row, (label, value)) in [("Nom :", "Jean Dupont"), ("Ville :", "Paris"), ("Montant :", "1 250,00 €")].enumerated() {
+        let y = 640 - CGFloat(row) * 22
+        NSAttributedString(string: label, attributes: [.font: font("Helvetica", 11)]).draw(at: CGPoint(x: 60, y: y))
+        NSAttributedString(string: value, attributes: [.font: font("Helvetica-Bold", 11)]).draw(at: CGPoint(x: 300, y: y))
+    }
+    NSAttributedString(string: "« Citation » — œuvre complète, coût : 30 € → validé.", attributes: [.font: font("Times New Roman", 12)])
+        .draw(at: CGPoint(x: 60, y: 520))
+}])
+
 // 3. Invoice printed by Chrome (CID fonts without space glyph, one object per glyph run) — if Chrome is installed.
 let chrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 let invoiceHTML = output.appendingPathComponent("facture.html")

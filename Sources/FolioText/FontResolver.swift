@@ -10,17 +10,21 @@ final class ResolvedFont {
     /// The font has a space glyph. Otherwise (e.g. subsets made by Chrome) words are written as separate
     /// objects and the gap stands for the space.
     let writesSpaces: Bool
+    /// Whether the font has a glyph for a character.
+    let covers: (Character) -> Bool
     private let document: FPDF_DOCUMENT
     /// A character with ink, used as a right-hand marker when measuring.
     private let marker: String
     private var cache: [Substring: CGFloat] = [:]
 
-    init(handle: FPDF_FONT, document: FPDF_DOCUMENT, marker: Character, description: String, writesSpaces: Bool = true) {
+    init(handle: FPDF_FONT, document: FPDF_DOCUMENT, marker: Character, description: String, writesSpaces: Bool = true,
+         covers: @escaping (Character) -> Bool) {
         self.handle = handle
         self.document = document
         self.marker = String(marker)
         self.description = description
         self.writesSpaces = writesSpaces
+        self.covers = covers
     }
 
     /// Exact advance width, as PDF readers lay the text out: PDFium bounds stop at the last glyph's ink,
@@ -49,31 +53,55 @@ final class FontResolver {
     private let document: PDFiumDocument
     private let page: PDFiumPage
     private var systemFonts: [String: ResolvedFont] = [:]
-    private lazy var coverage: [String: Set<Character>] = learnCoverage()
+    /// Per font resource: one PDF can hold several subsets of the same font under the same name
+    /// (CoreText puts "€" or "→" in a second subset), so coverage is keyed by font handle, not name.
+    private lazy var coverage: [OpaquePointer: Set<Character>] = learnCoverage()
 
     init(page: PDFiumPage) {
         self.document = page.document
         self.page = page
     }
 
-    /// Characters seen in the page text for each font, i.e. the glyphs an embedded subset surely has.
-    func knownCharacters(of font: FontInfo) -> Set<Character> {
-        coverage[font.baseName] ?? []
+    /// Characters drawn on the page with a font resource, i.e. the glyphs an embedded subset surely has.
+    func knownCharacters(of font: FPDF_FONT) -> Set<Character> {
+        coverage[font] ?? []
     }
 
     /// The original embedded font, if it can encode every character of `text`.
     func embedded(_ handle: FPDF_FONT, info: FontInfo, for text: String) -> ResolvedFont? {
-        let coverage = knownCharacters(of: info)
+        let coverage = knownCharacters(of: handle)
         let needed = Set(text.filter { !$0.isNewline })
         guard !coverage.isEmpty, needed.isSubset(of: coverage.union([" "])),
               let marker = ["o", "n", "e", "a", "x", "0"].first(where: coverage.contains) ?? coverage.first(where: { $0.isLetter || $0.isNumber }) else { return nil }
         return ResolvedFont(handle: handle, document: document.handle, marker: marker,
-                            description: "\(info.postScriptName) (embedded)", writesSpaces: coverage.contains(" "))
+                            description: "\(info.postScriptName) (embedded)", writesSpaces: coverage.contains(" "),
+                            covers: { $0 == " " || coverage.contains($0) })
     }
 
     /// A system font matching `info` as closely as possible, embedded into the document once.
     func system(matching info: FontInfo, bold: Bool? = nil, italic: Bool? = nil) -> ResolvedFont? {
-        let ctFont = Self.closestSystemFont(to: info, bold: bold ?? info.isBold, italic: italic ?? info.isItalic)
+        system(Self.closestSystemFont(to: info, bold: bold ?? info.isBold, italic: italic ?? info.isItalic))
+    }
+
+    func system(named postScriptName: String) -> ResolvedFont? {
+        let font = CTFontCreateWithName(postScriptName as CFString, 12, nil)
+        guard (CTFontCopyPostScriptName(font) as String) == postScriptName else { return nil }
+        return system(font)
+    }
+
+    /// An installed font with a glyph for `character`, for characters the paragraph's font lacks
+    /// (as macOS does when you type "✓" in Times). Only TrueType-outline fonts can be embedded.
+    func fallback(for character: Character, near base: CTFont) -> (name: String, font: ResolvedFont)? {
+        let string = String(character) as CFString
+        let suggested = CTFontCreateForString(base, string, CFRange(location: 0, length: CFStringGetLength(string)))
+        let candidates = [CTFontCopyPostScriptName(suggested) as String, "ArialUnicodeMS", "Arial", "TimesNewRomanPSMT", "Menlo-Regular", "AppleSymbols"]
+        for name in candidates {
+            if let font = system(named: name), font.covers(character) { return (name, font) }
+        }
+        return nil
+    }
+
+    private func system(_ ctFont: CTFont) -> ResolvedFont? {
         let name = CTFontCopyPostScriptName(ctFont) as String
         if let cached = systemFonts[name] { return cached }
         guard let data = Self.sfntData(of: ctFont) else { return nil }
@@ -81,7 +109,8 @@ final class FontResolver {
             FPDFText_LoadFont(document.handle, bytes.bindMemory(to: UInt8.self).baseAddress, UInt32(data.count), FPDF_FONT_TRUETYPE, 1)
         }
         guard let handle else { return nil }
-        let resolved = ResolvedFont(handle: handle, document: document.handle, marker: "o", description: "\(name) (system)")
+        let resolved = ResolvedFont(handle: handle, document: document.handle, marker: "o", description: "\(name) (system)",
+                                    covers: { Self.hasGlyph($0, in: ctFont) })
         systemFonts[name] = resolved
         return resolved
     }
@@ -135,13 +164,18 @@ final class FontResolver {
         return names.filter { !$0.isEmpty }
     }
 
+    static func hasGlyph(_ character: Character, in font: CTFont) -> Bool {
+        let utf16 = Array(String(character).utf16)
+        var glyphs = [CGGlyph](repeating: 0, count: utf16.count)
+        return CTFontGetGlyphsForCharacters(font, utf16, &glyphs, utf16.count) && glyphs.allSatisfy { $0 != 0 }
+    }
+
     // MARK: Coverage
 
     /// Per font, every character actually drawn on the page with it: the glyphs an embedded subset surely contains.
-    private func learnCoverage() -> [String: Set<Character>] {
+    private func learnCoverage() -> [OpaquePointer: Set<Character>] {
         guard let textPage = page.textPage else { return [:] }
-        var coverage: [String: Set<Character>] = [:]
-        var names: [OpaquePointer: String] = [:]
+        var coverage: [OpaquePointer: Set<Character>] = [:]
         for index in 0..<Int(FPDFText_CountChars(textPage)) {
             // Spaces generated by the text extraction are not glyphs of the font.
             guard FPDFText_IsGenerated(textPage, Int32(index)) != 1,
@@ -149,12 +183,8 @@ final class FontResolver {
                   let object = FPDFText_GetTextObject(textPage, Int32(index)) else { continue }
             let character = Character(scalar)
             guard !character.isNewline else { continue }
-            let name = names[object] ?? {
-                let name = utf8String { FPDFFont_GetBaseFontName(FPDFTextObj_GetFont(object), $0, $1) }
-                names[object] = name
-                return name
-            }()
-            coverage[name, default: []].insert(character)
+            guard let font = FPDFTextObj_GetFont(object) else { continue }
+            coverage[font, default: []].insert(character)
         }
         return coverage
     }
