@@ -1,11 +1,26 @@
+import PDFKit
 import SwiftUI
 
 struct ContentView: View {
     @ObservedObject var document: PDFFileDocument
     @State private var viewer = ViewerModel()
     @Environment(\.undoManager) private var undoManager
+    /// Bumped after unlocking, since PDFKit does not publish `isLocked` changes.
+    @State private var unlockCount = 0
 
     var body: some View {
+        let _ = unlockCount
+        if document.pdf.isLocked {
+            UnlockView(document: document.pdf) { password in
+                viewer.documentPassword = password
+                unlockCount += 1
+            }
+        } else {
+            editor
+        }
+    }
+
+    private var editor: some View {
         NavigationSplitView {
             PageSidebar(viewer: viewer)
                 .navigationSplitViewColumnWidth(min: 140, ideal: 170, max: 260)
@@ -35,6 +50,9 @@ struct ContentView: View {
         }
         .sheet(isPresented: $viewer.showsSendExport) {
             SendExportSheet(viewer: viewer)
+        }
+        .sheet(isPresented: $viewer.showsImageExport) {
+            ImageExportSheet(viewer: viewer)
         }
         .sheet(isPresented: $viewer.showsStampEditor) {
             CustomStampEditor { stamp in
@@ -110,6 +128,43 @@ struct ContentView: View {
                 }
                 .help("Résultats de recherche")
             }
+        }
+    }
+}
+
+/// Asks for the password of an encrypted document.
+private struct UnlockView: View {
+    let document: PDFDocument
+    let onUnlock: (String) -> Void
+    @State private var password = ""
+    @State private var failed = false
+
+    var body: some View {
+        VStack(spacing: 14) {
+            Image(systemName: "lock.doc")
+                .font(.system(size: 48))
+                .foregroundStyle(.secondary)
+            Text("Ce document est protégé par un mot de passe.")
+                .font(.headline)
+            SecureField("Mot de passe", text: $password)
+                .frame(width: 240)
+                .onSubmit(unlock)
+            if failed {
+                Text("Mot de passe incorrect.").foregroundStyle(.red)
+            }
+            Button("Déverrouiller", action: unlock)
+                .keyboardShortcut(.defaultAction)
+                .disabled(password.isEmpty)
+        }
+        .padding(40)
+        .frame(minWidth: 700, minHeight: 500)
+    }
+
+    private func unlock() {
+        if document.unlock(withPassword: password) {
+            onUnlock(password)
+        } else {
+            failed = true
         }
     }
 }

@@ -10,15 +10,39 @@ struct SendOptions {
     var removeAuthor = true
     /// Drop the `/FolioImage` copy kept to re-edit images (only matters when not flattening).
     var stripEditingData = true
+    /// Password required to open the copy; empty for none.
+    var password = ""
+    /// Recompress images as JPEG optimized for screen.
+    var compress = false
+
+    var writeOptions: [PDFDocumentWriteOption: Any] {
+        var options: [PDFDocumentWriteOption: Any] = [:]
+        if !password.isEmpty {
+            options[.userPasswordOption] = password
+            options[.ownerPasswordOption] = password
+        }
+        if compress {
+            options[.saveImagesAsJPEGOption] = true
+            options[.optimizeImagesForScreenOption] = true
+        }
+        return options
+    }
 }
 
 /// Builds the copy to send. Always works on a copy: the open document is never changed.
 enum SendExporter {
     static let imageMaxPixels: CGFloat = 600
 
-    static func export(_ document: PDFDocument, options: SendOptions) -> Data? {
+    /// An independent, unlocked copy of the document to work on.
+    static func snapshot(of document: PDFDocument, password: String?) -> PDFDocument? {
         guard let data = document.dataRepresentation(), let copy = PDFDocument(data: data) else { return nil }
+        if copy.isLocked, !(password.map(copy.unlock(withPassword:)) ?? false) { return nil }
         copy.delegate = AnnotationClassProvider.shared
+        return copy
+    }
+
+    static func export(_ document: PDFDocument, password: String?, options: SendOptions) -> Data? {
+        guard let copy = snapshot(of: document, password: password) else { return nil }
 
         for page in (0..<copy.pageCount).compactMap({ copy.page(at: $0) }) {
             for annotation in page.annotations {
@@ -43,18 +67,21 @@ enum SendExporter {
         attributes[PDFDocumentAttribute.creatorAttribute] = "Folio"
         copy.documentAttributes = attributes
 
-        return options.flatten ? flattened(copy) : copy.dataRepresentation()
+        let output = options.flatten ? flattened(copy) : copy
+        return output?.dataRepresentation(options: options.writeOptions)
     }
 
-    /// Redraws every page with its annotations into a new PDF. Page text stays real text;
-    /// web links are kept, internal links and bookmarks are lost.
-    private static func flattened(_ document: PDFDocument) -> Data? {
+    /// Redraws the pages at `indexes` (all by default) with their annotations into a new document,
+    /// one page per index. Page text stays real text; web links are kept, internal links and
+    /// bookmarks are lost. Mutates `document`, so pass a snapshot.
+    static func flattened(_ document: PDFDocument, indexes: [Int]? = nil) -> PDFDocument? {
         let data = NSMutableData()
         guard let consumer = CGDataConsumer(data: data as CFMutableData),
               let context = CGContext(consumer: consumer, mediaBox: nil, nil) else { return nil }
 
         var rotations: [Int] = [], cropBoxes: [CGRect] = [], links: [[PDFAnnotation]] = []
-        for page in (0..<document.pageCount).compactMap({ document.page(at: $0) }) {
+        let pages = (indexes ?? Array(0..<document.pageCount)).compactMap { document.page(at: $0) }
+        for page in pages {
             // Drawing a rotated page mangles it, so draw upright and restore the rotation afterwards.
             rotations.append(page.rotation)
             page.rotation = 0
@@ -78,7 +105,7 @@ enum SendExporter {
             links[index].forEach { page.addAnnotation($0) }
         }
         flat.documentAttributes = document.documentAttributes
-        return flat.dataRepresentation()
+        return flat
     }
 }
 
@@ -96,7 +123,7 @@ extension ViewerModel {
         guard panel.runModal() == .OK, let url = panel.url else { return false }
 
         do {
-            guard let data = SendExporter.export(document, options: options) else {
+            guard let data = SendExporter.export(document, password: documentPassword, options: options) else {
                 throw CocoaError(.fileWriteUnknown)
             }
             try data.write(to: url, options: .atomic)
@@ -108,10 +135,29 @@ extension ViewerModel {
     }
 }
 
+extension ViewerModel {
+    /// Draws the annotations and form fields of `targets` into their page content, as one undoable action.
+    func flattenAnnotations(of targets: [PDFPage]) {
+        guard let document = pdfView.document,
+              let snapshot = SendExporter.snapshot(of: document, password: documentPassword) else { return NSSound.beep() }
+        let indexes = targets.compactMap { pages.firstIndex(of: $0) }
+        guard !indexes.isEmpty, let flat = SendExporter.flattened(snapshot, indexes: indexes) else { return NSSound.beep() }
+        var result = pages
+        for (k, index) in indexes.enumerated() {
+            if let page = flat.page(at: k)?.copy() as? PDFPage { result[index] = page }
+        }
+        select(nil)
+        applyPages(result, actionName: "Aplatir")
+    }
+}
+
 struct SendExportSheet: View {
     let viewer: ViewerModel
     @Environment(\.dismiss) private var dismiss
     @State private var options = SendOptions()
+    @State private var protect = false
+    @State private var password = ""
+    @State private var confirmation = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -137,15 +183,38 @@ struct SendExportSheet: View {
                     detail: "Supprime la copie de l'image conservée pour la rééditer dans Folio. L'image reste visible."
                 )
             }
+            option(
+                "Réduire la taille du fichier", isOn: $options.compress,
+                detail: "Recompresse les images en JPEG adapté à l'écran. Utile pour l'envoi par e-mail ; un peu moins net à l'impression."
+            )
+            option(
+                "Protéger par un mot de passe", isOn: $protect,
+                detail: "Le destinataire devra saisir ce mot de passe pour ouvrir le document. Communiquez-le par un autre moyen que le fichier."
+            )
+            if protect {
+                VStack(alignment: .leading, spacing: 6) {
+                    SecureField("Mot de passe", text: $password)
+                    SecureField("Confirmer le mot de passe", text: $confirmation)
+                    if !confirmation.isEmpty && password != confirmation {
+                        Text("Les mots de passe ne correspondent pas.")
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                    }
+                }
+                .padding(.leading, 20)
+            }
 
             HStack {
                 Spacer()
                 Button("Annuler", role: .cancel) { dismiss() }
                     .keyboardShortcut(.cancelAction)
                 Button("Exporter…") {
+                    var options = options
+                    options.password = protect ? password : ""
                     if viewer.exportForSending(options) { dismiss() }
                 }
                 .keyboardShortcut(.defaultAction)
+                .disabled(protect && (password.isEmpty || password != confirmation))
             }
         }
         .padding(20)

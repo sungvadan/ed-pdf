@@ -91,6 +91,8 @@ struct PageMenuItems: View {
         Button("Insérer une page vierge") { viewer.insertBlankPage() }
         Button("Insérer depuis un fichier…") { viewer.chooseFilesToInsert() }
         Button("Extraire…") { viewer.extractPages() }
+        Button("Exporter en images…") { viewer.showsImageExport = true }
+        Button("Aplatir les annotations") { viewer.flattenAnnotations(of: viewer.targetPages) }
         Divider()
         Button("Supprimer", role: .destructive) { viewer.deletePages(viewer.targetPages) }
     }

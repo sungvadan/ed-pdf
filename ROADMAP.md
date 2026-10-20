@@ -40,8 +40,11 @@
 - ✅ « Exporter pour envoi… » (⇧⌘E, bouton avion) : copie aplatie (texte conservé, liens web gardés),
   images réduites à 600 px, nom d'auteur retiré, données `/FolioImage` retirées — l'original n'est pas modifié
   (`SendExport.swift`). Limites : signets et liens internes perdus en mode aplati
-- Aplatir dans le document ouvert (toutes les annotations ou la sélection)
+- ✅ Export : mot de passe d'ouverture, réduction de taille (images JPEG optimisées écran)
+- ✅ Ouverture des PDF protégés (écran de déverrouillage ; le mot de passe est conservé à l'enregistrement)
+- ✅ Aplatir dans le document ouvert (pages sélectionnées ou tout), annulable — menu Pages / clic droit
+- ✅ Exporter en images (PNG/JPEG, 72/150/300 ppp, toutes les pages ou la sélection)
 - Ajouter du texte, masquer/caviarder (redaction)
 - Édition du texte existant (difficile avec PDFKit : surcouche « effacer + réécrire »)
-- Signets / table des matières, export image, compression, mot de passe
-- Icône de l'app, préférences
+- Signets / table des matières
+- Icône de l'app, préférences (nom d'auteur…)

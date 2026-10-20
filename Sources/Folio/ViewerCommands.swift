@@ -17,9 +17,12 @@ struct ViewerCommands: Commands {
 
     var body: some Commands {
         CommandGroup(after: .importExport) {
-            Button("Exporter pour envoi…") { viewer?.showsSendExport = true }
-                .keyboardShortcut("e", modifiers: [.command, .shift])
-                .disabled(viewer == nil)
+            Group {
+                Button("Exporter pour envoi…") { viewer?.showsSendExport = true }
+                    .keyboardShortcut("e", modifiers: [.command, .shift])
+                Button("Exporter en images…") { viewer?.showsImageExport = true }
+            }
+            .disabled(viewer == nil)
         }
 
         CommandGroup(after: .toolbar) {
@@ -56,6 +59,9 @@ struct ViewerCommands: Commands {
                     .keyboardShortcut("i", modifiers: [.command, .option])
                 Button("Extraire…") { viewer?.extractPages() }
                     .keyboardShortcut("e", modifiers: [.command, .option])
+                Divider()
+                Button("Aplatir les annotations des pages sélectionnées") { viewer?.flattenAnnotations(of: viewer?.targetPages ?? []) }
+                Button("Aplatir tout le document") { viewer?.flattenAnnotations(of: viewer?.pages ?? []) }
                 Divider()
                 Button("Supprimer") { viewer?.deletePages(viewer?.targetPages ?? []) }
                     .keyboardShortcut(.delete, modifiers: [.command, .option])
