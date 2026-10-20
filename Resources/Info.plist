@@ -8,6 +8,8 @@
 	<string>Folio</string>
 	<key>CFBundleIdentifier</key>
 	<string>local.svd.pdf-svd</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
 	<key>CFBundleExecutable</key>
 	<string>Folio</string>
 	<key>CFBundlePackageType</key>

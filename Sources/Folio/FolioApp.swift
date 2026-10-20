@@ -10,5 +10,9 @@ struct FolioApp: App {
             ViewerCommands()
             ImportFromDevicesCommands()
         }
+
+        Settings {
+            SettingsView()
+        }
     }
 }

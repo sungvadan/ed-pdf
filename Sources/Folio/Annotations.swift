@@ -288,6 +288,7 @@ extension ViewerModel {
     }
 
     func add(_ annotation: PDFAnnotation, to page: PDFPage, actionName: String = "Ajouter une annotation") {
+        annotation.userName = AppSettings.authorName
         page.addAnnotation(annotation)
         undoManager?.registerUndo(withTarget: self) { model in
             MainActor.assumeIsolated { model.remove(annotation, actionName: actionName) }
