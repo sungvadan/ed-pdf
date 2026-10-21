@@ -22,7 +22,8 @@ final class TextEditSession: NSObject, NSTextViewDelegate {
     let blockIndex: Int
     let styles: [RunStyle]
     let geometry: ParagraphGeometry
-    let textView = NSTextView()
+    /// TextKit 2: TextKit 1 draws the caret back at the line start on a line made only of spaces (fractional font sizes).
+    let textView = NSTextView(usingTextLayoutManager: true)
     let label = NSTextField(labelWithString: "")
     let originalText: String
     weak var pdfView: FolioPDFView?
@@ -162,18 +163,24 @@ final class TextEditSession: NSObject, NSTextViewDelegate {
     /// Positions the editor so its first baseline sits on the paragraph's first baseline.
     func layoutEditor() {
         guard let pdfView, let page = pdfView.document?.page(at: layout.pageIndex),
-              let layoutManager = textView.layoutManager, let container = textView.textContainer else { return }
-        layoutManager.ensureLayout(for: container)
-        let used = layoutManager.usedRect(for: container)
+              let layoutManager = textView.textLayoutManager else { return }
+        layoutManager.ensureLayout(for: layoutManager.documentRange)
         let scale = pdfView.scaleFactor
-        let width = block.lines.count == 1 ? max(used.width, block.bounds.width * scale) : geometry.width * scale
-        let height = max(used.height, geometry.leading * scale)
-
         var baselineOffset = (textView.font?.ascender ?? geometry.leading * scale * 0.8)
-        if layoutManager.numberOfGlyphs > 0 {
-            let fragment = layoutManager.lineFragmentRect(forGlyphAt: 0, effectiveRange: nil)
-            baselineOffset = fragment.minY + layoutManager.location(forGlyphAt: 0).y
+        var firstBaseline: CGFloat?
+        var lineWidth: CGFloat = 0
+        layoutManager.enumerateTextLayoutFragments(from: layoutManager.documentRange.location, options: [.ensuresLayout]) { fragment in
+            for line in fragment.textLineFragments {
+                let frame = fragment.layoutFragmentFrame
+                firstBaseline = firstBaseline ?? frame.minY + line.typographicBounds.minY + line.glyphOrigin.y
+                lineWidth = max(lineWidth, frame.minX + line.typographicBounds.maxX)
+            }
+            return true
         }
+        if !textView.string.isEmpty, let firstBaseline { baselineOffset = firstBaseline }
+        let width = block.lines.count == 1 ? max(lineWidth, block.bounds.width * scale) : geometry.width * scale
+        let height = max(layoutManager.usageBoundsForTextContainer.height, geometry.leading * scale)
+
         let baseline = pdfView.convert(geometry.origin, from: page)
         textView.frame = CGRect(x: baseline.x, y: baseline.y + baselineOffset - height, width: width + 2, height: height)
         label.frame.origin = CGPoint(x: textView.frame.minX, y: textView.frame.maxY + 3)
