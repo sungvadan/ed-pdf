@@ -206,8 +206,9 @@ final class TextEditSession: NSObject, NSTextViewDelegate {
     }
 
     func textView(_ textView: NSTextView, doCommandBy selector: Selector) -> Bool {
+        // Escape validates like a click outside: ⌘Z undoes the whole edit, retyping lost text is worse.
         if selector == #selector(NSResponder.cancelOperation(_:)) {
-            pdfView?.endTextEditing(commit: false)
+            pdfView?.endTextEditing(commit: true)
             return true
         }
         return false
