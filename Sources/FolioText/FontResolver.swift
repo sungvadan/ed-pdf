@@ -285,6 +285,22 @@ public enum TextDisplay {
         let font = FontResolver.closestSystemFont(to: style.font, bold: style.bold ?? style.font.isBold, italic: style.italic ?? style.font.isItalic)
         return CTFontCreateCopyWithAttributes(font, size, nil, nil)
     }
+
+    /// The font embedded in the PDF for a style, usable on screen if it maps every character of `text`
+    /// (subsets often lack a usable cmap, or are CFF data CoreText cannot load on its own).
+    public static func embeddedFont(for style: RunStyle, in page: PDFiumPage, text: String, size: CGFloat) -> CTFont? {
+        guard !style.changesEmphasis, let path = style.sourcePath, path.count == 1,
+              let object = FPDFPage_GetObject(page.handle, Int32(path[0])), let font = FPDFTextObj_GetFont(object),
+              FPDFFont_GetIsEmbedded(font) == 1 else { return nil }
+        var length = 0
+        guard FPDFFont_GetFontData(font, nil, 0, &length) != 0, length > 0 else { return nil }
+        var bytes = [UInt8](repeating: 0, count: length)
+        guard FPDFFont_GetFontData(font, &bytes, length, &length) != 0,
+              let provider = CGDataProvider(data: Data(bytes) as CFData), let cgFont = CGFont(provider) else { return nil }
+        let ctFont = CTFontCreateWithGraphicsFont(cgFont, size, nil, nil)
+        let characters = Set(text.filter { !$0.isWhitespace })
+        return characters.allSatisfy { FontResolver.hasGlyph($0, in: ctFont) } ? ctFont : nil
+    }
 }
 
 // MARK: - Diagnostics

@@ -72,6 +72,18 @@ makePDF("divers.pdf", pages: [{ _ in
         .draw(at: CGPoint(x: 60, y: 520))
 }])
 
+// 4. Form-like page: content drawn through a scaled CTM ("cm"), centered title with forced line breaks.
+makePDF("formulaire.pdf", pages: [{ context in
+    context.saveGState()
+    context.scaleBy(x: 2, y: 2)   // like PDFs whose content is scaled by "2 0 0 2 0 0 cm"
+    let centered = paragraph(0, alignment: .center)
+    NSAttributedString(string: "DÉCLARATION INITIALE\nen cas de création d'établissement ou de changement\nd'exploitant intervenu en 2026", attributes: [
+        .font: font("Avenir Next", 8), .paragraphStyle: centered,
+    ]).draw(in: CGRect(x: 30, y: 300, width: 237, height: 40))
+    NSAttributedString(string: "DÉPARTEMENT", attributes: [.font: font("Avenir Next", 5.5)]).draw(at: CGPoint(x: 45, y: 270))
+    context.restoreGState()
+}])
+
 // 3. Invoice printed by Chrome (CID fonts without space glyph, one object per glyph run) — if Chrome is installed.
 let chrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 let invoiceHTML = output.appendingPathComponent("facture.html")

@@ -29,7 +29,10 @@ final class TextEditSession: NSObject, NSTextViewDelegate {
 
     var block: TextBlock { layout.blocks[blockIndex] }
 
-    init(layout: PageTextLayout, blockIndex: Int, scale: CGFloat, pdfView: FolioPDFView) {
+    /// Display font per style index: the PDF's own font when it can be shown, else the closest installed one.
+    private(set) var usesEmbeddedFont: [Bool] = []
+
+    init(layout: PageTextLayout, blockIndex: Int, scale: CGFloat, pdfView: FolioPDFView, password: String?) {
         self.layout = layout
         self.blockIndex = blockIndex
         self.pdfView = pdfView
@@ -47,15 +50,28 @@ final class TextEditSession: NSObject, NSTextViewDelegate {
         paragraph.minimumLineHeight = geometry.leading * scale
         paragraph.maximumLineHeight = geometry.leading * scale
 
+        let segments = block.styledSegments
+        let pdfiumPage = PDFiumDocument(data: layout.data, password: password)?.page(at: layout.pageIndex)
+        var fonts: [NSFont] = []
+        var embedded: [Bool] = []
         let text = NSMutableAttributedString()
-        for segment in block.styledSegments {
+        for segment in segments {
             let index = styles.firstIndex(of: segment.style) ?? {
                 styles.append(segment.style)
+                let size = segment.style.fontSize * scale
+                let styleText = segments.filter { $0.style == segment.style }.map(\.text).joined()
+                if let pdfiumPage, let own = TextDisplay.embeddedFont(for: segment.style, in: pdfiumPage, text: styleText, size: size) {
+                    fonts.append(own as NSFont)
+                    embedded.append(true)
+                } else {
+                    fonts.append(TextDisplay.font(for: segment.style, size: size) as NSFont)
+                    embedded.append(false)
+                }
                 return styles.count - 1
             }()
             let c = segment.style.color
             text.append(NSAttributedString(string: segment.text, attributes: [
-                .font: TextDisplay.font(for: segment.style, size: segment.style.fontSize * scale) as NSFont,
+                .font: fonts[index],
                 .foregroundColor: NSColor(srgbRed: c.red, green: c.green, blue: c.blue, alpha: c.alpha),
                 .paragraphStyle: paragraph,
                 .folioRunStyle: index,
@@ -64,6 +80,7 @@ final class TextEditSession: NSObject, NSTextViewDelegate {
         // The last line has no separator to the next one; drop a dangling space.
         while text.string.hasSuffix(" ") { text.deleteCharacters(in: NSRange(location: text.length - 1, length: 1)) }
         self.styles = styles
+        usesEmbeddedFont = embedded
         originalText = text.string
         super.init()
 
@@ -88,7 +105,7 @@ final class TextEditSession: NSObject, NSTextViewDelegate {
             textView.textContainer?.widthTracksTextView = false
         } else {
             // The paragraph width comes from ink bounds, slightly narrower than glyph advances.
-            textView.textContainer?.size = CGSize(width: (geometry.width + (block.dominantRun?.fontSize ?? 10) * 0.3) * scale, height: .greatestFiniteMagnitude)
+            textView.textContainer?.size = CGSize(width: (geometry.width + geometry.wrapTolerance) * scale, height: .greatestFiniteMagnitude)
             textView.textContainer?.widthTracksTextView = false
         }
 
@@ -96,17 +113,19 @@ final class TextEditSession: NSObject, NSTextViewDelegate {
         label.textColor = .white
         label.drawsBackground = true
         label.backgroundColor = NSColor.controlAccentColor
-        label.stringValue = Self.describe(styles: styles, block: block)
+        label.stringValue = Self.describe(styles: styles, block: block, embedded: embedded)
         label.sizeToFit()
     }
 
-    private static func describe(styles: [RunStyle], block: TextBlock) -> String {
+    private static func describe(styles: [RunStyle], block: TextBlock, embedded: [Bool]) -> String {
         guard let main = block.dominantRun.map(RunStyle.init(run:)) else { return "" }
         let size = String(format: "%g", (main.fontSize * 10).rounded() / 10)
         let displayFont = TextDisplay.font(for: main, size: 12)
         let display = CTFontCopyFamilyName(displayFont) as String
         let exact = (CTFontCopyPostScriptName(displayFont) as String).caseInsensitiveCompare(main.font.postScriptName) == .orderedSame
-        let shown = exact ? display : "\(main.font.postScriptName) (affichée en \(display))"
+        let ownFont = styles.firstIndex(of: main).map { embedded[$0] } ?? false
+        let shown = exact ? display : ownFont ? main.font.familyName.isEmpty ? main.font.postScriptName : main.font.familyName
+            : "\(main.font.postScriptName) (affichée en \(display))"
         let more = styles.count > 1 ? " · \(styles.count) styles" : ""
         return "  \(shown) · \(size) pt\(more)  "
     }
@@ -206,7 +225,7 @@ extension FolioPDFView {
             return
         }
         hoverOverlay.isHidden = true
-        let session = TextEditSession(layout: layout, blockIndex: index, scale: scaleFactor, pdfView: self)
+        let session = TextEditSession(layout: layout, blockIndex: index, scale: scaleFactor, pdfView: self, password: viewer.documentPassword)
         textSession = session
         addSubview(session.textView, positioned: .above, relativeTo: nil)
         addSubview(session.label, positioned: .above, relativeTo: nil)

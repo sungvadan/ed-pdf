@@ -69,6 +69,9 @@ public struct ParagraphGeometry {
     public var width: CGFloat
     public var leading: CGFloat
     public var alignment: ParagraphAlignment
+    /// Extra width allowed when breaking lines: `width` comes from ink bounds, a bit narrower than the
+    /// advances of the same text, so the original lines must still fit.
+    public var wrapTolerance: CGFloat = 0
 
     public init(origin: CGPoint, width: CGFloat, leading: CGFloat, alignment: ParagraphAlignment) {
         self.origin = origin
@@ -85,6 +88,7 @@ public struct ParagraphGeometry {
         width = block.lines.count == 1 ? .greatestFiniteMagnitude : block.bounds.width
         leading = block.leading
         alignment = Self.alignment(of: block)
+        wrapTolerance = (block.dominantRun?.fontSize ?? 10) * 0.25
     }
 
     static func alignment(of block: TextBlock) -> ParagraphAlignment {
@@ -156,7 +160,7 @@ public final class BlockWriter {
         let segments = withFallbackFonts(segments, fonts: &resolved)
 
         // Layout, then create the new objects.
-        let lines = layout(segments, fonts: resolved, width: geometry.width)
+        let lines = layout(segments, fonts: resolved, width: geometry.width + geometry.wrapTolerance)
         var created: [FPDF_PAGEOBJECT] = []
         for (number, line) in lines.enumerated() {
             let baseline = geometry.origin.y - CGFloat(number) * geometry.leading
@@ -259,7 +263,7 @@ public final class BlockWriter {
             for word in words {
                 let wordWidth = word.reduce(0) { $0 + $1.width }
                 let visibleWidth = wordWidth - trailingSpaceWidth(word, fonts: fonts)
-                if !current.isEmpty, currentWidth + visibleWidth > width + 0.5 {
+                if !current.isEmpty, currentWidth + visibleWidth > width {
                     lines.append(Line(pieces: current, endsParagraph: false))
                     current = []
                     currentWidth = 0
@@ -390,12 +394,29 @@ extension TextBlock {
                 if text.hasPrefix(" "), segments.last?.text.hasSuffix(" ") == true { text.removeFirst() }
                 segments.append(StyledSegment(text: text, style: RunStyle(run: run)))
             }
-            // Lines of a paragraph are joined with a space; the writer re-wraps them.
-            if lineIndex < lines.count - 1, let last = segments.last, !last.text.hasSuffix(" "), !last.text.hasSuffix("-") {
-                segments[segments.count - 1].text += " "
+            // Wrapped lines are joined with a space so the writer can re-wrap them; a line the author
+            // broke on purpose keeps its line break.
+            if lineIndex < lines.count - 1, !segments.isEmpty {
+                while segments[segments.count - 1].text.hasSuffix(" ") { segments[segments.count - 1].text.removeLast() }
+                if endsWithForcedBreak(lineIndex) {
+                    segments[segments.count - 1].text += "\n"
+                } else if !segments[segments.count - 1].text.hasSuffix("-") {
+                    segments[segments.count - 1].text += " "
+                }
             }
         }
         return segments
+    }
+
+    /// A line ends with a forced break when the next line's first word would have fit after it:
+    /// automatic wrapping would have kept it there (titles, addresses, centered headings).
+    func endsWithForcedBreak(_ lineIndex: Int) -> Bool {
+        let line = lines[lineIndex], next = lines[lineIndex + 1]
+        let nextText = next.text.trimmingCharacters(in: .whitespaces)
+        guard let firstWord = nextText.split(separator: " ").first, !nextText.isEmpty else { return false }
+        let firstWordWidth = next.bounds.width * CGFloat(firstWord.count) / CGFloat(nextText.count)
+        let space = line.fontSize * 0.3
+        return line.bounds.width + space + firstWordWidth < bounds.width * 0.98
     }
 }
 
