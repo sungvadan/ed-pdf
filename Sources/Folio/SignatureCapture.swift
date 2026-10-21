@@ -129,7 +129,7 @@ final class CameraController: NSObject {
     }
 
     private func deny() {
-        message = "L'accès à la caméra est refusé. Autorisez Folio dans Réglages Système › Confidentialité et sécurité › Caméra, ou choisissez une image."
+        message = "L'accès à la caméra est refusé. Autorisez pdf-svd dans Réglages Système › Confidentialité et sécurité › Caméra, ou choisissez une image."
     }
 }
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Builds Folio.app into ./build. Usage: scripts/build-app.sh [debug|release] [--open]
+# Builds pdf-svd.app into ./build (executable and modules keep the internal name Folio). Usage: scripts/build-app.sh [debug|release] [--open]
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -8,7 +8,7 @@ scripts/fetch-pdfium.sh >/dev/null
 swift build -c "$CONFIG" --product Folio
 BIN="$(swift build -c "$CONFIG" --show-bin-path)/Folio"
 
-APP="build/Folio.app"
+APP="build/pdf-svd.app"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Frameworks"
 cp "$BIN" "$APP/Contents/MacOS/Folio"

@@ -64,7 +64,7 @@ enum SendExporter {
 
         var attributes = copy.documentAttributes ?? [:]
         if options.removeAuthor { attributes.removeValue(forKey: PDFDocumentAttribute.authorAttribute) }
-        attributes[PDFDocumentAttribute.creatorAttribute] = "Folio"
+        attributes[PDFDocumentAttribute.creatorAttribute] = "pdf-svd"
         copy.documentAttributes = attributes
 
         let output = options.flatten ? flattened(copy) : copy
@@ -180,8 +180,8 @@ struct SendExportSheet: View {
             )
             if !options.flatten {
                 option(
-                    "Retirer les données d'édition de Folio", isOn: $options.stripEditingData,
-                    detail: "Supprime la copie de l'image conservée pour la rééditer dans Folio. L'image reste visible."
+                    "Retirer les données d'édition de pdf-svd", isOn: $options.stripEditingData,
+                    detail: "Supprime la copie de l'image conservée pour la rééditer dans pdf-svd. L'image reste visible."
                 )
             }
             option(

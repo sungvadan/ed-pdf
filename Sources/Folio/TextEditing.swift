@@ -314,10 +314,10 @@ extension ViewerModel {
         }
     }
 
-    /// Appends the failure to ~/Library/Logs/Folio/text-edit.log, to send with a bug report.
+    /// Appends the failure to ~/Library/Logs/pdf-svd/text-edit.log, to send with a bug report.
     private static func logFailure(_ error: Error, segments: [StyledSegment]) -> URL? {
         guard let logs = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first?
-            .appendingPathComponent("Logs/Folio") else { return nil }
+            .appendingPathComponent("Logs/pdf-svd") else { return nil }
         try? FileManager.default.createDirectory(at: logs, withIntermediateDirectories: true)
         let url = logs.appendingPathComponent("text-edit.log")
         let fonts = Set(segments.map { "\($0.style.font.baseName) \(String(format: "%.1f", Double($0.style.fontSize)))pt embedded=\($0.style.font.isEmbedded)" })
@@ -342,14 +342,14 @@ extension ViewerModel {
         case TextEditError.verificationFailed(let expected, let found):
             let missing = TextEditor.missingCharacters(expected: expected, found: found)
             return missing.isEmpty
-                ? "Folio n'a pas pu écrire ce texte fidèlement avec les polices disponibles."
+                ? "pdf-svd n'a pas pu écrire ce texte fidèlement avec les polices disponibles."
                 : "Aucune police disponible ne contient ces caractères : « \(missing.map(String.init).joined(separator: " ")) »."
         case PDFFileError.unsupported(let what) where what.contains("chiffré"):
             return "La modification du texte n'est pas encore possible sur un document protégé par mot de passe."
         case TextEditError.notEditable:
             return "Ce paragraphe ne peut pas être modifié (texte pivoté ou imbriqué)."
         case is TextSurgeryError, is PDFFileError:
-            return "Ce PDF utilise une structure que Folio ne sait pas encore modifier."
+            return "Ce PDF utilise une structure que pdf-svd ne sait pas encore modifier."
         default:
             return "Erreur inattendue (\(error))."
         }

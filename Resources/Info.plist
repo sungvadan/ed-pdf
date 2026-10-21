@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleName</key>
-	<string>Folio</string>
+	<string>pdf-svd</string>
 	<key>CFBundleDisplayName</key>
-	<string>Folio</string>
+	<string>pdf-svd</string>
 	<key>CFBundleIdentifier</key>
 	<string>local.svd.pdf-svd</string>
 	<key>CFBundleIconFile</key>
@@ -27,7 +27,7 @@
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Folio utilise la caméra pour capturer une signature écrite sur papier.</string>
+	<string>pdf-svd utilise la caméra pour capturer une signature écrite sur papier.</string>
 	<key>NSHighResolutionCapable</key>
 	<true/>
 	<key>CFBundleDocumentTypes</key>

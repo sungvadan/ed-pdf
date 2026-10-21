@@ -84,7 +84,7 @@ XObjects, texte tourné : lecture seule.
   `.folioRunStyle` par caractère → la saisie hérite du style) ; étiquette police · taille ; clic ailleurs / changement
   d'outil / zoom = validation, Échap = annulation ; validation = `TextEditor.replace` + `applyPages` (⌘Z).
   Mise en page analysée une fois par révision (`ViewerModel.textLayout(for:)`).
-  Auto-test sans UI du vrai code de l'app : `build/Folio.app/Contents/MacOS/Folio --selftest-edit in.pdf "trouver" "remplacer" out.pdf`
+  Auto-test sans UI du vrai code de l'app : `build/pdf-svd.app/Contents/MacOS/Folio --selftest-edit in.pdf "trouver" "remplacer" out.pdf`
   (`FOLIO_SNAPSHOT=x.png` capture l'éditeur).
 - C2. À faire : contrôles de style pendant l'édition (police, taille, gras, italique, couleur — `RunStyle.bold/italic`
   existent déjà côté moteur), nouveau paragraphe de texte « natif », déplacer/redimensionner un paragraphe.

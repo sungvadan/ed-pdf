@@ -1,8 +1,10 @@
-# Folio
+# pdf-svd (nom de code interne : Folio)
 
 Éditeur PDF macOS (type PDF Expert). Swift 5 mode + SwiftUI + PDFKit, SwiftPM uniquement (pas de projet Xcode : seulement les Command Line Tools sont installés).
 
-- Build : `scripts/build-app.sh [debug|release] [--open]` → `build/Folio.app` (bundle assemblé à la main, Info.plist dans `Resources/`, signature ad hoc).
+- Nom affiché : pdf-svd (Info.plist, bundle `build/pdf-svd.app`) ; identifiant `local.svd.pdf-svd` gardé exprès
+  (signatures, tampons et réglages de l'utilisateur y sont rattachés). Installation : `scripts/install.sh`.
+- Build : `scripts/build-app.sh [debug|release] [--open]` → `build/pdf-svd.app` (bundle assemblé à la main, Info.plist dans `Resources/`, signature ad hoc).
 - Cible : macOS 14+. UI en français.
 - Architecture :
   - `PDFFileDocument` : `ReferenceFileDocument` encapsulant un `PDFDocument` (modifié en place).
