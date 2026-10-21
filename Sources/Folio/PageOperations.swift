@@ -23,6 +23,7 @@ extension ViewerModel {
         guard let doc = pdfView.document, !target.isEmpty else { return }
         let old = pages
         let keep = Set(target.map(ObjectIdentifier.init))
+        let anchor = scrollAnchor(old: old, target: target)
 
         for index in stride(from: doc.pageCount - 1, through: 0, by: -1) {
             if let page = doc.page(at: index), !keep.contains(ObjectIdentifier(page)) {
@@ -43,12 +44,35 @@ extension ViewerModel {
         clearSearch()
         syncPages()
         pdfView.layoutDocumentView()
+        anchor?()
+        // PDFKit may scroll again once it has processed the page changes.
+        if let anchor { DispatchQueue.main.async(execute: anchor) }
         revision += 1
 
         undoManager?.registerUndo(withTarget: self) { model in
             MainActor.assumeIsolated { model.applyPages(old, actionName: actionName) }
         }
         undoManager?.setActionName(actionName)
+    }
+
+    /// Remembers which page point is at the top-left of the view, and returns a closure that
+    /// scrolls it back there. A replaced page (e.g. text edit) is followed through its index.
+    private func scrollAnchor(old: [PDFPage], target: [PDFPage]) -> (() -> Void)? {
+        guard let documentView = pdfView.documentView, let clip = documentView.enclosingScrollView?.contentView else { return nil }
+        let corner = CGPoint(x: pdfView.bounds.minX + 1, y: pdfView.bounds.maxY - 1)
+        guard let page = pdfView.page(for: corner, nearest: true), let oldIndex = old.firstIndex(of: page) else { return nil }
+        let pagePoint = pdfView.convert(corner, to: page)
+        let start = documentView.convert(corner, from: pdfView)
+        let offset = CGSize(width: start.x - clip.bounds.minX, height: start.y - clip.bounds.minY)
+        let newIndex = target.firstIndex(of: page) ?? min(oldIndex, target.count - 1)
+        return { [weak self] in
+            guard let self, let doc = pdfView.document, newIndex < doc.pageCount, let newPage = doc.page(at: newIndex) else { return }
+            let point = documentView.convert(pdfView.convert(pagePoint, from: newPage), from: pdfView)
+            let origin = CGPoint(x: point.x - offset.width, y: point.y - offset.height)
+            guard origin != clip.bounds.origin else { return }
+            clip.scroll(to: origin)
+            documentView.enclosingScrollView?.reflectScrolledClipView(clip)
+        }
     }
 
     // MARK: Operations
