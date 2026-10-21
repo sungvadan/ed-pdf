@@ -40,15 +40,12 @@ enum SelfTest {
         print("editor:", session.label.stringValue.trimmingCharacters(in: .whitespaces), "| frame", session.textView.frame.integral)
         if let path = ProcessInfo.processInfo.environment["FOLIO_SNAPSHOT"] {
             // Page with the editor on top, to check that the editor text sits on the original text.
-            session.textView.backgroundColor = NSColor.white.withAlphaComponent(0.0)
-            session.textView.drawsBackground = false
             let content = window.contentView!
             content.layoutSubtreeIfNeeded()
             if let rep = content.bitmapImageRepForCachingDisplay(in: content.bounds) {
                 content.cacheDisplay(in: content.bounds, to: rep)
                 try? rep.representation(using: .png, properties: [:])?.write(to: URL(fileURLWithPath: path))
             }
-            session.textView.drawsBackground = true
         }
 
         // Type the replacement over the found text, as a user would.

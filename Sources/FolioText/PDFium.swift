@@ -51,6 +51,7 @@ public final class PDFiumPage {
     let document: PDFiumDocument
     let handle: FPDF_PAGE
     private(set) lazy var textPage: FPDF_TEXTPAGE? = FPDFText_LoadPage(handle)
+    var fontInfoCache: [OpaquePointer: FontInfo] = [:]
 
     init(document: PDFiumDocument, handle: FPDF_PAGE) {
         self.document = document

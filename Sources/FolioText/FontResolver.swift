@@ -143,7 +143,9 @@ final class FontResolver {
         let generic: String
         if info.isMonospaced || ["courier", "mono", "consol", "menlo"].contains(where: lower.contains) {
             generic = "Courier New"
-        } else if info.isSerif || ["times", "georgia", "garamond", "serif", "roman", "cambria", "book", "minion"].contains(where: lower.contains) {
+        } else if info.isSerif || (!lower.contains("sans") && ["times", "georgia", "garamond", "serif", "roman", "cambria", "book", "minion",
+                    "spectral", "merriweather", "playfair", "lora", "crimson", "baskerville", "caslon", "didot", "bodoni", "palatino",
+                    "charter", "constantia", "libre", "pt-serif", "noto serif", "source serif", "tinos", "liberation serif"].contains(where: lower.contains)) {
             generic = "Times New Roman"
         } else {
             generic = "Arial"

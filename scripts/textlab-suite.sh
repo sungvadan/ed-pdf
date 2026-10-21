@@ -28,7 +28,8 @@ divers.pdf|0|officiel|officiel et efficace|d1
 divers.pdf|2|Jean Dupont|Jeanne Dupuis-Martin|d2
 divers.pdf|7|30 €|45 € ✓|d3
 divers.pdf|4|Paris|Paris ✓ ★|d4
-formulaire.pdf|0|2026|2027|m1
-formulaire.pdf|0|INITIALE|INITIALE MODIFICATIVE|m2
+formulaire.pdf|1|2026|2027|m1
+formulaire.pdf|1|INITIALE|INITIALE MODIFICATIVE|m2
+formulaire.pdf|0|CFE|CVAE|m3
 CASES
 echo "$pass réussis, $fail échoués"

@@ -91,7 +91,10 @@ final class TextEditSession: NSObject, NSTextViewDelegate {
         textView.importsGraphics = false
         textView.allowsUndo = true
         textView.drawsBackground = true
-        textView.backgroundColor = .white
+        // The page color behind the paragraph (e.g. white text on a black banner stays readable).
+        let background = pdfView.document?.page(at: layout.pageIndex).map { Self.backgroundColor(of: $0, around: block.bounds) } ?? .white
+        textView.backgroundColor = background
+        textView.insertionPointColor = (background.usingColorSpace(.sRGB)?.brightnessComponent ?? 1) < 0.5 ? .white : .black
         textView.textContainerInset = .zero
         textView.textContainer?.lineFragmentPadding = 0
         textView.isVerticallyResizable = false
@@ -115,6 +118,32 @@ final class TextEditSession: NSObject, NSTextViewDelegate {
         label.backgroundColor = NSColor.controlAccentColor
         label.stringValue = Self.describe(styles: styles, block: block, embedded: embedded)
         label.sizeToFit()
+    }
+
+    /// Most frequent color of the page area (text covers far fewer pixels than its background).
+    static func backgroundColor(of page: PDFPage, around rect: CGRect) -> NSColor {
+        let area = rect.insetBy(dx: -2, dy: -2)
+        let width = 96, height = max(8, min(256, Int(96 * area.height / max(area.width, 1))))
+        guard area.width > 0, let context = CGContext(
+            data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4,
+            space: CGColorSpace(name: CGColorSpace.sRGB)!, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        ) else { return .white }
+        context.setFillColor(.white)
+        context.fill(CGRect(x: 0, y: 0, width: width, height: height))
+        let box = page.bounds(for: .mediaBox)
+        context.scaleBy(x: CGFloat(width) / area.width, y: CGFloat(height) / area.height)
+        context.translateBy(x: -(area.minX - box.minX), y: -(area.minY - box.minY))
+        page.draw(with: .mediaBox, to: context)
+        guard let data = context.data?.assumingMemoryBound(to: UInt8.self) else { return .white }
+
+        var counts: [UInt32: Int] = [:]
+        for i in 0..<(width * height) {
+            let key = UInt32(data[i * 4] >> 3) << 10 | UInt32(data[i * 4 + 1] >> 3) << 5 | UInt32(data[i * 4 + 2] >> 3)
+            counts[key, default: 0] += 1
+        }
+        guard let key = counts.max(by: { $0.value < $1.value })?.key else { return .white }
+        func channel(_ shift: UInt32) -> CGFloat { CGFloat((key >> shift) & 31) * 8 / 255 + 4 / 255 }
+        return NSColor(srgbRed: min(channel(10), 1), green: min(channel(5), 1), blue: min(channel(0), 1), alpha: 1)
     }
 
     private static func describe(styles: [RunStyle], block: TextBlock, embedded: [Bool]) -> String {

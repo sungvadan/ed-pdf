@@ -1,4 +1,5 @@
 import CoreGraphics
+import CoreText
 import CPDFium
 import Foundation
 
@@ -11,6 +12,8 @@ public struct FontInfo: Hashable {
     public var italicAngle: Int
     public var flags: Int
     public var isEmbedded: Bool
+    /// Serif design read from the embedded font program (PDF flags are often missing).
+    public var hasSerifDesign = false
 
     /// Base name without the "ABCDEF+" subset tag.
     public var postScriptName: String {
@@ -30,7 +33,7 @@ public struct FontInfo: Hashable {
     }
 
     public var isMonospaced: Bool { flags & 1 != 0 }
-    public var isSerif: Bool { flags & 2 != 0 }
+    public var isSerif: Bool { flags & 2 != 0 || hasSerifDesign }
 }
 
 /// RGBA, 0...1.
@@ -209,9 +212,10 @@ extension PDFiumPage {
         guard let font else {
             return FontInfo(baseName: "", familyName: "", weight: 400, italicAngle: 0, flags: 0, isEmbedded: false)
         }
+        if let cached = fontInfoCache[font] { return cached }
         var angle: Int32 = 0
         FPDFFont_GetItalicAngle(font, &angle)
-        return FontInfo(
+        var info = FontInfo(
             baseName: utf8String { FPDFFont_GetBaseFontName(font, $0, $1) },
             familyName: utf8String { FPDFFont_GetFamilyName(font, $0, $1) },
             weight: Int(FPDFFont_GetWeight(font)),
@@ -219,6 +223,21 @@ extension PDFiumPage {
             flags: Int(FPDFFont_GetFlags(font)),
             isEmbedded: FPDFFont_GetIsEmbedded(font) != 0
         )
+        info.hasSerifDesign = Self.serifDesign(of: font)
+        fontInfoCache[font] = info
+        return info
+    }
+
+    /// CoreText's stylistic class of the embedded font program, when it can be loaded.
+    private static func serifDesign(of font: FPDF_FONT) -> Bool {
+        var length = 0
+        guard FPDFFont_GetIsEmbedded(font) == 1, FPDFFont_GetFontData(font, nil, 0, &length) != 0, length > 0 else { return false }
+        var bytes = [UInt8](repeating: 0, count: length)
+        guard FPDFFont_GetFontData(font, &bytes, length, &length) != 0,
+              let provider = CGDataProvider(data: Data(bytes) as CFData), let cgFont = CGFont(provider) else { return false }
+        let fontClass = CTFontGetSymbolicTraits(CTFontCreateWithGraphicsFont(cgFont, 12, nil, nil)).rawValue & CTFontSymbolicTraits.traitClassMask.rawValue
+        let serifClasses: [CTFontStylisticClass] = [.oldStyleSerifsClass, .transitionalSerifsClass, .modernSerifsClass, .clarendonSerifsClass, .slabSerifsClass, .freeformSerifsClass]
+        return serifClasses.contains { $0.rawValue == fontClass }
     }
 }
 
