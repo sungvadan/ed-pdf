@@ -87,6 +87,15 @@ makePDF("formulaire.pdf", pages: [{ context in
     CGRect(x: 60, y: 720, width: 150, height: 60).fill()
     NSAttributedString(string: "CFE", attributes: [.font: font("Georgia Bold Italic", 40), .foregroundColor: NSColor.white])
         .draw(at: CGPoint(x: 90, y: 728))
+    // Section banner: black "B2" in a white box, then the white title close by (a 1.3 em gap, same line).
+    NSColor(white: 0.1, alpha: 1).setFill()
+    CGRect(x: 60, y: 400, width: 475, height: 34).fill()
+    NSColor.white.setFill()
+    CGRect(x: 66, y: 404, width: 34, height: 26).fill()
+    let label = NSAttributedString(string: "B2", attributes: [.font: font("Helvetica-Bold", 14), .foregroundColor: NSColor.black])
+    label.draw(at: CGPoint(x: 72, y: 410))
+    NSAttributedString(string: "Renseignements pour l'établissement", attributes: [.font: font("Helvetica-Bold", 14), .foregroundColor: NSColor.white])
+        .draw(at: CGPoint(x: 72 + label.size().width + 14 * 1.3, y: 410))
 }])
 
 // 3. Invoice printed by Chrome (CID fonts without space glyph, one object per glyph run) — if Chrome is installed.

@@ -24,7 +24,7 @@ swift scripts/make-fixtures.swift            # PDF de test dans build/fixtures
 
 ## Ce qui marche (étape A)
 
-- `TextModel.swift` : runs → lignes (même ligne de base, coupure aux gouttières de colonnes) → blocs (paragraphes :
+- `TextModel.swift` : runs → lignes (même ligne de base, coupure aux gouttières de colonnes et aux changements de couleur espacés de plus de 0,6 em, ex. « B2 » noir sur case blanche + titre blanc sur bandeau) → blocs (paragraphes :
   taille proche, interlignage régulier, recouvrement horizontal). Testé : lettre, deux colonnes justifiées, titres,
   gras en ligne, couleurs.
 - `FontResolver.swift` : police embarquée réutilisée si elle contient tous les caractères (couverture apprise depuis le

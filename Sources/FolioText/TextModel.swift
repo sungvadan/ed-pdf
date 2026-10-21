@@ -249,7 +249,8 @@ public enum TextLayout {
         groupBlocks(lines(from: runs))
     }
 
-    /// Runs sharing a baseline, split where a wide gap suggests another column.
+    /// Runs sharing a baseline, split where a wide gap suggests another column, or where the color changes
+    /// across more than a word space (a black "B2" in a white box next to a white title on a dark banner).
     public static func lines(from runs: [TextRun]) -> [TextLine] {
         let sorted = runs.sorted { $0.origin.y > $1.origin.y }
         var rows: [[TextRun]] = []
@@ -265,9 +266,12 @@ public enum TextLayout {
         for row in rows {
             var current: [TextRun] = []
             for run in row.sorted(by: { $0.bounds.minX < $1.bounds.minX }) {
-                if let last = current.last, run.bounds.minX - last.bounds.maxX > max(last.fontSize, run.fontSize) * 1.5 {
-                    lines.append(makeLine(current))
-                    current = []
+                if let last = current.last {
+                    let gap = (run.bounds.minX - last.bounds.maxX) / max(last.fontSize, run.fontSize)
+                    if gap > 1.5 || (gap > 0.6 && last.color != run.color) {
+                        lines.append(makeLine(current))
+                        current = []
+                    }
                 }
                 current.append(run)
             }

@@ -31,5 +31,7 @@ divers.pdf|4|Paris|Paris ✓ ★|d4
 formulaire.pdf|1|2026|2027|m1
 formulaire.pdf|1|INITIALE|INITIALE MODIFICATIVE|m2
 formulaire.pdf|0|CFE|CVAE|m3
+formulaire.pdf|4|établissement|établissement principal|m4
+formulaire.pdf|3|B2|B3|m5
 CASES
 echo "$pass réussis, $fail échoués"
