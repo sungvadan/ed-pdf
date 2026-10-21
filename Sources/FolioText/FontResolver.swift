@@ -80,7 +80,20 @@ final class FontResolver {
 
     /// A system font matching `info` as closely as possible, embedded into the document once.
     func system(matching info: FontInfo, bold: Bool? = nil, italic: Bool? = nil) -> ResolvedFont? {
-        system(Self.closestSystemFont(to: info, bold: bold ?? info.isBold, italic: italic ?? info.isItalic))
+        let bold = bold ?? info.isBold, italic = italic ?? info.isItalic
+        if let font = system(Self.closestSystemFont(to: info, bold: bold, italic: italic)) { return font }
+        // The closest font cannot be embedded (license or format): use a generic one of the same class.
+        var generic = info
+        generic.baseName = info.isSerif ? "TimesNewRomanPSMT" : info.isMonospaced ? "CourierNewPSMT" : "ArialMT"
+        generic.familyName = ""
+        return system(Self.closestSystemFont(to: generic, bold: bold, italic: italic))
+    }
+
+    /// OS/2 fsType: "restricted license embedding" fonts must not be embedded in documents.
+    static func allowsEmbedding(_ font: CTFont) -> Bool {
+        guard let os2 = CTFontCopyTable(font, CTFontTableTag(kCTFontTableOS2), []) as Data?, os2.count >= 10 else { return true }
+        let fsType = UInt16(os2[os2.startIndex + 8]) << 8 | UInt16(os2[os2.startIndex + 9])
+        return fsType & 0x000F != 0x0002
     }
 
     func system(named postScriptName: String) -> ResolvedFont? {
@@ -104,7 +117,7 @@ final class FontResolver {
     private func system(_ ctFont: CTFont) -> ResolvedFont? {
         let name = CTFontCopyPostScriptName(ctFont) as String
         if let cached = systemFonts[name] { return cached }
-        guard let data = Self.sfntData(of: ctFont) else { return nil }
+        guard Self.allowsEmbedding(ctFont), let data = Self.sfntData(of: ctFont) else { return nil }
         let handle = data.withUnsafeBytes { bytes in
             FPDFText_LoadFont(document.handle, bytes.bindMemory(to: UInt8.self).baseAddress, UInt32(data.count), FPDF_FONT_TRUETYPE, 1)
         }

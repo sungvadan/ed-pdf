@@ -1,6 +1,6 @@
 # pdf-svd (nom de code interne : Folio)
 
-Éditeur PDF macOS (type PDF Expert). Swift 5 mode + SwiftUI + PDFKit, SwiftPM uniquement (pas de projet Xcode : seulement les Command Line Tools sont installés).
+Éditeur PDF macOS complet (lecture, annotation, signature, édition du texte). Swift 5 mode + SwiftUI + PDFKit, SwiftPM uniquement (pas de projet Xcode : seulement les Command Line Tools sont installés).
 
 - Nom affiché : pdf-svd (Info.plist, bundle `build/pdf-svd.app`) ; identifiant `local.svd.pdf-svd` gardé exprès
   (signatures, tampons et réglages de l'utilisateur y sont rattachés). Installation : `scripts/install.sh`.

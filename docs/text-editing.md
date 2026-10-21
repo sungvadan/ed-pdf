@@ -1,6 +1,6 @@
 # Édition du texte existant — conception
 
-Objectif : éditer le texte d'un PDF « comme dans Word » (PDF Expert) : clic dans un paragraphe, édition sur place,
+Objectif : éditer le texte d'un PDF « comme dans Word » : clic dans un paragraphe, édition sur place,
 même police / taille / couleur, reflux du paragraphe, styles conservés. Pas de « cache blanc + zone de texte ».
 
 ## Architecture

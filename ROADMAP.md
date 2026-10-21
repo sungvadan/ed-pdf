@@ -1,6 +1,6 @@
 # Folio — feuille de route
 
-Éditeur PDF natif macOS (clone de PDF Expert), construit par étapes.
+Éditeur PDF natif macOS, construit par étapes.
 
 ## ✅ Étape 1 — Lecteur
 - Ouvrir / enregistrer / nouveau document (DocumentGroup), onglets et fichiers récents natifs

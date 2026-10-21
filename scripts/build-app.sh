@@ -15,7 +15,11 @@ cp "$BIN" "$APP/Contents/MacOS/Folio"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
 [ -f Resources/AppIcon.icns ] && cp Resources/AppIcon.icns "$APP/Contents/Resources/"
 cp Vendor/pdfium/lib/libpdfium.dylib "$APP/Contents/Frameworks/"
-cp Vendor/pdfium/LICENSE "$APP/Contents/Resources/PDFium-LICENSE.txt"
+# PDFium and the libraries it contains require their notices to ship with the binary.
+mkdir -p "$APP/Contents/Resources/Licenses"
+cp LICENSE "$APP/Contents/Resources/Licenses/pdf-svd.txt"
+cp Vendor/pdfium/LICENSE "$APP/Contents/Resources/Licenses/pdfium-binaries.txt"
+cp Vendor/pdfium/licenses/* "$APP/Contents/Resources/Licenses/"
 codesign --force --sign - "$APP/Contents/Frameworks/libpdfium.dylib" >/dev/null
 codesign --force --sign - "$APP" >/dev/null
 
