@@ -9,6 +9,8 @@ import PDFKit
 ///     Rewrites one paragraph with a text substitution (styles of unchanged text kept).
 /// textlab render <file.pdf> <page> <out.png> [scale]
 ///     Renders a page with PDFKit, to check results visually.
+/// textlab compress <in.pdf> <out.pdf>
+///     Reduces the file size (same as Fichier > Réduire la taille…).
 let arguments = CommandLine.arguments
 func fail(_ message: String) -> Never {
     FileHandle.standardError.write(Data((message + "\n").utf8))
@@ -18,6 +20,18 @@ func fail(_ message: String) -> Never {
 switch arguments.count >= 2 ? arguments[1] : "" {
 case "replace": replace()
 case "render": render()
+case "compress":
+    guard arguments.count >= 4, let input = FileManager.default.contents(atPath: arguments[2]) else {
+        fail("usage: textlab compress <in.pdf> <out.pdf>")
+    }
+    do {
+        let output = try PDFCompressor.compress(input)
+        try output.write(to: URL(fileURLWithPath: arguments[3]))
+        print("\(input.count) → \(output.count) octets, \(PDFDocument(data: output)?.pageCount ?? -1) pages")
+        exit(0)
+    } catch {
+        fail("\(error)")
+    }
 case "measure":
     let document = PDFiumDocument(data: FileManager.default.contents(atPath: arguments[2])!)!
     print(document.page(at: 0)!.debugMeasure(arguments[4], fontName: arguments[3]))

@@ -40,6 +40,11 @@
   images réduites à 600 px, nom d'auteur retiré, données `/FolioImage` retirées — l'original n'est pas modifié
   (`SendExport.swift`). Limites : signets et liens internes perdus en mode aplati
 - ✅ Export : mot de passe d'ouverture, réduction de taille (images JPEG optimisées écran)
+- ✅ Fichier > « Réduire la taille… » : copie réécrite par `PDFCompressor` (`Sources/FolioText/Compressor.swift`),
+  sans réglage : images RVB/gris ramenées à 150 ppp (par rapport à la plus grande page) en JPEG qualité 0,6,
+  objets inutilisés, `/PieceInfo`, `/Thumb` et métadonnées XMP retirés, flux identiques fusionnés, object streams
+  + xref compressée. Texte et vectoriel intacts. Masques, CMJN, Indexed, JPEG 2000, JBIG2 laissés tels quels.
+  Documents chiffrés : déchiffrés via PDFium (la copie n'est plus protégée). Test : `textlab compress in.pdf out.pdf`
 - ✅ Ouverture des PDF protégés (écran de déverrouillage ; le mot de passe est conservé à l'enregistrement)
 - ✅ Aplatir dans le document ouvert (pages sélectionnées ou tout), annulable — menu Pages / clic droit
 - ✅ Exporter en images (PNG/JPEG, 72/150/300 ppp, toutes les pages ou la sélection)

@@ -21,6 +21,7 @@ struct ViewerCommands: Commands {
                 Button("Exporter pour envoi…") { viewer?.showsSendExport = true }
                     .keyboardShortcut("e", modifiers: [.command, .shift])
                 Button("Exporter en images…") { viewer?.showsImageExport = true }
+                Button("Réduire la taille…") { viewer?.reduceFileSize() }
             }
             .disabled(viewer == nil)
         }

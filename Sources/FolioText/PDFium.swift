@@ -43,7 +43,12 @@ public final class PDFiumDocument {
 
     /// Serializes the document, including edits whose page content was regenerated.
     public func data() -> Data? {
-        SaveSink.save(handle)
+        SaveSink.save(handle, flags: FPDF_NO_INCREMENTAL)
+    }
+
+    /// Serializes the document without its encryption (the password has been given to open it).
+    public func decryptedData() -> Data? {
+        SaveSink.save(handle, flags: FPDF_NO_INCREMENTAL | FPDF_REMOVE_SECURITY)
     }
 }
 
@@ -77,7 +82,7 @@ public final class PDFiumPage {
 private enum SaveSink {
     private static var buffers: [UnsafeMutableRawPointer: NSMutableData] = [:]
 
-    static func save(_ document: FPDF_DOCUMENT) -> Data? {
+    static func save(_ document: FPDF_DOCUMENT, flags: Int32) -> Data? {
         let writer = UnsafeMutablePointer<FPDF_FILEWRITE>.allocate(capacity: 1)
         defer { writer.deallocate() }
         writer.pointee.version = 1
@@ -89,7 +94,7 @@ private enum SaveSink {
         let output = NSMutableData()
         buffers[UnsafeMutableRawPointer(writer)] = output
         defer { buffers[UnsafeMutableRawPointer(writer)] = nil }
-        guard FPDF_SaveAsCopy(document, writer, FPDF_DWORD(FPDF_NO_INCREMENTAL)) != 0 else { return nil }
+        guard FPDF_SaveAsCopy(document, writer, FPDF_DWORD(flags)) != 0 else { return nil }
         return output as Data
     }
 }
