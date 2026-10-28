@@ -613,3 +613,12 @@
 /* AnnotationViews.swift:34 */
 "Épaisseur du trait" = "Linienstärke";
 
+
+/* AnnotationViews.swift:86 */
+"Signer" = "Signieren";
+
+/* Bookmarks.swift:115 */
+"Aucun signet" = "Keine Lesezeichen";
+
+/* AnnotationViews.swift:43 */
+"Appliquer le caviardage (%d)" = "Schwärzung anwenden (%d)";

@@ -613,3 +613,12 @@
 /* AnnotationViews.swift:34 */
 "Épaisseur du trait" = "Spessore tratto";
 
+
+/* AnnotationViews.swift:86 */
+"Signer" = "Firma";
+
+/* Bookmarks.swift:115 */
+"Aucun signet" = "Nessun segnalibro";
+
+/* AnnotationViews.swift:43 */
+"Appliquer le caviardage (%d)" = "Applica oscuramento (%d)";

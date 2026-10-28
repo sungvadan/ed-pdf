@@ -18,7 +18,7 @@ LOCALIZATIONS = ROOT / "Resources/Localizations"
 
 # Lines whose literals are not UI text.
 IGNORED_LINES = re.compile(
-    r"systemImage|systemName|subtype|forKey|forAnnotationKey|Key\(|applyingFilter|NSFont\(name|"
+    r"subtype|forKey|forAnnotationKey|Key\(|applyingFilter|NSFont\(name|"
     r"CTFontCreateWithName|\.custom\(|fatalError|environment|defaultsKey|authorNameKey|"
     r"firstIndex\(of: \"--|appendingPathComponent|bundleIdentifier|AppleLanguages|"
     r"// l10n-ignore"
@@ -64,6 +64,8 @@ def source_keys():
             for match in LITERAL.finditer(code):
                 text = match.group(1)
                 prefix = code[: match.start() + 1]
+                if re.search(r"(systemImage|systemName): \"$", prefix):
+                    continue
                 in_tr = re.search(r"\btr\(\"$", prefix) and re.search(r"[A-Za-zÀ-ÿ]", text)
                 if not looks_like_text(text) and not in_tr:
                     continue

@@ -613,3 +613,12 @@
 /* AnnotationViews.swift:34 */
 "Épaisseur du trait" = "線の太さ";
 
+
+/* AnnotationViews.swift:86 */
+"Signer" = "署名";
+
+/* Bookmarks.swift:115 */
+"Aucun signet" = "ブックマークなし";
+
+/* AnnotationViews.swift:43 */
+"Appliquer le caviardage (%d)" = "墨消しを適用（%d）";

@@ -613,3 +613,12 @@
 /* AnnotationViews.swift:34 */
 "Épaisseur du trait" = "Grosor del trazo";
 
+
+/* AnnotationViews.swift:86 */
+"Signer" = "Firmar";
+
+/* Bookmarks.swift:115 */
+"Aucun signet" = "No hay marcadores";
+
+/* AnnotationViews.swift:43 */
+"Appliquer le caviardage (%d)" = "Aplicar censura (%d)";

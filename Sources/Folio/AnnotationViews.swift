@@ -40,7 +40,7 @@ struct AnnotationBar: View {
                 Button {
                     viewer.applyRedactions()
                 } label: {
-                    Label("Appliquer le caviardage (\(viewer.redactionMarkCount))", systemImage: "checkmark.shield")
+                    Label(tr("Appliquer le caviardage (%d)", viewer.redactionMarkCount), systemImage: "checkmark.shield")
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.red)
