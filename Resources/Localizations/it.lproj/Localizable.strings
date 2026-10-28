@@ -631,3 +631,6 @@
 
 /* windows/MainWindow.axaml.cs */
 "Impossible d'ouvrir ce fichier." = "Impossibile aprire questo file.";
+
+/* ViewerCommands.swift */
+"Rechercher…" = "Trova…";

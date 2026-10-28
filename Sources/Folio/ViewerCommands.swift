@@ -26,6 +26,13 @@ struct ViewerCommands: Commands {
             .disabled(viewer == nil)
         }
 
+        CommandGroup(after: .pasteboard) {
+            Divider()
+            Button("Rechercher…") { viewer?.focusSearch() }
+                .keyboardShortcut("f")
+                .disabled(viewer == nil)
+        }
+
         CommandGroup(after: .toolbar) {
             Divider()
             Group {

@@ -139,6 +139,22 @@ final class ViewerModel {
 
     // MARK: Search
 
+    /// ⌘F: puts the cursor in the toolbar search field (SwiftUI's `.searchable` has no focus API before macOS 15).
+    func focusSearch() {
+        guard let window = pdfView.window else { return }
+        if let item = window.toolbar?.items.lazy.compactMap({ $0 as? NSSearchToolbarItem }).first {
+            item.beginSearchInteraction()
+        } else if let field = Self.searchField(in: window.contentView?.superview) {
+            window.makeFirstResponder(field)
+        }
+    }
+
+    private static func searchField(in view: NSView?) -> NSSearchField? {
+        guard let view else { return nil }
+        if let field = view as? NSSearchField { return field }
+        return view.subviews.lazy.compactMap { searchField(in: $0) }.first
+    }
+
     func search() {
         guard let doc = pdfView.document else { return }
         let query = searchText.trimmingCharacters(in: .whitespaces)

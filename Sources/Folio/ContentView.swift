@@ -64,9 +64,12 @@ struct ContentView: View {
         .onChange(of: undoManager) { _, manager in viewer.undoManager = manager }
         .toolbar { toolbar }
         .searchable(text: $viewer.searchText, placement: .toolbar, prompt: "Rechercher")
-        .onSubmit(of: .search) { viewer.search() }
-        .onChange(of: viewer.searchText) { _, text in
-            if text.isEmpty { viewer.clearSearch() }
+        .onSubmit(of: .search) { viewer.searchResults.isEmpty ? viewer.search() : viewer.nextResult() }
+        // Search as you type, once typing pauses; a new keystroke cancels the pending search.
+        .task(id: viewer.searchText) {
+            guard !viewer.searchText.isEmpty else { return viewer.clearSearch() }
+            try? await Task.sleep(for: .milliseconds(250))
+            if !Task.isCancelled { viewer.search() }
         }
         .focusedSceneValue(\.viewer, viewer)
         .frame(minWidth: 700, minHeight: 500)
