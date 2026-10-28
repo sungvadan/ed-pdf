@@ -87,7 +87,7 @@ struct ContentView: View {
                 .help("Page précédente")
             Button(action: viewer.nextPage) { Image(systemName: "chevron.down") }
                 .help("Page suivante")
-            Text(viewer.pageCount > 0 ? "\(viewer.pageIndex + 1) / \(viewer.pageCount)" : "–")
+            Text(viewer.pageCount > 0 ? "\(viewer.pageIndex + 1) / \(viewer.pageCount)" : "–") // l10n-ignore
                 .monospacedDigit()
                 .foregroundStyle(.secondary)
         }
@@ -104,7 +104,7 @@ struct ContentView: View {
             }
 
             Picker("Affichage", selection: $viewer.layout) {
-                ForEach(PageLayout.allCases) { Text($0.rawValue).tag($0) }
+                ForEach(PageLayout.allCases) { Text(tr($0.rawValue)).tag($0) }
             }
             .pickerStyle(.menu)
             .help("Mode d'affichage")
@@ -113,7 +113,7 @@ struct ContentView: View {
                 Button(action: viewer.zoomOut) { Image(systemName: "minus.magnifyingglass") }
                     .help("Zoom arrière")
                 Button(action: viewer.zoomToFit) {
-                    Text("\(Int((viewer.scale * 100).rounded())) %").monospacedDigit()
+                    Text("\(Int((viewer.scale * 100).rounded())) %").monospacedDigit() // l10n-ignore
                 }
                 .help("Ajuster à la fenêtre")
                 Button(action: viewer.zoomIn) { Image(systemName: "plus.magnifyingglass") }
@@ -123,7 +123,7 @@ struct ContentView: View {
             if !viewer.searchResults.isEmpty {
                 ControlGroup {
                     Button(action: viewer.previousResult) { Image(systemName: "chevron.left") }
-                    Text("\(viewer.searchIndex + 1)/\(viewer.searchResults.count)").monospacedDigit()
+                    Text("\(viewer.searchIndex + 1)/\(viewer.searchResults.count)").monospacedDigit() // l10n-ignore
                     Button(action: viewer.nextResult) { Image(systemName: "chevron.right") }
                 }
                 .help("Résultats de recherche")

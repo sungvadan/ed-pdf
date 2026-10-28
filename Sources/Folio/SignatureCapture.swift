@@ -104,7 +104,7 @@ final class CameraController: NSObject {
         }
         guard let device = AVCaptureDevice.default(for: .video),
               let input = try? AVCaptureDeviceInput(device: device) else {
-            message = "Aucune caméra disponible. Choisissez plutôt une image."
+            message = tr("Aucune caméra disponible. Choisissez plutôt une image.")
             return
         }
         session.beginConfiguration()
@@ -129,7 +129,7 @@ final class CameraController: NSObject {
     }
 
     private func deny() {
-        message = "L'accès à la caméra est refusé. Autorisez pdf-svd dans Réglages Système › Confidentialité et sécurité › Caméra, ou choisissez une image."
+        message = tr("L'accès à la caméra est refusé. Autorisez pdf-svd dans Réglages Système › Confidentialité et sécurité › Caméra, ou choisissez une image.")
     }
 }
 
@@ -274,7 +274,7 @@ struct SignatureCaptureSheet: View {
                 }
             }
             Picker("Couleur de l'encre", selection: $inkColor) {
-                ForEach(InkColor.allCases) { Text($0.rawValue).tag($0) }
+                ForEach(InkColor.allCases) { Text(tr($0.rawValue)).tag($0) }
             }
             .pickerStyle(.segmented)
 
@@ -325,7 +325,7 @@ struct SignatureCaptureSheet: View {
     private func chooseFile() {
         let panel = NSOpenPanel()
         panel.allowedContentTypes = [.image, .pdf]
-        panel.message = "Choisissez une photo ou un scan de votre signature"
+        panel.message = tr("Choisissez une photo ou un scan de votre signature")
         guard panel.runModal() == .OK, let url = panel.url, let image = NSImage(contentsOf: url) else { return }
         use(image)
     }

@@ -118,8 +118,8 @@ extension ViewerModel {
         panel.allowedContentTypes = [.pdf]
         let title = pdfView.window?.title ?? "Document"
         let base = title.hasSuffix(".pdf") ? String(title.dropLast(4)) : title
-        panel.nameFieldStringValue = "\(base) (envoi).pdf"
-        panel.message = "Enregistrer la copie à envoyer"
+        panel.nameFieldStringValue = tr("%@ (envoi)", base) + ".pdf"
+        panel.message = tr("Enregistrer la copie à envoyer")
         guard panel.runModal() == .OK, let url = panel.url else { return false }
 
         do {
@@ -172,7 +172,7 @@ struct SendExportSheet: View {
             )
             option(
                 "Réduire la résolution des signatures et images", isOn: $options.downscaleImages,
-                detail: "Limite les images à \(Int(SendExporter.imageMaxPixels)) pixels : suffisant à l'écran et à l'impression, moins exploitable si quelqu'un l'extrait."
+                detail: tr("Limite les images à %d pixels : suffisant à l'écran et à l'impression, moins exploitable si quelqu'un l'extrait.", Int(SendExporter.imageMaxPixels))
             )
             option(
                 "Retirer mon nom d'auteur", isOn: $options.removeAuthor,
@@ -225,8 +225,8 @@ struct SendExportSheet: View {
     private func option(_ title: String, isOn: Binding<Bool>, detail: String) -> some View {
         Toggle(isOn: isOn) {
             VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                Text(detail)
+                Text(tr(title))
+                Text(tr(detail))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)

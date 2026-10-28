@@ -177,15 +177,13 @@ extension ViewerModel {
         guard !affected.isEmpty, let document = pdfView.document else { return }
 
         let alert = NSAlert()
-        alert.messageText = "Appliquer le caviardage ?"
-        alert.informativeText = """
-        Le contenu sous les \(redactionMarkCount) zones marquées sera supprimé du document. \
-        Les \(affected.count) pages concernées sont reconstruites : leur texte restant reste sélectionnable, \
-        mais leurs annotations et liens sont intégrés à la page. \
-        Vous pouvez annuler (⌘Z) tant que le document est ouvert ; une fois enregistré, le contenu caviardé est perdu.
-        """
-        alert.addButton(withTitle: "Appliquer")
-        alert.addButton(withTitle: "Annuler")
+        alert.messageText = tr("Appliquer le caviardage ?")
+        alert.informativeText = tr(
+            "Le contenu sous les %d zones marquées sera supprimé du document. Les %d pages concernées sont reconstruites : leur texte restant reste sélectionnable, mais leurs annotations et liens sont intégrés à la page. Vous pouvez annuler (⌘Z) tant que le document est ouvert ; une fois enregistré, le contenu caviardé est perdu.",
+            redactionMarkCount, affected.count
+        )
+        alert.addButton(withTitle: tr("Appliquer"))
+        alert.addButton(withTitle: tr("Annuler"))
         alert.buttons.first?.hasDestructiveAction = true
         guard alert.runModal() == .alertFirstButtonReturn else { return }
 

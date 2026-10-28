@@ -154,16 +154,16 @@ enum Stamp: CaseIterable, Identifiable {
 
     var text: String {
         switch self {
-        case .approved: "APPROUVÉ"
-        case .rejected: "REJETÉ"
-        case .confidential: "CONFIDENTIEL"
-        case .draft: "BROUILLON"
-        case .paid: "PAYÉ"
+        case .approved: tr("APPROUVÉ")
+        case .rejected: tr("REJETÉ")
+        case .confidential: tr("CONFIDENTIEL")
+        case .draft: tr("BROUILLON")
+        case .paid: tr("PAYÉ")
         case .date: Date.now.formatted(date: .numeric, time: .omitted)
         }
     }
 
-    var label: String { self == .date ? "Date du jour (\(text))" : text.capitalized }
+    var label: String { self == .date ? tr("Date du jour (%@)", text) : text.capitalized }
 
     var color: NSColor {
         switch self {
@@ -245,7 +245,7 @@ struct CustomStampEditor: View {
                 ColorPicker("Couleur", selection: $color, supportsOpacity: false)
             }
 
-            Text(trimmed.isEmpty ? "APERÇU" : trimmed.uppercased())
+            Text(trimmed.isEmpty ? tr("APERÇU") : trimmed.uppercased())
                 .font(.custom("Helvetica-Bold", size: 20))
                 .foregroundStyle(color)
                 .padding(.horizontal, 10)
@@ -343,8 +343,8 @@ extension ViewerModel {
     func chooseImageToPlace() {
         let panel = NSOpenPanel()
         panel.allowedContentTypes = [.image]
-        panel.message = "Choisissez une image à placer sur la page"
-        panel.prompt = "Placer"
+        panel.message = tr("Choisissez une image à placer sur la page")
+        panel.prompt = tr("Placer")
         let handler: (NSApplication.ModalResponse) -> Void = { [weak self] response in
             guard response == .OK, let url = panel.url, let image = NSImage(contentsOf: url) else { return }
             self?.placeImage(image)

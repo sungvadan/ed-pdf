@@ -155,9 +155,9 @@ final class TextEditSession: NSObject, NSTextViewDelegate {
         let exact = (CTFontCopyPostScriptName(displayFont) as String).caseInsensitiveCompare(main.font.postScriptName) == .orderedSame
         let ownFont = styles.firstIndex(of: main).map { embedded[$0] } ?? false
         let shown = exact ? display : ownFont ? main.font.familyName.isEmpty ? main.font.postScriptName : main.font.familyName
-            : "\(main.font.postScriptName) (affichée en \(display))"
-        let more = styles.count > 1 ? " · \(styles.count) styles" : ""
-        return "  \(shown) · \(size) pt\(more)  "
+            : tr("%@ (affichée en %@)", main.font.postScriptName, display)
+        let more = styles.count > 1 ? " · " + tr("%d styles", styles.count) : ""
+        return "  \(shown) · \(size) pt\(more)  " // l10n-ignore
     }
 
     /// Positions the editor so its first baseline sits on the paragraph's first baseline.
@@ -315,9 +315,9 @@ extension ViewerModel {
         } catch {
             let log = Self.logFailure(error, segments: segments)
             let alert = NSAlert()
-            alert.messageText = "Le texte n'a pas pu être modifié"
-            alert.informativeText = Self.explain(error) + " Le document n'a pas été changé."
-                + (log.map { "\n\nDétails : \($0.path)" } ?? "")
+            alert.messageText = tr("Le texte n'a pas pu être modifié")
+            alert.informativeText = Self.explain(error) + " " + tr("Le document n'a pas été changé.")
+                + (log.map { "\n\n" + tr("Détails : %@", $0.path) } ?? "")
             alert.runModal()
         }
     }
@@ -328,11 +328,11 @@ extension ViewerModel {
             .appendingPathComponent("Logs/pdf-svd") else { return nil }
         try? FileManager.default.createDirectory(at: logs, withIntermediateDirectories: true)
         let url = logs.appendingPathComponent("text-edit.log")
-        let fonts = Set(segments.map { "\($0.style.font.baseName) \(String(format: "%.1f", Double($0.style.fontSize)))pt embedded=\($0.style.font.isEmbedded)" })
-        var entry = "=== \(Date.now.formatted(.iso8601))\nerror: \(error)\nfonts: \(fonts.sorted().joined(separator: "; "))\n"
+        let fonts = Set(segments.map { "\($0.style.font.baseName) \(String(format: "%.1f", Double($0.style.fontSize)))pt embedded=\($0.style.font.isEmbedded)" }) // l10n-ignore
+        var entry = "=== \(Date.now.formatted(.iso8601))\nerror: \(error)\nfonts: \(fonts.sorted().joined(separator: "; "))\n" // l10n-ignore
         if case TextEditError.verificationFailed(let expected, let found) = error {
             let missing = TextEditor.missingCharacters(expected: expected, found: found)
-            entry += "missing: \(missing.unicodeScalars.map { String(format: "U+%04X", $0.value) }.joined(separator: " "))\n"
+            entry += "missing: \(missing.unicodeScalars.map { String(format: "U+%04X", $0.value) }.joined(separator: " "))\n" // l10n-ignore
         }
         entry += "\n"
         if let handle = try? FileHandle(forWritingTo: url) {
@@ -350,16 +350,16 @@ extension ViewerModel {
         case TextEditError.verificationFailed(let expected, let found):
             let missing = TextEditor.missingCharacters(expected: expected, found: found)
             return missing.isEmpty
-                ? "pdf-svd n'a pas pu écrire ce texte fidèlement avec les polices disponibles."
-                : "Aucune police disponible ne contient ces caractères : « \(missing.map(String.init).joined(separator: " ")) »."
-        case PDFFileError.unsupported(let what) where what.contains("chiffré"):
-            return "La modification du texte n'est pas encore possible sur un document protégé par mot de passe."
+                ? tr("pdf-svd n'a pas pu écrire ce texte fidèlement avec les polices disponibles.")
+                : tr("Aucune police disponible ne contient ces caractères : « %@ ».", missing.map(String.init).joined(separator: " "))
+        case PDFFileError.unsupported(let what) where what.contains("chiffré"): // l10n-ignore
+            return tr("La modification du texte n'est pas encore possible sur un document protégé par mot de passe.")
         case TextEditError.notEditable:
-            return "Ce paragraphe ne peut pas être modifié (texte pivoté ou imbriqué)."
+            return tr("Ce paragraphe ne peut pas être modifié (texte pivoté ou imbriqué).")
         case is TextSurgeryError, is PDFFileError:
-            return "Ce PDF utilise une structure que pdf-svd ne sait pas encore modifier."
+            return tr("Ce PDF utilise une structure que pdf-svd ne sait pas encore modifier.")
         default:
-            return "Erreur inattendue (\(error))."
+            return tr("Erreur inattendue (%@).", "\(error)")
         }
     }
 }

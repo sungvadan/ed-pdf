@@ -48,6 +48,6 @@ extension ViewerModel {
                 model.registerFormChange(from: new, to: old)
             }
         }
-        undoManager?.setActionName("Remplir le formulaire")
+        undoManager?.setActionName(tr("Remplir le formulaire"))
     }
 }

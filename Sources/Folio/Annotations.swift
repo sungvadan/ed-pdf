@@ -8,7 +8,7 @@ enum AnnotationTool: String, CaseIterable, Identifiable {
     var id: Self { self }
 
     var label: String {
-        switch self {
+        let key = switch self {
         case .select: "Sélection"
         case .highlight: "Surligner"
         case .underline: "Souligner"
@@ -23,6 +23,7 @@ enum AnnotationTool: String, CaseIterable, Identifiable {
         case .redact: "Caviarder"
         case .editText: "Modifier le texte"
         }
+        return tr(key)
     }
 
     var symbol: String {
@@ -70,8 +71,8 @@ extension PDFAnnotation {
     var isMovable: Bool { isUserEditable && !isTextMarkup }
 
     var displayName: String {
-        if isRedactionMark { return "Zone à caviarder" }
-        return switch subtype {
+        if isRedactionMark { return tr("Zone à caviarder") }
+        let key = switch subtype {
         case "Highlight": "Surlignage"
         case "Underline": "Soulignement"
         case "StrikeOut": "Texte barré"
@@ -85,6 +86,7 @@ extension PDFAnnotation {
         case "Widget": "Champ de formulaire"
         default: subtype
         }
+        return tr(key)
     }
 
     /// Forces PDFKit to redraw the annotation after a geometry change.
@@ -230,7 +232,7 @@ enum AnnotationFactory {
         case .text:
             let annotation = FreeTextAnnotation(bounds: CGRect(x: p.x, y: p.y - 22, width: 200, height: 22), forType: .freeText, withProperties: nil)
             annotation.adoptFolioStyle()
-            annotation.contents = "Texte"
+            annotation.contents = tr("Texte")
             annotation.font = NSFont(name: "Helvetica", size: 14) ?? .systemFont(ofSize: 14)
             annotation.fontColor = color
             annotation.color = .clear
@@ -302,7 +304,7 @@ extension ViewerModel {
         undoManager?.registerUndo(withTarget: self) { model in
             MainActor.assumeIsolated { model.remove(annotation, actionName: actionName) }
         }
-        undoManager?.setActionName(actionName)
+        undoManager?.setActionName(tr(actionName))
     }
 
     func remove(_ annotation: PDFAnnotation, actionName: String = "Supprimer l'annotation") {
@@ -313,7 +315,7 @@ extension ViewerModel {
         undoManager?.registerUndo(withTarget: self) { model in
             MainActor.assumeIsolated { model.add(annotation, to: page, actionName: actionName) }
         }
-        undoManager?.setActionName(actionName)
+        undoManager?.setActionName(tr(actionName))
     }
 
     func deleteSelection() {
@@ -340,7 +342,7 @@ extension ViewerModel {
                 model.registerChange(of: annotation, from: current, actionName: actionName)
             }
         }
-        undoManager?.setActionName(actionName)
+        undoManager?.setActionName(tr(actionName))
     }
 
     func addMarkup(for selection: PDFSelection) {

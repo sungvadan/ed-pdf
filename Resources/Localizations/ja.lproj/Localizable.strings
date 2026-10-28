@@ -1,0 +1,615 @@
+/* TextEditing.swift:158 */
+"%@ (affichée en %@)" = "%1$@（%2$@で表示）";
+
+/* SendExport.swift:121 */
+"%@ (envoi)" = "%@（送信用）";
+
+/* ReduceSize.swift:32 */
+"%@ (réduit)" = "%@（縮小）";
+
+/* ImageExport.swift:30 */
+"%@ - page %@" = "%1$@ - ページ%2$@";
+
+/* AnnotationViews.swift:30 */
+"%d pt" = "%d pt";
+
+/* AnnotationViews.swift:348 */
+"%d pt (auto)" = "%d pt（自動）";
+
+/* TextEditing.swift:159 */
+"%d styles" = "%d種類のスタイル";
+
+/* ImageExport.swift:80 */
+"150 ppp (standard)" = "150 dpi（標準）";
+
+/* ImageExport.swift:81 */
+"300 ppp (impression)" = "300 dpi（印刷）";
+
+/* ImageExport.swift:79 */
+"72 ppp (écran)" = "72 dpi（画面）";
+
+/* ContentView.swift:106 */
+"Affichage" = "表示";
+
+/* Bookmarks.swift:78 */
+"Ajouter un signet" = "ブックマークを追加";
+
+/* Bookmarks.swift:131 */
+"Ajouter un signet pour la page affichée (⌘B)" = "表示中のページにブックマークを追加（⌘B）";
+
+/* Annotations.swift:300 */
+"Ajouter une annotation" = "注釈を追加";
+
+/* Bookmarks.swift:116 */
+"Ajoutez un signet pour retrouver la page affichée." = "ブックマークを追加すると、表示中のページにすぐ戻れます。";
+
+/* ContentView.swift:118 */
+"Ajuster à la fenêtre" = "ウインドウに合わせる";
+
+/* AnnotationViews.swift:243 */
+"Alignement" = "行揃え";
+
+/* ViewerCommands.swift:73 */
+"Aller" = "移動";
+
+/* ImageExport.swift:93 */
+"Annuler" = "キャンセル";
+
+/* Signatures.swift:248 */
+"APERÇU" = "プレビュー";
+
+/* SendExport.swift:151 */
+"Aplatir" = "平坦化";
+
+/* PageSidebar.swift:95 */
+"Aplatir les annotations" = "注釈を平坦化";
+
+/* ViewerCommands.swift:64 */
+"Aplatir les annotations des pages sélectionnées" = "選択したページの注釈を平坦化";
+
+/* SendExport.swift:170 */
+"Aplatir les annotations et les formulaires" = "注釈とフォームを平坦化";
+
+/* ViewerCommands.swift:65 */
+"Aplatir tout le document" = "書類全体を平坦化";
+
+/* Redaction.swift:185 */
+"Appliquer" = "適用";
+
+/* Redaction.swift:180 */
+"Appliquer le caviardage ?" = "墨消しを適用しますか？";
+
+/* Signatures.swift:157 */
+"APPROUVÉ" = "承認";
+
+/* SignatureCapture.swift:230 */
+"Astuce : menu Fichier › « Importer depuis l'iPhone » › Prendre une photo, pour utiliser votre iPhone." = "ヒント：iPhoneを使うには、「ファイル」メニュー › 「iPhoneから読み込む」 › 「写真を撮る」を選択します。";
+
+/* SignatureCapture.swift:107 */
+"Aucune caméra disponible. Choisissez plutôt une image." = "使用できるカメラがありません。代わりに画像を選択してください。";
+
+/* TextEditing.swift:354 */
+"Aucune police disponible ne contient ces caractères : « %@ »." = "次の文字を含むフォントがありません：「%@」";
+
+/* ReduceSize.swift:25 */
+"Aucune réduction significative n'est possible." = "これ以上大きく縮小することはできません。";
+
+/* SignatureCapture.swift:256 */
+"Aucune signature détectée. Augmentez la sensibilité ou reprenez la photo." = "署名が検出されませんでした。感度を上げるか、写真を撮り直してください。";
+
+/* Bookmarks.swift:90 */
+"Barre latérale" = "サイドバー";
+
+/* Annotations.swift:15 */
+"Barrer" = "取り消し線";
+
+/* AnnotationViews.swift:236 */
+"Barré" = "取り消し線";
+
+/* SignatureCapture.swift:180 */
+"Bleu" = "青";
+
+/* Signatures.swift:160 */
+"BROUILLON" = "下書き";
+
+/* Annotations.swift:23 */
+"Caviarder" = "墨消し";
+
+/* ReduceSize.swift:25 */
+"Ce document est déjà compact." = "この書類はすでに十分小さいサイズです。";
+
+/* ContentView.swift:147 */
+"Ce document est protégé par un mot de passe." = "この書類はパスワードで保護されています。";
+
+/* TextEditing.swift:358 */
+"Ce paragraphe ne peut pas être modifié (texte pivoté ou imbriqué)." = "この段落は編集できません（回転または入れ子になったテキスト）。";
+
+/* TextEditing.swift:360 */
+"Ce PDF utilise une structure que pdf-svd ne sait pas encore modifier." = "このPDFは、pdf-svdがまだ編集に対応していない構造を使用しています。";
+
+/* Annotations.swift:86 */
+"Champ de formulaire" = "フォームフィールド";
+
+/* SignatureCapture.swift:235 */
+"Choisir une image…" = "画像を選択…";
+
+/* PageOperations.swift:167 */
+"Choisissez des PDF ou des images à insérer après la page courante" = "現在のページの後に挿入するPDFまたは画像を選択してください";
+
+/* ImageExport.swift:21 */
+"Choisissez le dossier où enregistrer les images" = "画像を保存するフォルダを選択してください";
+
+/* Signatures.swift:346 */
+"Choisissez une image à placer sur la page" = "ページに配置する画像を選択してください";
+
+/* SignatureCapture.swift:328 */
+"Choisissez une photo ou un scan de votre signature" = "署名の写真またはスキャン画像を選択してください";
+
+/* AnnotationViews.swift:159 */
+"Commentaire" = "コメント";
+
+/* Signatures.swift:159 */
+"CONFIDENTIEL" = "社外秘";
+
+/* SendExport.swift:198 */
+"Confirmer le mot de passe" = "パスワードを確認";
+
+/* AnnotationViews.swift:22 */
+"Couleur" = "カラー";
+
+/* SignatureCapture.swift:276 */
+"Couleur de l'encre" = "インクのカラー";
+
+/* AnnotationViews.swift:24 */
+"Couleur de l'outil" = "ツールのカラー";
+
+/* AnnotationViews.swift:252 */
+"Couleur du fond" = "背景のカラー";
+
+/* SendExport.swift:166 */
+"Crée une copie prête à envoyer. Le document ouvert n'est pas modifié." = "送信用のコピーを作成します。開いている書類は変更されません。";
+
+/* Signatures.swift:166 */
+"Date du jour (%@)" = "今日の日付（%@）";
+
+/* AnnotationViews.swift:77 */
+"Depuis le papier (caméra ou image)…" = "紙から（カメラまたは画像）…";
+
+/* ViewerCommands.swift:81 */
+"Dernière page" = "最後のページ";
+
+/* Annotations.swift:18 */
+"Dessin" = "描画";
+
+/* ViewerModel.swift:9 */
+"Deux pages" = "見開き";
+
+/* PageOperations.swift:108 */
+"Dupliquer" = "複製";
+
+/* ViewerModel.swift:8 */
+"Défilement continu" = "連続スクロール";
+
+/* FolioPDFView.swift:172 */
+"Déplacer" = "移動";
+
+/* PageOperations.swift:122 */
+"Déplacer les pages" = "ページを移動";
+
+/* TextEditing.swift:320 */
+"Détails : %@" = "詳細：%@";
+
+/* ContentView.swift:155 */
+"Déverrouiller" = "ロック解除";
+
+/* Signatures.swift:132 */
+"Effacer" = "消去";
+
+/* Annotations.swift:20 */
+"Ellipse" = "楕円";
+
+/* SignatureCapture.swift:290 */
+"Enregistrer et placer" = "保存して配置";
+
+/* SendExport.swift:122 */
+"Enregistrer la copie à envoyer" = "送信用のコピーを保存";
+
+/* PageOperations.swift:179 */
+"Enregistrer la page" = "ページを保存";
+
+/* PageOperations.swift:179 */
+"Enregistrer les %d pages sélectionnées" = "選択した%dページを保存";
+
+/* TextEditing.swift:362 */
+"Erreur inattendue (%@)." = "予期しないエラー（%@）。";
+
+/* Signatures.swift:244 */
+"Ex. : VU ET VÉRIFIÉ" = "例：確認済";
+
+/* ImageExport.swift:70 */
+"Exporter en images" = "画像として書き出す";
+
+/* PageSidebar.swift:94 */
+"Exporter en images…" = "画像として書き出す…";
+
+/* ImageExport.swift:20 */
+"Exporter ici" = "ここに書き出す";
+
+/* ContentView.swift:97 */
+"Exporter pour envoi" = "送信用に書き出す";
+
+/* ViewerCommands.swift:21 */
+"Exporter pour envoi…" = "送信用に書き出す…";
+
+/* ImageExport.swift:95 */
+"Exporter…" = "書き出す…";
+
+/* PageSidebar.swift:93 */
+"Extraire…" = "抽出…";
+
+/* Annotations.swift:22 */
+"Flèche" = "矢印";
+
+/* AnnotationViews.swift:250 */
+"Fond" = "背景";
+
+/* ImageExport.swift:73 */
+"Format" = "フォーマット";
+
+/* AnnotationViews.swift:224 */
+"Gras" = "太字";
+
+/* AnnotationViews.swift:348 */
+"Hauteur" = "高さ";
+
+/* Signatures.swift:364 */
+"Image" = "画像";
+
+/* ReduceSize.swift:21 */
+"Impossible de réduire ce document." = "この書類を縮小できません。";
+
+/* Settings.swift:34 */
+"Inscrit dans chaque nouvelle annotation et visible par les destinataires du PDF. Laissez vide pour ne pas inscrire de nom." = "新しい注釈それぞれに記録され、PDFの受信者にも表示されます。名前を記録しない場合は空欄のままにしてください。";
+
+/* PageOperations.swift:168 */
+"Insérer" = "挿入";
+
+/* PageSidebar.swift:92 */
+"Insérer depuis un fichier…" = "ファイルから挿入…";
+
+/* PageOperations.swift:160 */
+"Insérer des pages" = "ページを挿入";
+
+/* PageOperations.swift:115 */
+"Insérer une page vierge" = "空白ページを挿入";
+
+/* AnnotationViews.swift:228 */
+"Italique" = "斜体";
+
+/* SignatureCapture.swift:132 */
+"L'accès à la caméra est refusé. Autorisez pdf-svd dans Réglages Système › Confidentialité et sécurité › Caméra, ou choisissez une image." = "カメラへのアクセスが拒否されています。「システム設定」 › 「プライバシーとセキュリティ」 › 「カメラ」でpdf-svdを許可するか、画像を選択してください。";
+
+/* ReduceSize.swift:34 */
+"la copie ne sera pas protégée par mot de passe" = "コピーはパスワードで保護されません";
+
+/* TextEditing.swift:356 */
+"La modification du texte n'est pas encore possible sur un document protégé par mot de passe." = "パスワードで保護された書類のテキストはまだ編集できません。";
+
+/* Settings.swift:28 */
+"La nouvelle langue sera utilisée au prochain lancement de pdf-svd." = "新しい言語は、次回pdf-svdを起動したときに適用されます。";
+
+/* Settings.swift:21 */
+"Langue" = "言語";
+
+/* Settings.swift:22 */
+"Langue du système" = "システムの言語";
+
+/* AnnotationViews.swift:343 */
+"Largeur" = "幅";
+
+/* AnnotationViews.swift:135 */
+"Le contenu de cette zone sera supprimé lorsque vous appliquerez le caviardage." = "墨消しを適用すると、この領域の内容は削除されます。";
+
+/* Redaction.swift:182 */
+"Le contenu sous les %d zones marquées sera supprimé du document. Les %d pages concernées sont reconstruites : leur texte restant reste sélectionnable, mais leurs annotations et liens sont intégrés à la page. Vous pouvez annuler (⌘Z) tant que le document est ouvert ; une fois enregistré, le contenu caviardé est perdu." = "マークした%1$d個の領域の下にある内容が書類から削除されます。対象の%2$dページは再構成されます。残りのテキストは引き続き選択できますが、注釈とリンクはページに統合されます。書類を開いている間は取り消せます（⌘Z）が、保存すると墨消しした内容は失われます。";
+
+/* SendExport.swift:193 */
+"Le destinataire devra saisir ce mot de passe pour ouvrir le document. Communiquez-le par un autre moyen que le fichier." = "受信者が書類を開くにはこのパスワードの入力が必要です。パスワードはファイルとは別の方法で伝えてください。";
+
+/* TextEditing.swift:319 */
+"Le document n'a pas été changé." = "書類は変更されていません。";
+
+/* TextEditing.swift:318 */
+"Le texte n'a pas pu être modifié" = "テキストを編集できませんでした";
+
+/* SendExport.swift:200 */
+"Les mots de passe ne correspondent pas." = "パスワードが一致しません。";
+
+/* AnnotationViews.swift:356 */
+"Les proportions sont conservées." = "縦横比は維持されます。";
+
+/* Annotations.swift:21 */
+"Ligne" = "線";
+
+/* SendExport.swift:175 */
+"Limite les images à %d pixels : suffisant à l'écran et à l'impression, moins exploitable si quelqu'un l'extrait." = "画像を%dピクセルに制限します。画面表示や印刷には十分ですが、抜き出されても悪用されにくくなります。";
+
+/* SendExport.swift:179 */
+"macOS inscrit le nom de votre compte dans chaque annotation et dans les propriétés du document." = "macOSは、各注釈と書類のプロパティにアカウント名を記録します。";
+
+/* Redaction.swift:168 */
+"Marquer pour caviardage" = "墨消し用にマーク";
+
+/* AnnotationViews.swift:216 */
+"Mise en forme" = "書式";
+
+/* ContentView.swift:110 */
+"Mode d'affichage" = "表示モード";
+
+/* AnnotationViews.swift:204 */
+"Modifier le texte" = "テキストを編集";
+
+/* SignatureCapture.swift:271 */
+"Moins" = "低";
+
+/* ContentView.swift:149 */
+"Mot de passe" = "パスワード";
+
+/* ContentView.swift:153 */
+"Mot de passe incorrect." = "パスワードが正しくありません。";
+
+/* SignatureCapture.swift:180 */
+"Noir" = "黒";
+
+/* Settings.swift:33 */
+"Nom d'auteur des annotations" = "注釈の作成者名";
+
+/* Bookmarks.swift:141 */
+"Nom du signet" = "ブックマーク名";
+
+/* Annotations.swift:16 */
+"Note" = "メモ";
+
+/* Signatures.swift:241 */
+"Nouveau tampon" = "新規スタンプ";
+
+/* AnnotationViews.swift:101 */
+"Nouveau tampon…" = "新規スタンプ…";
+
+/* Signatures.swift:104 */
+"Nouvelle signature" = "新規署名";
+
+/* AnnotationViews.swift:76 */
+"Nouvelle signature…" = "新規署名…";
+
+/* AnnotationViews.swift:10 */
+"Outil" = "ツール";
+
+/* ImageExport.swift:24 */
+"Page" = "ページ";
+
+/* Bookmarks.swift:44 */
+"Page %d" = "ページ%d";
+
+/* ContentView.swift:87 */
+"Page précédente" = "前のページ";
+
+/* ContentView.swift:89 */
+"Page suivante" = "次のページ";
+
+/* ViewerModel.swift:7 */
+"Page unique" = "単一ページ";
+
+/* ImageExport.swift:84 */
+"Pages" = "ページ";
+
+/* PageOperations.swift:178 */
+"Pages extraites" = "抽出したページ";
+
+/* Signatures.swift:161 */
+"PAYÉ" = "支払済";
+
+/* TextEditing.swift:353 */
+"pdf-svd n'a pas pu écrire ce texte fidèlement avec les polices disponibles." = "pdf-svdは、使用可能なフォントでこのテキストを正確に書き込めませんでした。";
+
+/* ContentView.swift:103 */
+"Pivoter à droite" = "右に回転";
+
+/* ContentView.swift:101 */
+"Pivoter à gauche" = "左に回転";
+
+/* Signatures.swift:347 */
+"Placer" = "配置";
+
+/* AnnotationViews.swift:119 */
+"Placer une image" = "画像を配置";
+
+/* SignatureCapture.swift:273 */
+"Plus" = "高";
+
+/* AnnotationViews.swift:217 */
+"Police" = "フォント";
+
+/* ViewerCommands.swift:79 */
+"Première page" = "最初のページ";
+
+/* SignatureCapture.swift:239 */
+"Prendre la photo" = "写真を撮る";
+
+/* SendExport.swift:192 */
+"Protéger par un mot de passe" = "パスワードで保護";
+
+/* ContentView.swift:66 */
+"Rechercher" = "検索";
+
+/* SendExport.swift:189 */
+"Recompresse les images en JPEG adapté à l'écran. Utile pour l'envoi par e-mail ; un peu moins net à l'impression." = "画像を画面表示向けのJPEGに再圧縮します。メールでの送信に便利ですが、印刷時はやや鮮明さが落ちます。";
+
+/* Annotations.swift:19 */
+"Rectangle" = "長方形";
+
+/* AnnotationViews.swift:388 */
+"Redimensionner" = "サイズを変更";
+
+/* Signatures.swift:158 */
+"REJETÉ" = "却下";
+
+/* Forms.swift:51 */
+"Remplir le formulaire" = "フォームに入力";
+
+/* Bookmarks.swift:155 */
+"Renommer" = "名称変更";
+
+/* Bookmarks.swift:69 */
+"Renommer le signet" = "ブックマークの名称を変更";
+
+/* SignatureCapture.swift:282 */
+"Reprendre" = "撮り直す";
+
+/* SendExport.swift:183 */
+"Retirer les données d'édition de pdf-svd" = "pdf-svdの編集データを削除";
+
+/* SendExport.swift:178 */
+"Retirer mon nom d'auteur" = "作成者名を削除";
+
+/* SendExport.swift:174 */
+"Réduire la résolution des signatures et images" = "署名と画像の解像度を下げる";
+
+/* SendExport.swift:188 */
+"Réduire la taille du fichier" = "ファイルサイズを縮小";
+
+/* ViewerCommands.swift:24 */
+"Réduire la taille…" = "サイズを縮小…";
+
+/* ImageExport.swift:78 */
+"Résolution" = "解像度";
+
+/* ViewerCommands.swift:89 */
+"Résultat précédent" = "前の検索結果";
+
+/* ViewerCommands.swift:87 */
+"Résultat suivant" = "次の検索結果";
+
+/* ContentView.swift:129 */
+"Résultats de recherche" = "検索結果";
+
+/* ReduceSize.swift:21 */
+"Sa structure n'est pas prise en charge." = "この書類の構造には対応していません。";
+
+/* Bookmarks.swift:148 */
+"Sans titre" = "名称未設定";
+
+/* SignatureCapture.swift:267 */
+"Sensibilité" = "感度";
+
+/* AnnotationViews.swift:88 */
+"Signature" = "署名";
+
+/* SignatureCapture.swift:187 */
+"Signature depuis le papier" = "紙から署名を取り込む";
+
+/* SendExport.swift:171 */
+"Signatures, tampons, notes et champs sont intégrés à la page : ils ne peuvent plus être sélectionnés, déplacés ni modifiés. Le texte des zones de texte devient sélectionnable." = "署名、スタンプ、メモ、フィールドはページに統合され、選択、移動、編集ができなくなります。テキストボックスのテキストは選択可能になります。";
+
+/* Bookmarks.swift:16 */
+"Signets" = "ブックマーク";
+
+/* Signatures.swift:105 */
+"Signez dans le cadre avec la souris ou le trackpad." = "マウスまたはトラックパッドで枠内に署名してください。";
+
+/* SignatureCapture.swift:214 */
+"Signez sur une feuille blanche, puis présentez-la à la caméra en la tenant bien droite." = "白い紙に署名し、まっすぐに持ってカメラに向けてください。";
+
+/* Annotations.swift:77 */
+"Soulignement" = "下線";
+
+/* Annotations.swift:14 */
+"Souligner" = "下線";
+
+/* AnnotationViews.swift:232 */
+"Souligné" = "下線";
+
+/* SendExport.swift:184 */
+"Supprime la copie de l'image conservée pour la rééditer dans pdf-svd. L'image reste visible." = "pdf-svdで再編集するために保持している画像のコピーを削除します。画像は引き続き表示されます。";
+
+/* Bookmarks.swift:156 */
+"Supprimer" = "削除";
+
+/* AnnotationViews.swift:47 */
+"Supprimer définitivement le contenu des zones marquées" = "マークした領域の内容を完全に削除";
+
+/* AnnotationViews.swift:167 */
+"Supprimer l'annotation" = "注釈を削除";
+
+/* PageOperations.swift:100 */
+"Supprimer la page" = "ページを削除";
+
+/* Bookmarks.swift:58 */
+"Supprimer le signet" = "ブックマークを削除";
+
+/* PageOperations.swift:100 */
+"Supprimer les pages" = "ページを削除";
+
+/* AnnotationViews.swift:103 */
+"Supprimer un tampon" = "スタンプを削除";
+
+/* AnnotationViews.swift:79 */
+"Supprimer une signature" = "署名を削除";
+
+/* Annotations.swift:76 */
+"Surlignage" = "ハイライト";
+
+/* Annotations.swift:13 */
+"Surligner" = "ハイライト";
+
+/* Annotations.swift:12 */
+"Sélection" = "選択";
+
+/* ImageExport.swift:86 */
+"Sélection (%d)" = "選択したページ（%d）";
+
+/* AnnotationViews.swift:342 */
+"Taille" = "サイズ";
+
+/* ReduceSize.swift:33 */
+"Taille : %@ → %@ (−%d %%)" = "サイズ：%@ → %@（−%d %%）";
+
+/* AnnotationViews.swift:221 */
+"Taille : %d pt" = "サイズ：%d pt";
+
+/* AnnotationViews.swift:285 */
+"Taille du texte" = "テキストのサイズ";
+
+/* ViewerCommands.swift:36 */
+"Taille réelle" = "実際のサイズ";
+
+/* AnnotationViews.swift:112 */
+"Tampon" = "スタンプ";
+
+/* AnnotationViews.swift:159 */
+"Texte" = "テキスト";
+
+/* Annotations.swift:78 */
+"Texte barré" = "取り消し線";
+
+/* ImageExport.swift:85 */
+"Toutes (%d)" = "すべて（%d）";
+
+/* Annotations.swift:17 */
+"Zone de texte" = "テキストボックス";
+
+/* Annotations.swift:74 */
+"Zone à caviarder" = "墨消し領域";
+
+/* ContentView.swift:114 */
+"Zoom arrière" = "縮小";
+
+/* ContentView.swift:120 */
+"Zoom avant" = "拡大";
+
+/* AnnotationViews.swift:28 */
+"Épaisseur" = "太さ";
+
+/* AnnotationViews.swift:34 */
+"Épaisseur du trait" = "線の太さ";
+

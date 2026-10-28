@@ -39,7 +39,7 @@ struct ViewerCommands: Commands {
                     .keyboardShortcut("9")
                 Divider()
                 ForEach(PageLayout.allCases) { layout in
-                    Button(layout.rawValue) { viewer?.layout = layout }
+                    Button(tr(layout.rawValue)) { viewer?.layout = layout }
                 }
             }
             .disabled(viewer == nil)

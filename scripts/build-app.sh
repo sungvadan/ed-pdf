@@ -14,6 +14,7 @@ mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Framewor
 cp "$BIN" "$APP/Contents/MacOS/Folio"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
 [ -f Resources/AppIcon.icns ] && cp Resources/AppIcon.icns "$APP/Contents/Resources/"
+cp -R Resources/Localizations/*.lproj "$APP/Contents/Resources/"
 cp Vendor/pdfium/lib/libpdfium.dylib "$APP/Contents/Frameworks/"
 # PDFium and the libraries it contains require their notices to ship with the binary.
 mkdir -p "$APP/Contents/Resources/Licenses"

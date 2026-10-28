@@ -5,7 +5,13 @@
 - Nom affiché : pdf-svd (Info.plist, bundle `build/pdf-svd.app`), identifiant `local.svd.pdf-svd` (projet personnel).
   Installation : `scripts/install.sh`.
 - Build : `scripts/build-app.sh [debug|release] [--open]` → `build/pdf-svd.app` (bundle assemblé à la main, Info.plist dans `Resources/`, signature ad hoc).
-- Cible : macOS 14+. UI en français.
+- Cible : macOS 14+. UI en français (langue source) traduite en en, de, es, it, pt-BR, ja, zh-Hans.
+  Les textes français sont les clés : littéraux SwiftUI (`Text("…")`, `Button("…")`, `.help("…")`) traduits
+  automatiquement ; ailleurs (String, NSAlert, panneaux, enums) `tr("…")`, avec `%d`/`%@` au lieu d'interpolations.
+  Noms d'actions d'annulation traduits par `setActionName(tr(…))`. Traductions dans
+  `Resources/Localizations/<lang>.lproj/Localizable.strings` ; après tout texte ajouté ou modifié, lancer
+  `scripts/l10n.py` (signale clés manquantes/inutilisées, formats différents, interpolations) et compléter
+  chaque langue. `// l10n-ignore` en fin de ligne pour un littéral qui n'est pas du texte d'interface.
 - Architecture :
   - `PDFFileDocument` : `ReferenceFileDocument` encapsulant un `PDFDocument` (modifié en place).
   - `ViewerModel` (@Observable, @MainActor) : possède le `PDFView` de la fenêtre et expose son état ; partagé avec les menus via `focusedSceneValue(\.viewer)`.

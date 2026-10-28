@@ -1,0 +1,615 @@
+/* TextEditing.swift:158 */
+"%@ (affichée en %@)" = "%1$@ (angezeigt als %2$@)";
+
+/* SendExport.swift:121 */
+"%@ (envoi)" = "%@ (Versand)";
+
+/* ReduceSize.swift:32 */
+"%@ (réduit)" = "%@ (verkleinert)";
+
+/* ImageExport.swift:30 */
+"%@ - page %@" = "%1$@ - Seite %2$@";
+
+/* AnnotationViews.swift:30 */
+"%d pt" = "%d pt";
+
+/* AnnotationViews.swift:348 */
+"%d pt (auto)" = "%d pt (auto)";
+
+/* TextEditing.swift:159 */
+"%d styles" = "%d Stile";
+
+/* ImageExport.swift:80 */
+"150 ppp (standard)" = "150 dpi (Standard)";
+
+/* ImageExport.swift:81 */
+"300 ppp (impression)" = "300 dpi (Druck)";
+
+/* ImageExport.swift:79 */
+"72 ppp (écran)" = "72 dpi (Bildschirm)";
+
+/* ContentView.swift:106 */
+"Affichage" = "Darstellung";
+
+/* Bookmarks.swift:78 */
+"Ajouter un signet" = "Lesezeichen hinzufügen";
+
+/* Bookmarks.swift:131 */
+"Ajouter un signet pour la page affichée (⌘B)" = "Lesezeichen für die angezeigte Seite hinzufügen (⌘B)";
+
+/* Annotations.swift:300 */
+"Ajouter une annotation" = "Anmerkung hinzufügen";
+
+/* Bookmarks.swift:116 */
+"Ajoutez un signet pour retrouver la page affichée." = "Füge ein Lesezeichen hinzu, um die angezeigte Seite wiederzufinden.";
+
+/* ContentView.swift:118 */
+"Ajuster à la fenêtre" = "An Fenster anpassen";
+
+/* AnnotationViews.swift:243 */
+"Alignement" = "Ausrichtung";
+
+/* ViewerCommands.swift:73 */
+"Aller" = "Gehe zu";
+
+/* ImageExport.swift:93 */
+"Annuler" = "Abbrechen";
+
+/* Signatures.swift:248 */
+"APERÇU" = "VORSCHAU";
+
+/* SendExport.swift:151 */
+"Aplatir" = "Reduzieren";
+
+/* PageSidebar.swift:95 */
+"Aplatir les annotations" = "Anmerkungen reduzieren";
+
+/* ViewerCommands.swift:64 */
+"Aplatir les annotations des pages sélectionnées" = "Anmerkungen der ausgewählten Seiten reduzieren";
+
+/* SendExport.swift:170 */
+"Aplatir les annotations et les formulaires" = "Anmerkungen und Formulare reduzieren";
+
+/* ViewerCommands.swift:65 */
+"Aplatir tout le document" = "Gesamtes Dokument reduzieren";
+
+/* Redaction.swift:185 */
+"Appliquer" = "Anwenden";
+
+/* Redaction.swift:180 */
+"Appliquer le caviardage ?" = "Schwärzung anwenden?";
+
+/* Signatures.swift:157 */
+"APPROUVÉ" = "GENEHMIGT";
+
+/* SignatureCapture.swift:230 */
+"Astuce : menu Fichier › « Importer depuis l'iPhone » › Prendre une photo, pour utiliser votre iPhone." = "Tipp: Menü „Ablage“ › „Vom iPhone importieren“ › „Foto aufnehmen“, um dein iPhone zu verwenden.";
+
+/* SignatureCapture.swift:107 */
+"Aucune caméra disponible. Choisissez plutôt une image." = "Keine Kamera verfügbar. Wähle stattdessen ein Bild.";
+
+/* TextEditing.swift:354 */
+"Aucune police disponible ne contient ces caractères : « %@ »." = "Keine verfügbare Schrift enthält diese Zeichen: „%@“.";
+
+/* ReduceSize.swift:25 */
+"Aucune réduction significative n'est possible." = "Eine nennenswerte Verkleinerung ist nicht möglich.";
+
+/* SignatureCapture.swift:256 */
+"Aucune signature détectée. Augmentez la sensibilité ou reprenez la photo." = "Keine Unterschrift erkannt. Erhöhe die Empfindlichkeit oder nimm das Foto erneut auf.";
+
+/* Bookmarks.swift:90 */
+"Barre latérale" = "Seitenleiste";
+
+/* Annotations.swift:15 */
+"Barrer" = "Durchstreichen";
+
+/* AnnotationViews.swift:236 */
+"Barré" = "Durchgestrichen";
+
+/* SignatureCapture.swift:180 */
+"Bleu" = "Blau";
+
+/* Signatures.swift:160 */
+"BROUILLON" = "ENTWURF";
+
+/* Annotations.swift:23 */
+"Caviarder" = "Schwärzen";
+
+/* ReduceSize.swift:25 */
+"Ce document est déjà compact." = "Dieses Dokument ist bereits kompakt.";
+
+/* ContentView.swift:147 */
+"Ce document est protégé par un mot de passe." = "Dieses Dokument ist durch ein Passwort geschützt.";
+
+/* TextEditing.swift:358 */
+"Ce paragraphe ne peut pas être modifié (texte pivoté ou imbriqué)." = "Dieser Absatz kann nicht bearbeitet werden (gedrehter oder verschachtelter Text).";
+
+/* TextEditing.swift:360 */
+"Ce PDF utilise une structure que pdf-svd ne sait pas encore modifier." = "Dieses PDF verwendet eine Struktur, die pdf-svd noch nicht bearbeiten kann.";
+
+/* Annotations.swift:86 */
+"Champ de formulaire" = "Formularfeld";
+
+/* SignatureCapture.swift:235 */
+"Choisir une image…" = "Bild auswählen …";
+
+/* PageOperations.swift:167 */
+"Choisissez des PDF ou des images à insérer après la page courante" = "Wähle PDFs oder Bilder, die nach der aktuellen Seite eingefügt werden sollen";
+
+/* ImageExport.swift:21 */
+"Choisissez le dossier où enregistrer les images" = "Wähle den Ordner, in dem die Bilder gesichert werden sollen";
+
+/* Signatures.swift:346 */
+"Choisissez une image à placer sur la page" = "Wähle ein Bild, das auf der Seite platziert werden soll";
+
+/* SignatureCapture.swift:328 */
+"Choisissez une photo ou un scan de votre signature" = "Wähle ein Foto oder einen Scan deiner Unterschrift";
+
+/* AnnotationViews.swift:159 */
+"Commentaire" = "Kommentar";
+
+/* Signatures.swift:159 */
+"CONFIDENTIEL" = "VERTRAULICH";
+
+/* SendExport.swift:198 */
+"Confirmer le mot de passe" = "Passwort bestätigen";
+
+/* AnnotationViews.swift:22 */
+"Couleur" = "Farbe";
+
+/* SignatureCapture.swift:276 */
+"Couleur de l'encre" = "Tintenfarbe";
+
+/* AnnotationViews.swift:24 */
+"Couleur de l'outil" = "Werkzeugfarbe";
+
+/* AnnotationViews.swift:252 */
+"Couleur du fond" = "Hintergrundfarbe";
+
+/* SendExport.swift:166 */
+"Crée une copie prête à envoyer. Le document ouvert n'est pas modifié." = "Erstellt eine versandfertige Kopie. Das geöffnete Dokument wird nicht verändert.";
+
+/* Signatures.swift:166 */
+"Date du jour (%@)" = "Heutiges Datum (%@)";
+
+/* AnnotationViews.swift:77 */
+"Depuis le papier (caméra ou image)…" = "Von Papier (Kamera oder Bild) …";
+
+/* ViewerCommands.swift:81 */
+"Dernière page" = "Letzte Seite";
+
+/* Annotations.swift:18 */
+"Dessin" = "Zeichnen";
+
+/* ViewerModel.swift:9 */
+"Deux pages" = "Zwei Seiten";
+
+/* PageOperations.swift:108 */
+"Dupliquer" = "Duplizieren";
+
+/* ViewerModel.swift:8 */
+"Défilement continu" = "Fortlaufend scrollen";
+
+/* FolioPDFView.swift:172 */
+"Déplacer" = "Bewegen";
+
+/* PageOperations.swift:122 */
+"Déplacer les pages" = "Seiten bewegen";
+
+/* TextEditing.swift:320 */
+"Détails : %@" = "Details: %@";
+
+/* ContentView.swift:155 */
+"Déverrouiller" = "Entsperren";
+
+/* Signatures.swift:132 */
+"Effacer" = "Löschen";
+
+/* Annotations.swift:20 */
+"Ellipse" = "Ellipse";
+
+/* SignatureCapture.swift:290 */
+"Enregistrer et placer" = "Sichern und platzieren";
+
+/* SendExport.swift:122 */
+"Enregistrer la copie à envoyer" = "Kopie für den Versand sichern";
+
+/* PageOperations.swift:179 */
+"Enregistrer la page" = "Seite sichern";
+
+/* PageOperations.swift:179 */
+"Enregistrer les %d pages sélectionnées" = "%d ausgewählte Seiten sichern";
+
+/* TextEditing.swift:362 */
+"Erreur inattendue (%@)." = "Unerwarteter Fehler (%@).";
+
+/* Signatures.swift:244 */
+"Ex. : VU ET VÉRIFIÉ" = "Z. B.: GESEHEN UND GEPRÜFT";
+
+/* ImageExport.swift:70 */
+"Exporter en images" = "Als Bilder exportieren";
+
+/* PageSidebar.swift:94 */
+"Exporter en images…" = "Als Bilder exportieren …";
+
+/* ImageExport.swift:20 */
+"Exporter ici" = "Hierhin exportieren";
+
+/* ContentView.swift:97 */
+"Exporter pour envoi" = "Für Versand exportieren";
+
+/* ViewerCommands.swift:21 */
+"Exporter pour envoi…" = "Für Versand exportieren …";
+
+/* ImageExport.swift:95 */
+"Exporter…" = "Exportieren …";
+
+/* PageSidebar.swift:93 */
+"Extraire…" = "Extrahieren …";
+
+/* Annotations.swift:22 */
+"Flèche" = "Pfeil";
+
+/* AnnotationViews.swift:250 */
+"Fond" = "Hintergrund";
+
+/* ImageExport.swift:73 */
+"Format" = "Format";
+
+/* AnnotationViews.swift:224 */
+"Gras" = "Fett";
+
+/* AnnotationViews.swift:348 */
+"Hauteur" = "Höhe";
+
+/* Signatures.swift:364 */
+"Image" = "Bild";
+
+/* ReduceSize.swift:21 */
+"Impossible de réduire ce document." = "Dieses Dokument kann nicht verkleinert werden.";
+
+/* Settings.swift:34 */
+"Inscrit dans chaque nouvelle annotation et visible par les destinataires du PDF. Laissez vide pour ne pas inscrire de nom." = "Wird in jede neue Anmerkung eingetragen und ist für die Empfänger des PDF sichtbar. Leer lassen, um keinen Namen einzutragen.";
+
+/* PageOperations.swift:168 */
+"Insérer" = "Einfügen";
+
+/* PageSidebar.swift:92 */
+"Insérer depuis un fichier…" = "Aus Datei einfügen …";
+
+/* PageOperations.swift:160 */
+"Insérer des pages" = "Seiten einfügen";
+
+/* PageOperations.swift:115 */
+"Insérer une page vierge" = "Leere Seite einfügen";
+
+/* AnnotationViews.swift:228 */
+"Italique" = "Kursiv";
+
+/* SignatureCapture.swift:132 */
+"L'accès à la caméra est refusé. Autorisez pdf-svd dans Réglages Système › Confidentialité et sécurité › Caméra, ou choisissez une image." = "Der Zugriff auf die Kamera wurde verweigert. Erlaube pdf-svd unter Systemeinstellungen › Datenschutz & Sicherheit › Kamera oder wähle ein Bild.";
+
+/* ReduceSize.swift:34 */
+"la copie ne sera pas protégée par mot de passe" = "die Kopie wird nicht durch ein Passwort geschützt";
+
+/* TextEditing.swift:356 */
+"La modification du texte n'est pas encore possible sur un document protégé par mot de passe." = "Text kann in einem passwortgeschützten Dokument noch nicht bearbeitet werden.";
+
+/* Settings.swift:28 */
+"La nouvelle langue sera utilisée au prochain lancement de pdf-svd." = "Die neue Sprache wird beim nächsten Start von pdf-svd verwendet.";
+
+/* Settings.swift:21 */
+"Langue" = "Sprache";
+
+/* Settings.swift:22 */
+"Langue du système" = "Systemsprache";
+
+/* AnnotationViews.swift:343 */
+"Largeur" = "Breite";
+
+/* AnnotationViews.swift:135 */
+"Le contenu de cette zone sera supprimé lorsque vous appliquerez le caviardage." = "Der Inhalt dieses Bereichs wird beim Anwenden der Schwärzung entfernt.";
+
+/* Redaction.swift:182 */
+"Le contenu sous les %d zones marquées sera supprimé du document. Les %d pages concernées sont reconstruites : leur texte restant reste sélectionnable, mais leurs annotations et liens sont intégrés à la page. Vous pouvez annuler (⌘Z) tant que le document est ouvert ; une fois enregistré, le contenu caviardé est perdu." = "Der Inhalt unter den %d markierten Bereichen wird aus dem Dokument entfernt. Die %d betroffenen Seiten werden neu aufgebaut: Ihr restlicher Text bleibt auswählbar, ihre Anmerkungen und Links werden jedoch in die Seite integriert. Du kannst dies widerrufen (⌘Z), solange das Dokument geöffnet ist; nach dem Sichern ist der geschwärzte Inhalt verloren.";
+
+/* SendExport.swift:193 */
+"Le destinataire devra saisir ce mot de passe pour ouvrir le document. Communiquez-le par un autre moyen que le fichier." = "Der Empfänger muss dieses Passwort eingeben, um das Dokument zu öffnen. Teile es auf einem anderen Weg als mit der Datei mit.";
+
+/* TextEditing.swift:319 */
+"Le document n'a pas été changé." = "Das Dokument wurde nicht verändert.";
+
+/* TextEditing.swift:318 */
+"Le texte n'a pas pu être modifié" = "Der Text konnte nicht bearbeitet werden";
+
+/* SendExport.swift:200 */
+"Les mots de passe ne correspondent pas." = "Die Passwörter stimmen nicht überein.";
+
+/* AnnotationViews.swift:356 */
+"Les proportions sont conservées." = "Die Proportionen bleiben erhalten.";
+
+/* Annotations.swift:21 */
+"Ligne" = "Linie";
+
+/* SendExport.swift:175 */
+"Limite les images à %d pixels : suffisant à l'écran et à l'impression, moins exploitable si quelqu'un l'extrait." = "Begrenzt Bilder auf %d Pixel: ausreichend für Bildschirm und Druck, aber weniger brauchbar, falls jemand sie extrahiert.";
+
+/* SendExport.swift:179 */
+"macOS inscrit le nom de votre compte dans chaque annotation et dans les propriétés du document." = "macOS trägt deinen Accountnamen in jede Anmerkung und in die Dokumenteigenschaften ein.";
+
+/* Redaction.swift:168 */
+"Marquer pour caviardage" = "Zum Schwärzen markieren";
+
+/* AnnotationViews.swift:216 */
+"Mise en forme" = "Formatierung";
+
+/* ContentView.swift:110 */
+"Mode d'affichage" = "Darstellungsmodus";
+
+/* AnnotationViews.swift:204 */
+"Modifier le texte" = "Text bearbeiten";
+
+/* SignatureCapture.swift:271 */
+"Moins" = "Weniger";
+
+/* ContentView.swift:149 */
+"Mot de passe" = "Passwort";
+
+/* ContentView.swift:153 */
+"Mot de passe incorrect." = "Falsches Passwort.";
+
+/* SignatureCapture.swift:180 */
+"Noir" = "Schwarz";
+
+/* Settings.swift:33 */
+"Nom d'auteur des annotations" = "Autorname für Anmerkungen";
+
+/* Bookmarks.swift:141 */
+"Nom du signet" = "Name des Lesezeichens";
+
+/* Annotations.swift:16 */
+"Note" = "Notiz";
+
+/* Signatures.swift:241 */
+"Nouveau tampon" = "Neuer Stempel";
+
+/* AnnotationViews.swift:101 */
+"Nouveau tampon…" = "Neuer Stempel …";
+
+/* Signatures.swift:104 */
+"Nouvelle signature" = "Neue Unterschrift";
+
+/* AnnotationViews.swift:76 */
+"Nouvelle signature…" = "Neue Unterschrift …";
+
+/* AnnotationViews.swift:10 */
+"Outil" = "Werkzeug";
+
+/* ImageExport.swift:24 */
+"Page" = "Seite";
+
+/* Bookmarks.swift:44 */
+"Page %d" = "Seite %d";
+
+/* ContentView.swift:87 */
+"Page précédente" = "Vorherige Seite";
+
+/* ContentView.swift:89 */
+"Page suivante" = "Nächste Seite";
+
+/* ViewerModel.swift:7 */
+"Page unique" = "Einzelne Seite";
+
+/* ImageExport.swift:84 */
+"Pages" = "Seiten";
+
+/* PageOperations.swift:178 */
+"Pages extraites" = "Extrahierte Seiten";
+
+/* Signatures.swift:161 */
+"PAYÉ" = "BEZAHLT";
+
+/* TextEditing.swift:353 */
+"pdf-svd n'a pas pu écrire ce texte fidèlement avec les polices disponibles." = "pdf-svd konnte diesen Text mit den verfügbaren Schriften nicht originalgetreu darstellen.";
+
+/* ContentView.swift:103 */
+"Pivoter à droite" = "Nach rechts drehen";
+
+/* ContentView.swift:101 */
+"Pivoter à gauche" = "Nach links drehen";
+
+/* Signatures.swift:347 */
+"Placer" = "Platzieren";
+
+/* AnnotationViews.swift:119 */
+"Placer une image" = "Bild platzieren";
+
+/* SignatureCapture.swift:273 */
+"Plus" = "Mehr";
+
+/* AnnotationViews.swift:217 */
+"Police" = "Schrift";
+
+/* ViewerCommands.swift:79 */
+"Première page" = "Erste Seite";
+
+/* SignatureCapture.swift:239 */
+"Prendre la photo" = "Foto aufnehmen";
+
+/* SendExport.swift:192 */
+"Protéger par un mot de passe" = "Mit Passwort schützen";
+
+/* ContentView.swift:66 */
+"Rechercher" = "Suchen";
+
+/* SendExport.swift:189 */
+"Recompresse les images en JPEG adapté à l'écran. Utile pour l'envoi par e-mail ; un peu moins net à l'impression." = "Komprimiert Bilder erneut als bildschirmgerechtes JPEG. Praktisch für den Versand per E-Mail; im Druck etwas weniger scharf.";
+
+/* Annotations.swift:19 */
+"Rectangle" = "Rechteck";
+
+/* AnnotationViews.swift:388 */
+"Redimensionner" = "Größe ändern";
+
+/* Signatures.swift:158 */
+"REJETÉ" = "ABGELEHNT";
+
+/* Forms.swift:51 */
+"Remplir le formulaire" = "Formular ausfüllen";
+
+/* Bookmarks.swift:155 */
+"Renommer" = "Umbenennen";
+
+/* Bookmarks.swift:69 */
+"Renommer le signet" = "Lesezeichen umbenennen";
+
+/* SignatureCapture.swift:282 */
+"Reprendre" = "Erneut aufnehmen";
+
+/* SendExport.swift:183 */
+"Retirer les données d'édition de pdf-svd" = "Bearbeitungsdaten von pdf-svd entfernen";
+
+/* SendExport.swift:178 */
+"Retirer mon nom d'auteur" = "Meinen Autornamen entfernen";
+
+/* SendExport.swift:174 */
+"Réduire la résolution des signatures et images" = "Auflösung von Unterschriften und Bildern reduzieren";
+
+/* SendExport.swift:188 */
+"Réduire la taille du fichier" = "Dateigröße reduzieren";
+
+/* ViewerCommands.swift:24 */
+"Réduire la taille…" = "Dateigröße reduzieren …";
+
+/* ImageExport.swift:78 */
+"Résolution" = "Auflösung";
+
+/* ViewerCommands.swift:89 */
+"Résultat précédent" = "Vorheriger Treffer";
+
+/* ViewerCommands.swift:87 */
+"Résultat suivant" = "Nächster Treffer";
+
+/* ContentView.swift:129 */
+"Résultats de recherche" = "Suchergebnisse";
+
+/* ReduceSize.swift:21 */
+"Sa structure n'est pas prise en charge." = "Seine Struktur wird nicht unterstützt.";
+
+/* Bookmarks.swift:148 */
+"Sans titre" = "Ohne Titel";
+
+/* SignatureCapture.swift:267 */
+"Sensibilité" = "Empfindlichkeit";
+
+/* AnnotationViews.swift:88 */
+"Signature" = "Unterschrift";
+
+/* SignatureCapture.swift:187 */
+"Signature depuis le papier" = "Unterschrift von Papier";
+
+/* SendExport.swift:171 */
+"Signatures, tampons, notes et champs sont intégrés à la page : ils ne peuvent plus être sélectionnés, déplacés ni modifiés. Le texte des zones de texte devient sélectionnable." = "Unterschriften, Stempel, Notizen und Felder werden in die Seite integriert: Sie können nicht mehr ausgewählt, bewegt oder bearbeitet werden. Der Text in Textfeldern wird auswählbar.";
+
+/* Bookmarks.swift:16 */
+"Signets" = "Lesezeichen";
+
+/* Signatures.swift:105 */
+"Signez dans le cadre avec la souris ou le trackpad." = "Unterschreibe im Rahmen mit der Maus oder dem Trackpad.";
+
+/* SignatureCapture.swift:214 */
+"Signez sur une feuille blanche, puis présentez-la à la caméra en la tenant bien droite." = "Unterschreibe auf einem weißen Blatt und halte es dann gerade vor die Kamera.";
+
+/* Annotations.swift:77 */
+"Soulignement" = "Unterstreichung";
+
+/* Annotations.swift:14 */
+"Souligner" = "Unterstreichen";
+
+/* AnnotationViews.swift:232 */
+"Souligné" = "Unterstrichen";
+
+/* SendExport.swift:184 */
+"Supprime la copie de l'image conservée pour la rééditer dans pdf-svd. L'image reste visible." = "Entfernt die Bildkopie, die pdf-svd zum erneuten Bearbeiten aufbewahrt. Das Bild bleibt sichtbar.";
+
+/* Bookmarks.swift:156 */
+"Supprimer" = "Löschen";
+
+/* AnnotationViews.swift:47 */
+"Supprimer définitivement le contenu des zones marquées" = "Inhalt der markierten Bereiche endgültig entfernen";
+
+/* AnnotationViews.swift:167 */
+"Supprimer l'annotation" = "Anmerkung löschen";
+
+/* PageOperations.swift:100 */
+"Supprimer la page" = "Seite löschen";
+
+/* Bookmarks.swift:58 */
+"Supprimer le signet" = "Lesezeichen löschen";
+
+/* PageOperations.swift:100 */
+"Supprimer les pages" = "Seiten löschen";
+
+/* AnnotationViews.swift:103 */
+"Supprimer un tampon" = "Stempel löschen";
+
+/* AnnotationViews.swift:79 */
+"Supprimer une signature" = "Unterschrift löschen";
+
+/* Annotations.swift:76 */
+"Surlignage" = "Markierung";
+
+/* Annotations.swift:13 */
+"Surligner" = "Markieren";
+
+/* Annotations.swift:12 */
+"Sélection" = "Auswahl";
+
+/* ImageExport.swift:86 */
+"Sélection (%d)" = "Auswahl (%d)";
+
+/* AnnotationViews.swift:342 */
+"Taille" = "Größe";
+
+/* ReduceSize.swift:33 */
+"Taille : %@ → %@ (−%d %%)" = "Größe: %1$@ → %2$@ (−%3$d %%)";
+
+/* AnnotationViews.swift:221 */
+"Taille : %d pt" = "Größe: %d pt";
+
+/* AnnotationViews.swift:285 */
+"Taille du texte" = "Textgröße";
+
+/* ViewerCommands.swift:36 */
+"Taille réelle" = "Originalgröße";
+
+/* AnnotationViews.swift:112 */
+"Tampon" = "Stempel";
+
+/* AnnotationViews.swift:159 */
+"Texte" = "Text";
+
+/* Annotations.swift:78 */
+"Texte barré" = "Durchgestrichener Text";
+
+/* ImageExport.swift:85 */
+"Toutes (%d)" = "Alle (%d)";
+
+/* Annotations.swift:17 */
+"Zone de texte" = "Textfeld";
+
+/* Annotations.swift:74 */
+"Zone à caviarder" = "Zu schwärzender Bereich";
+
+/* ContentView.swift:114 */
+"Zoom arrière" = "Verkleinern";
+
+/* ContentView.swift:120 */
+"Zoom avant" = "Vergrößern";
+
+/* AnnotationViews.swift:28 */
+"Épaisseur" = "Stärke";
+
+/* AnnotationViews.swift:34 */
+"Épaisseur du trait" = "Linienstärke";
+

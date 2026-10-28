@@ -41,7 +41,7 @@ extension ViewerModel {
         }()
         let top = pdfView.convert(CGPoint(x: 0, y: pdfView.bounds.maxY), to: page)
         let bookmark = PDFOutline()
-        bookmark.label = "Page \(document.index(for: page) + 1)"
+        bookmark.label = tr("Page %d", document.index(for: page) + 1)
         bookmark.destination = PDFDestination(page: page, at: CGPoint(x: kPDFDestinationUnspecifiedValue, y: min(top.y, page.bounds(for: .mediaBox).maxY)))
         insert(bookmark, into: root, at: root.numberOfChildren)
         sidebarMode = .bookmarks
@@ -55,7 +55,7 @@ extension ViewerModel {
         undoManager?.registerUndo(withTarget: self) { model in
             MainActor.assumeIsolated { model.insert(bookmark, into: parent, at: index) }
         }
-        undoManager?.setActionName("Supprimer le signet")
+        undoManager?.setActionName(tr("Supprimer le signet"))
     }
 
     func renameBookmark(_ bookmark: PDFOutline, to label: String) {
@@ -66,7 +66,7 @@ extension ViewerModel {
         undoManager?.registerUndo(withTarget: self) { model in
             MainActor.assumeIsolated { model.renameBookmark(bookmark, to: old) }
         }
-        undoManager?.setActionName("Renommer le signet")
+        undoManager?.setActionName(tr("Renommer le signet"))
     }
 
     private func insert(_ bookmark: PDFOutline, into parent: PDFOutline, at index: Int) {
@@ -75,7 +75,7 @@ extension ViewerModel {
         undoManager?.registerUndo(withTarget: self) { model in
             MainActor.assumeIsolated { model.removeBookmark(bookmark) }
         }
-        undoManager?.setActionName("Ajouter un signet")
+        undoManager?.setActionName(tr("Ajouter un signet"))
     }
 }
 
@@ -88,7 +88,7 @@ struct Sidebar: View {
     var body: some View {
         VStack(spacing: 0) {
             Picker("Barre latérale", selection: $viewer.sidebarMode) {
-                ForEach(SidebarMode.allCases) { Text($0.rawValue).tag($0) }
+                ForEach(SidebarMode.allCases) { Text(tr($0.rawValue)).tag($0) }
             }
             .pickerStyle(.segmented)
             .labelsHidden()
@@ -145,7 +145,7 @@ private struct BookmarkSidebar: View {
                 }
                 .onExitCommand { editing = nil }
         } else {
-            Text(node.outline.label ?? "Sans titre")
+            Text(node.outline.label ?? tr("Sans titre"))
                 .lineLimit(2)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .contentShape(Rectangle())

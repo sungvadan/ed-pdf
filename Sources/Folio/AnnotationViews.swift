@@ -27,7 +27,7 @@ struct AnnotationBar: View {
             if viewer.tool.usesLineWidth {
                 Picker("Épaisseur", selection: $viewer.lineWidth) {
                     ForEach([1, 2, 4, 8] as [CGFloat], id: \.self) { width in
-                        Text("\(Int(width)) pt").tag(width)
+                        Text(tr("%d pt", Int(width))).tag(width)
                     }
                 }
                 .fixedSize()
@@ -156,7 +156,7 @@ struct AnnotationInspector: View {
             }
 
             if annotation.hasEditableText {
-                Section(annotation.isFreeText ? "Texte" : "Commentaire") {
+                Section(annotation.isFreeText ? tr("Texte") : tr("Commentaire")) {
                     TextEditor(text: contents)
                         .font(.body)
                         .frame(minHeight: 120)
@@ -218,7 +218,7 @@ private struct TextFormatSection: View {
                 ForEach(families, id: \.self) { Text($0).tag($0) }
             }
 
-            Stepper("Taille : \(Int(fontSize.wrappedValue)) pt", value: fontSize, in: 6...96)
+            Stepper(tr("Taille : %d pt", Int(fontSize.wrappedValue)), value: fontSize, in: 6...96)
 
             HStack {
                 Toggle(isOn: trait(.boldFontMask, isOn: textBox.isBold, name: "Gras")) {
@@ -345,7 +345,7 @@ private struct SizeSection: View {
                 return CGSize(width: width, height: keepsRatio ? width * ratio : annotation.bounds.height)
             }
             if annotation.isFreeText {
-                LabeledContent("Hauteur", value: "\(Int(annotation.bounds.height.rounded())) pt (auto)")
+                LabeledContent("Hauteur", value: tr("%d pt (auto)", Int(annotation.bounds.height.rounded())))
             } else {
                 dimension("Hauteur", value: annotation.bounds.height) { height in
                     let ratio = annotation.bounds.width / max(annotation.bounds.height, 1)
@@ -368,6 +368,7 @@ private struct SizeSection: View {
         } set: { newValue in
             resize(to: size(max(CGFloat(newValue), 8)))
         }
+        let label = tr(label)
         return LabeledContent(label) {
             HStack(spacing: 4) {
                 TextField(label, value: binding, format: .number.precision(.fractionLength(0)))

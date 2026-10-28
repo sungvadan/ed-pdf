@@ -29,9 +29,9 @@ extension ViewerModel {
             let percent = Int((1 - Double(reduced.count) / Double(before)) * 100)
             let panel = NSSavePanel()
             panel.allowedContentTypes = [.pdf]
-            panel.nameFieldStringValue = "\(base) (réduit).pdf"
-            panel.message = "Taille : \(format.string(fromByteCount: Int64(before))) → \(format.string(fromByteCount: Int64(reduced.count))) (−\(percent) %)"
-                + (password == nil ? "" : " — la copie ne sera pas protégée par mot de passe")
+            panel.nameFieldStringValue = tr("%@ (réduit)", base) + ".pdf"
+            panel.message = tr("Taille : %@ → %@ (−%d %%)", format.string(fromByteCount: Int64(before)), format.string(fromByteCount: Int64(reduced.count)), percent)
+                + (password == nil ? "" : " — " + tr("la copie ne sera pas protégée par mot de passe"))
             let save: (NSApplication.ModalResponse) -> Void = { response in
                 guard response == .OK, let url = panel.url else { return }
                 do {
@@ -46,8 +46,8 @@ extension ViewerModel {
 
     private func showAlert(_ message: String, detail: String) {
         let alert = NSAlert()
-        alert.messageText = message
-        alert.informativeText = detail
+        alert.messageText = tr(message)
+        alert.informativeText = tr(detail)
         if let window = pdfView.window { alert.beginSheetModal(for: window) } else { alert.runModal() }
     }
 }

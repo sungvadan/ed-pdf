@@ -40,6 +40,9 @@
   images réduites à 600 px, nom d'auteur retiré, données `/FolioImage` retirées — l'original n'est pas modifié
   (`SendExport.swift`). Limites : signets et liens internes perdus en mode aplati
 - ✅ Export : mot de passe d'ouverture, réduction de taille (images JPEG optimisées écran)
+- ✅ Interface multilingue : français (source), anglais, allemand, espagnol, italien, portugais (Brésil), japonais,
+  chinois simplifié — langue du système par défaut, ou choisie dans Réglages (au prochain lancement).
+  Vérification : `scripts/l10n.py`
 - ✅ Fichier > « Réduire la taille… » : copie réécrite par `PDFCompressor` (`Sources/FolioText/Compressor.swift`),
   sans réglage : images RVB/gris ramenées à 150 ppp (par rapport à la plus grande page) en JPEG qualité 0,6,
   objets inutilisés, `/PieceInfo`, `/Thumb` et métadonnées XMP retirés, flux identiques fusionnés, object streams

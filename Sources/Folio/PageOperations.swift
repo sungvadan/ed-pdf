@@ -52,7 +52,7 @@ extension ViewerModel {
         undoManager?.registerUndo(withTarget: self) { model in
             MainActor.assumeIsolated { model.applyPages(old, actionName: actionName) }
         }
-        undoManager?.setActionName(actionName)
+        undoManager?.setActionName(tr(actionName))
     }
 
     /// Remembers which page point is at the top-left of the view, and returns a closure that
@@ -88,7 +88,7 @@ extension ViewerModel {
         undoManager?.registerUndo(withTarget: self) { model in
             MainActor.assumeIsolated { model.rotate(targets, by: -degrees) }
         }
-        undoManager?.setActionName(name)
+        undoManager?.setActionName(tr(name))
     }
 
     func deletePages(_ targets: [PDFPage]) {
@@ -164,8 +164,8 @@ extension ViewerModel {
         let panel = NSOpenPanel()
         panel.allowedContentTypes = [.pdf, .image]
         panel.allowsMultipleSelection = true
-        panel.message = "Choisissez des PDF ou des images à insérer après la page courante"
-        panel.prompt = "Insérer"
+        panel.message = tr("Choisissez des PDF ou des images à insérer après la page courante")
+        panel.prompt = tr("Insérer")
         let index = insertionIndex
         runPanel(panel) { [weak self] in self?.insertFiles(panel.urls, at: index) }
     }
@@ -175,8 +175,8 @@ extension ViewerModel {
         guard !targets.isEmpty else { return }
         let panel = NSSavePanel()
         panel.allowedContentTypes = [.pdf]
-        panel.nameFieldStringValue = "Pages extraites.pdf"
-        panel.message = targets.count > 1 ? "Enregistrer les \(targets.count) pages sélectionnées" : "Enregistrer la page"
+        panel.nameFieldStringValue = tr("Pages extraites") + ".pdf"
+        panel.message = targets.count > 1 ? tr("Enregistrer les %d pages sélectionnées", targets.count) : tr("Enregistrer la page")
         runPanel(panel) {
             let output = PDFDocument()
             for (i, page) in targets.enumerated() {

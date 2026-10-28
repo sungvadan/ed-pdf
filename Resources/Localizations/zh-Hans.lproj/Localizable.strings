@@ -1,0 +1,615 @@
+/* TextEditing.swift:158 */
+"%@ (affichée en %@)" = "%@（显示为 %@）";
+
+/* SendExport.swift:121 */
+"%@ (envoi)" = "%@（发送）";
+
+/* ReduceSize.swift:32 */
+"%@ (réduit)" = "%@（已压缩）";
+
+/* ImageExport.swift:30 */
+"%@ - page %@" = "%@ - 第 %@ 页";
+
+/* AnnotationViews.swift:30 */
+"%d pt" = "%d pt";
+
+/* AnnotationViews.swift:348 */
+"%d pt (auto)" = "%d pt（自动）";
+
+/* TextEditing.swift:159 */
+"%d styles" = "%d 种样式";
+
+/* ImageExport.swift:80 */
+"150 ppp (standard)" = "150 dpi（标准）";
+
+/* ImageExport.swift:81 */
+"300 ppp (impression)" = "300 dpi（打印）";
+
+/* ImageExport.swift:79 */
+"72 ppp (écran)" = "72 dpi（屏幕）";
+
+/* ContentView.swift:106 */
+"Affichage" = "显示";
+
+/* Bookmarks.swift:78 */
+"Ajouter un signet" = "添加书签";
+
+/* Bookmarks.swift:131 */
+"Ajouter un signet pour la page affichée (⌘B)" = "为当前页面添加书签（⌘B）";
+
+/* Annotations.swift:300 */
+"Ajouter une annotation" = "添加注释";
+
+/* Bookmarks.swift:116 */
+"Ajoutez un signet pour retrouver la page affichée." = "添加书签以便快速返回当前页面。";
+
+/* ContentView.swift:118 */
+"Ajuster à la fenêtre" = "缩放以适合窗口";
+
+/* AnnotationViews.swift:243 */
+"Alignement" = "对齐";
+
+/* ViewerCommands.swift:73 */
+"Aller" = "前往";
+
+/* ImageExport.swift:93 */
+"Annuler" = "取消";
+
+/* Signatures.swift:248 */
+"APERÇU" = "预览";
+
+/* SendExport.swift:151 */
+"Aplatir" = "扁平化";
+
+/* PageSidebar.swift:95 */
+"Aplatir les annotations" = "扁平化注释";
+
+/* ViewerCommands.swift:64 */
+"Aplatir les annotations des pages sélectionnées" = "扁平化所选页面的注释";
+
+/* SendExport.swift:170 */
+"Aplatir les annotations et les formulaires" = "扁平化注释和表单";
+
+/* ViewerCommands.swift:65 */
+"Aplatir tout le document" = "扁平化整个文稿";
+
+/* Redaction.swift:185 */
+"Appliquer" = "应用";
+
+/* Redaction.swift:180 */
+"Appliquer le caviardage ?" = "要应用涂黑吗？";
+
+/* Signatures.swift:157 */
+"APPROUVÉ" = "已批准";
+
+/* SignatureCapture.swift:230 */
+"Astuce : menu Fichier › « Importer depuis l'iPhone » › Prendre une photo, pour utiliser votre iPhone." = "提示：若要使用 iPhone，请选取“文件”菜单 ›“从 iPhone 导入” ›“拍照”。";
+
+/* SignatureCapture.swift:107 */
+"Aucune caméra disponible. Choisissez plutôt une image." = "没有可用的摄像头。请改为选择一张图像。";
+
+/* TextEditing.swift:354 */
+"Aucune police disponible ne contient ces caractères : « %@ »." = "没有可用的字体包含这些字符：“%@”。";
+
+/* ReduceSize.swift:25 */
+"Aucune réduction significative n'est possible." = "无法显著减小文件大小。";
+
+/* SignatureCapture.swift:256 */
+"Aucune signature détectée. Augmentez la sensibilité ou reprenez la photo." = "未检测到签名。请提高灵敏度或重新拍照。";
+
+/* Bookmarks.swift:90 */
+"Barre latérale" = "边栏";
+
+/* Annotations.swift:15 */
+"Barrer" = "删除线";
+
+/* AnnotationViews.swift:236 */
+"Barré" = "删除线";
+
+/* SignatureCapture.swift:180 */
+"Bleu" = "蓝色";
+
+/* Signatures.swift:160 */
+"BROUILLON" = "草稿";
+
+/* Annotations.swift:23 */
+"Caviarder" = "涂黑";
+
+/* ReduceSize.swift:25 */
+"Ce document est déjà compact." = "此文稿已经很小。";
+
+/* ContentView.swift:147 */
+"Ce document est protégé par un mot de passe." = "此文稿受密码保护。";
+
+/* TextEditing.swift:358 */
+"Ce paragraphe ne peut pas être modifié (texte pivoté ou imbriqué)." = "无法编辑此段落（文本已旋转或嵌套）。";
+
+/* TextEditing.swift:360 */
+"Ce PDF utilise une structure que pdf-svd ne sait pas encore modifier." = "此 PDF 使用的结构 pdf-svd 暂时无法编辑。";
+
+/* Annotations.swift:86 */
+"Champ de formulaire" = "表单栏";
+
+/* SignatureCapture.swift:235 */
+"Choisir une image…" = "选择图像…";
+
+/* PageOperations.swift:167 */
+"Choisissez des PDF ou des images à insérer après la page courante" = "选择要插入到当前页面之后的 PDF 或图像";
+
+/* ImageExport.swift:21 */
+"Choisissez le dossier où enregistrer les images" = "选择存储图像的文件夹";
+
+/* Signatures.swift:346 */
+"Choisissez une image à placer sur la page" = "选择要放置到页面上的图像";
+
+/* SignatureCapture.swift:328 */
+"Choisissez une photo ou un scan de votre signature" = "选择签名的照片或扫描件";
+
+/* AnnotationViews.swift:159 */
+"Commentaire" = "评论";
+
+/* Signatures.swift:159 */
+"CONFIDENTIEL" = "机密";
+
+/* SendExport.swift:198 */
+"Confirmer le mot de passe" = "验证密码";
+
+/* AnnotationViews.swift:22 */
+"Couleur" = "颜色";
+
+/* SignatureCapture.swift:276 */
+"Couleur de l'encre" = "墨水颜色";
+
+/* AnnotationViews.swift:24 */
+"Couleur de l'outil" = "工具颜色";
+
+/* AnnotationViews.swift:252 */
+"Couleur du fond" = "背景颜色";
+
+/* SendExport.swift:166 */
+"Crée une copie prête à envoyer. Le document ouvert n'est pas modifié." = "创建一份可供发送的副本。打开的文稿不会被修改。";
+
+/* Signatures.swift:166 */
+"Date du jour (%@)" = "今天日期（%@）";
+
+/* AnnotationViews.swift:77 */
+"Depuis le papier (caméra ou image)…" = "从纸张（摄像头或图像）…";
+
+/* ViewerCommands.swift:81 */
+"Dernière page" = "最后一页";
+
+/* Annotations.swift:18 */
+"Dessin" = "绘图";
+
+/* ViewerModel.swift:9 */
+"Deux pages" = "双页";
+
+/* PageOperations.swift:108 */
+"Dupliquer" = "复制";
+
+/* ViewerModel.swift:8 */
+"Défilement continu" = "连续滚动";
+
+/* FolioPDFView.swift:172 */
+"Déplacer" = "移动";
+
+/* PageOperations.swift:122 */
+"Déplacer les pages" = "移动页面";
+
+/* TextEditing.swift:320 */
+"Détails : %@" = "详细信息：%@";
+
+/* ContentView.swift:155 */
+"Déverrouiller" = "解锁";
+
+/* Signatures.swift:132 */
+"Effacer" = "清除";
+
+/* Annotations.swift:20 */
+"Ellipse" = "椭圆";
+
+/* SignatureCapture.swift:290 */
+"Enregistrer et placer" = "存储并放置";
+
+/* SendExport.swift:122 */
+"Enregistrer la copie à envoyer" = "存储要发送的副本";
+
+/* PageOperations.swift:179 */
+"Enregistrer la page" = "存储页面";
+
+/* PageOperations.swift:179 */
+"Enregistrer les %d pages sélectionnées" = "存储所选的 %d 个页面";
+
+/* TextEditing.swift:362 */
+"Erreur inattendue (%@)." = "意外错误（%@）。";
+
+/* Signatures.swift:244 */
+"Ex. : VU ET VÉRIFIÉ" = "例如：已审核";
+
+/* ImageExport.swift:70 */
+"Exporter en images" = "导出为图像";
+
+/* PageSidebar.swift:94 */
+"Exporter en images…" = "导出为图像…";
+
+/* ImageExport.swift:20 */
+"Exporter ici" = "导出到此处";
+
+/* ContentView.swift:97 */
+"Exporter pour envoi" = "导出以发送";
+
+/* ViewerCommands.swift:21 */
+"Exporter pour envoi…" = "导出以发送…";
+
+/* ImageExport.swift:95 */
+"Exporter…" = "导出…";
+
+/* PageSidebar.swift:93 */
+"Extraire…" = "提取…";
+
+/* Annotations.swift:22 */
+"Flèche" = "箭头";
+
+/* AnnotationViews.swift:250 */
+"Fond" = "背景";
+
+/* ImageExport.swift:73 */
+"Format" = "格式";
+
+/* AnnotationViews.swift:224 */
+"Gras" = "粗体";
+
+/* AnnotationViews.swift:348 */
+"Hauteur" = "高度";
+
+/* Signatures.swift:364 */
+"Image" = "图像";
+
+/* ReduceSize.swift:21 */
+"Impossible de réduire ce document." = "无法压缩此文稿。";
+
+/* Settings.swift:34 */
+"Inscrit dans chaque nouvelle annotation et visible par les destinataires du PDF. Laissez vide pour ne pas inscrire de nom." = "写入每个新注释，PDF 的收件人可以看到。留空则不写入名称。";
+
+/* PageOperations.swift:168 */
+"Insérer" = "插入";
+
+/* PageSidebar.swift:92 */
+"Insérer depuis un fichier…" = "从文件插入…";
+
+/* PageOperations.swift:160 */
+"Insérer des pages" = "插入页面";
+
+/* PageOperations.swift:115 */
+"Insérer une page vierge" = "插入空白页";
+
+/* AnnotationViews.swift:228 */
+"Italique" = "斜体";
+
+/* SignatureCapture.swift:132 */
+"L'accès à la caméra est refusé. Autorisez pdf-svd dans Réglages Système › Confidentialité et sécurité › Caméra, ou choisissez une image." = "摄像头访问被拒绝。请在“系统设置” ›“隐私与安全性” ›“摄像头”中允许 pdf-svd，或者选择一张图像。";
+
+/* ReduceSize.swift:34 */
+"la copie ne sera pas protégée par mot de passe" = "副本将不受密码保护";
+
+/* TextEditing.swift:356 */
+"La modification du texte n'est pas encore possible sur un document protégé par mot de passe." = "暂时无法编辑受密码保护文稿中的文本。";
+
+/* Settings.swift:28 */
+"La nouvelle langue sera utilisée au prochain lancement de pdf-svd." = "新语言将在下次启动 pdf-svd 时生效。";
+
+/* Settings.swift:21 */
+"Langue" = "语言";
+
+/* Settings.swift:22 */
+"Langue du système" = "系统语言";
+
+/* AnnotationViews.swift:343 */
+"Largeur" = "宽度";
+
+/* AnnotationViews.swift:135 */
+"Le contenu de cette zone sera supprimé lorsque vous appliquerez le caviardage." = "应用涂黑时，此区域的内容将被删除。";
+
+/* Redaction.swift:182 */
+"Le contenu sous les %d zones marquées sera supprimé du document. Les %d pages concernées sont reconstruites : leur texte restant reste sélectionnable, mais leurs annotations et liens sont intégrés à la page. Vous pouvez annuler (⌘Z) tant que le document est ouvert ; une fois enregistré, le contenu caviardé est perdu." = "%d 个已标记区域下的内容将从文稿中删除。受影响的 %d 个页面将被重建：剩余文本仍可选择，但其注释和链接将合并到页面中。文稿打开期间可以撤销（⌘Z）；存储后，被涂黑的内容将永久丢失。";
+
+/* SendExport.swift:193 */
+"Le destinataire devra saisir ce mot de passe pour ouvrir le document. Communiquez-le par un autre moyen que le fichier." = "收件人需要输入此密码才能打开文稿。请通过文件以外的其他方式告知密码。";
+
+/* TextEditing.swift:319 */
+"Le document n'a pas été changé." = "文稿未被更改。";
+
+/* TextEditing.swift:318 */
+"Le texte n'a pas pu être modifié" = "无法编辑文本";
+
+/* SendExport.swift:200 */
+"Les mots de passe ne correspondent pas." = "密码不匹配。";
+
+/* AnnotationViews.swift:356 */
+"Les proportions sont conservées." = "保持比例。";
+
+/* Annotations.swift:21 */
+"Ligne" = "线条";
+
+/* SendExport.swift:175 */
+"Limite les images à %d pixels : suffisant à l'écran et à l'impression, moins exploitable si quelqu'un l'extrait." = "将图像限制为 %d 像素：足以满足屏幕显示和打印，被他人提取时也较难利用。";
+
+/* SendExport.swift:179 */
+"macOS inscrit le nom de votre compte dans chaque annotation et dans les propriétés du document." = "macOS 会将你的账户名称写入每个注释和文稿属性中。";
+
+/* Redaction.swift:168 */
+"Marquer pour caviardage" = "标记以涂黑";
+
+/* AnnotationViews.swift:216 */
+"Mise en forme" = "格式";
+
+/* ContentView.swift:110 */
+"Mode d'affichage" = "显示模式";
+
+/* AnnotationViews.swift:204 */
+"Modifier le texte" = "编辑文本";
+
+/* SignatureCapture.swift:271 */
+"Moins" = "较低";
+
+/* ContentView.swift:149 */
+"Mot de passe" = "密码";
+
+/* ContentView.swift:153 */
+"Mot de passe incorrect." = "密码不正确。";
+
+/* SignatureCapture.swift:180 */
+"Noir" = "黑色";
+
+/* Settings.swift:33 */
+"Nom d'auteur des annotations" = "注释作者名称";
+
+/* Bookmarks.swift:141 */
+"Nom du signet" = "书签名称";
+
+/* Annotations.swift:16 */
+"Note" = "附注";
+
+/* Signatures.swift:241 */
+"Nouveau tampon" = "新建图章";
+
+/* AnnotationViews.swift:101 */
+"Nouveau tampon…" = "新建图章…";
+
+/* Signatures.swift:104 */
+"Nouvelle signature" = "新建签名";
+
+/* AnnotationViews.swift:76 */
+"Nouvelle signature…" = "新建签名…";
+
+/* AnnotationViews.swift:10 */
+"Outil" = "工具";
+
+/* ImageExport.swift:24 */
+"Page" = "页面";
+
+/* Bookmarks.swift:44 */
+"Page %d" = "第 %d 页";
+
+/* ContentView.swift:87 */
+"Page précédente" = "上一页";
+
+/* ContentView.swift:89 */
+"Page suivante" = "下一页";
+
+/* ViewerModel.swift:7 */
+"Page unique" = "单页";
+
+/* ImageExport.swift:84 */
+"Pages" = "页面";
+
+/* PageOperations.swift:178 */
+"Pages extraites" = "提取的页面";
+
+/* Signatures.swift:161 */
+"PAYÉ" = "已付款";
+
+/* TextEditing.swift:353 */
+"pdf-svd n'a pas pu écrire ce texte fidèlement avec les polices disponibles." = "pdf-svd 无法使用可用字体准确写入此文本。";
+
+/* ContentView.swift:103 */
+"Pivoter à droite" = "向右旋转";
+
+/* ContentView.swift:101 */
+"Pivoter à gauche" = "向左旋转";
+
+/* Signatures.swift:347 */
+"Placer" = "放置";
+
+/* AnnotationViews.swift:119 */
+"Placer une image" = "放置图像";
+
+/* SignatureCapture.swift:273 */
+"Plus" = "较高";
+
+/* AnnotationViews.swift:217 */
+"Police" = "字体";
+
+/* ViewerCommands.swift:79 */
+"Première page" = "第一页";
+
+/* SignatureCapture.swift:239 */
+"Prendre la photo" = "拍照";
+
+/* SendExport.swift:192 */
+"Protéger par un mot de passe" = "使用密码保护";
+
+/* ContentView.swift:66 */
+"Rechercher" = "搜索";
+
+/* SendExport.swift:189 */
+"Recompresse les images en JPEG adapté à l'écran. Utile pour l'envoi par e-mail ; un peu moins net à l'impression." = "将图像重新压缩为适合屏幕的 JPEG。便于通过电子邮件发送；打印时清晰度略低。";
+
+/* Annotations.swift:19 */
+"Rectangle" = "矩形";
+
+/* AnnotationViews.swift:388 */
+"Redimensionner" = "调整大小";
+
+/* Signatures.swift:158 */
+"REJETÉ" = "已拒绝";
+
+/* Forms.swift:51 */
+"Remplir le formulaire" = "填写表单";
+
+/* Bookmarks.swift:155 */
+"Renommer" = "重新命名";
+
+/* Bookmarks.swift:69 */
+"Renommer le signet" = "重新命名书签";
+
+/* SignatureCapture.swift:282 */
+"Reprendre" = "重拍";
+
+/* SendExport.swift:183 */
+"Retirer les données d'édition de pdf-svd" = "移除 pdf-svd 编辑数据";
+
+/* SendExport.swift:178 */
+"Retirer mon nom d'auteur" = "移除我的作者名称";
+
+/* SendExport.swift:174 */
+"Réduire la résolution des signatures et images" = "降低签名和图像的分辨率";
+
+/* SendExport.swift:188 */
+"Réduire la taille du fichier" = "减小文件大小";
+
+/* ViewerCommands.swift:24 */
+"Réduire la taille…" = "减小文件大小…";
+
+/* ImageExport.swift:78 */
+"Résolution" = "分辨率";
+
+/* ViewerCommands.swift:89 */
+"Résultat précédent" = "上一个结果";
+
+/* ViewerCommands.swift:87 */
+"Résultat suivant" = "下一个结果";
+
+/* ContentView.swift:129 */
+"Résultats de recherche" = "搜索结果";
+
+/* ReduceSize.swift:21 */
+"Sa structure n'est pas prise en charge." = "不支持其结构。";
+
+/* Bookmarks.swift:148 */
+"Sans titre" = "未命名";
+
+/* SignatureCapture.swift:267 */
+"Sensibilité" = "灵敏度";
+
+/* AnnotationViews.swift:88 */
+"Signature" = "签名";
+
+/* SignatureCapture.swift:187 */
+"Signature depuis le papier" = "从纸张获取签名";
+
+/* SendExport.swift:171 */
+"Signatures, tampons, notes et champs sont intégrés à la page : ils ne peuvent plus être sélectionnés, déplacés ni modifiés. Le texte des zones de texte devient sélectionnable." = "签名、图章、附注和栏位将合并到页面中：无法再选择、移动或编辑。文本框中的文本将变为可选择。";
+
+/* Bookmarks.swift:16 */
+"Signets" = "书签";
+
+/* Signatures.swift:105 */
+"Signez dans le cadre avec la souris ou le trackpad." = "使用鼠标或触控板在框内签名。";
+
+/* SignatureCapture.swift:214 */
+"Signez sur une feuille blanche, puis présentez-la à la caméra en la tenant bien droite." = "在白纸上签名，然后将其端正地对准摄像头。";
+
+/* Annotations.swift:77 */
+"Soulignement" = "下划线";
+
+/* Annotations.swift:14 */
+"Souligner" = "下划线";
+
+/* AnnotationViews.swift:232 */
+"Souligné" = "下划线";
+
+/* SendExport.swift:184 */
+"Supprime la copie de l'image conservée pour la rééditer dans pdf-svd. L'image reste visible." = "删除为在 pdf-svd 中重新编辑而保留的图像副本。图像仍然可见。";
+
+/* Bookmarks.swift:156 */
+"Supprimer" = "删除";
+
+/* AnnotationViews.swift:47 */
+"Supprimer définitivement le contenu des zones marquées" = "永久删除已标记区域的内容";
+
+/* AnnotationViews.swift:167 */
+"Supprimer l'annotation" = "删除注释";
+
+/* PageOperations.swift:100 */
+"Supprimer la page" = "删除页面";
+
+/* Bookmarks.swift:58 */
+"Supprimer le signet" = "删除书签";
+
+/* PageOperations.swift:100 */
+"Supprimer les pages" = "删除页面";
+
+/* AnnotationViews.swift:103 */
+"Supprimer un tampon" = "删除图章";
+
+/* AnnotationViews.swift:79 */
+"Supprimer une signature" = "删除签名";
+
+/* Annotations.swift:76 */
+"Surlignage" = "高亮";
+
+/* Annotations.swift:13 */
+"Surligner" = "高亮";
+
+/* Annotations.swift:12 */
+"Sélection" = "选择";
+
+/* ImageExport.swift:86 */
+"Sélection (%d)" = "所选（%d）";
+
+/* AnnotationViews.swift:342 */
+"Taille" = "大小";
+
+/* ReduceSize.swift:33 */
+"Taille : %@ → %@ (−%d %%)" = "大小：%@ → %@（−%d%%）";
+
+/* AnnotationViews.swift:221 */
+"Taille : %d pt" = "大小：%d pt";
+
+/* AnnotationViews.swift:285 */
+"Taille du texte" = "文本大小";
+
+/* ViewerCommands.swift:36 */
+"Taille réelle" = "实际大小";
+
+/* AnnotationViews.swift:112 */
+"Tampon" = "图章";
+
+/* AnnotationViews.swift:159 */
+"Texte" = "文本";
+
+/* Annotations.swift:78 */
+"Texte barré" = "删除线";
+
+/* ImageExport.swift:85 */
+"Toutes (%d)" = "全部（%d）";
+
+/* Annotations.swift:17 */
+"Zone de texte" = "文本框";
+
+/* Annotations.swift:74 */
+"Zone à caviarder" = "涂黑区域";
+
+/* ContentView.swift:114 */
+"Zoom arrière" = "缩小";
+
+/* ContentView.swift:120 */
+"Zoom avant" = "放大";
+
+/* AnnotationViews.swift:28 */
+"Épaisseur" = "粗细";
+
+/* AnnotationViews.swift:34 */
+"Épaisseur du trait" = "线条粗细";
+

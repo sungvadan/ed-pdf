@@ -17,17 +17,17 @@ extension ViewerModel {
         panel.canChooseFiles = false
         panel.canChooseDirectories = true
         panel.canCreateDirectories = true
-        panel.prompt = "Exporter ici"
-        panel.message = "Choisissez le dossier où enregistrer les images"
+        panel.prompt = tr("Exporter ici")
+        panel.message = tr("Choisissez le dossier où enregistrer les images")
         guard panel.runModal() == .OK, let folder = panel.url else { return false }
 
-        let title = pdfView.window?.title ?? "Page"
+        let title = pdfView.window?.title ?? tr("Page")
         let base = title.hasSuffix(".pdf") ? String(title.dropLast(4)) : title
         let digits = max(String(pages.count).count, 2)
         var written: [URL] = []
         for page in targets {
             let number = (pages.firstIndex(of: page) ?? 0) + 1
-            let name = "\(base) - page \(String(format: "%0\(digits)d", number)).\(format.fileExtension)"
+            let name = tr("%@ - page %@", base, String(format: "%0\(digits)d", number)) + "." + format.fileExtension
             let url = folder.appendingPathComponent(name)
             guard let data = Self.render(page, format: format, dpi: dpi) else { continue }
             do {
@@ -82,8 +82,8 @@ struct ImageExportSheet: View {
                 }
 
                 Picker("Pages", selection: $onlySelection) {
-                    Text("Toutes (\(viewer.pages.count))").tag(false)
-                    Text("Sélection (\(viewer.targetPages.count))").tag(true)
+                    Text(tr("Toutes (%d)", viewer.pages.count)).tag(false)
+                    Text(tr("Sélection (%d)", viewer.targetPages.count)).tag(true)
                 }
                 .pickerStyle(.radioGroup)
             }
