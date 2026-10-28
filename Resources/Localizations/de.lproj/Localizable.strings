@@ -616,3 +616,18 @@
 
 /* AnnotationViews.swift:43 */
 "Appliquer le caviardage (%d)" = "Schwärzung anwenden (%d)";
+
+/* windows/MainWindow.axaml.cs */
+"Ouvrir…" = "Öffnen …";
+
+/* windows/MainWindow.axaml.cs */
+"Ouvrir un PDF" = "PDF öffnen";
+
+/* windows/MainWindow.axaml.cs */
+"Glissez un PDF ici ou ouvrez-en un (Ctrl+O)." = "PDF hierher ziehen oder öffnen (Strg+O).";
+
+/* windows/MainWindow.axaml.cs */
+"Documents PDF" = "PDF-Dokumente";
+
+/* windows/MainWindow.axaml.cs */
+"Impossible d'ouvrir ce fichier." = "Diese Datei kann nicht geöffnet werden.";

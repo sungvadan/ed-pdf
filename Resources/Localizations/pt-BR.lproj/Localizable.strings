@@ -616,3 +616,18 @@
 
 /* AnnotationViews.swift:43 */
 "Appliquer le caviardage (%d)" = "Aplicar ocultação (%d)";
+
+/* windows/MainWindow.axaml.cs */
+"Ouvrir…" = "Abrir…";
+
+/* windows/MainWindow.axaml.cs */
+"Ouvrir un PDF" = "Abrir um PDF";
+
+/* windows/MainWindow.axaml.cs */
+"Glissez un PDF ici ou ouvrez-en un (Ctrl+O)." = "Arraste um PDF para cá ou abra um (Ctrl+O).";
+
+/* windows/MainWindow.axaml.cs */
+"Documents PDF" = "Documentos PDF";
+
+/* windows/MainWindow.axaml.cs */
+"Impossible d'ouvrir ce fichier." = "Não é possível abrir este arquivo.";

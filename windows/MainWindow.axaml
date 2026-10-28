@@ -1,0 +1,69 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="using:PdfSvd"
+        x:Class="PdfSvd.MainWindow"
+        Title="pdf-svd" Width="1100" Height="800" MinWidth="560" MinHeight="400"
+        Icon="/Assets/pdf-svd.ico"
+        DragDrop.AllowDrop="True">
+    <Window.Styles>
+        <Style Selector="Button.tool">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="MinWidth" Value="34" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+        </Style>
+    </Window.Styles>
+
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Padding="8,6" BorderThickness="0,0,0,1"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+            <DockPanel>
+                <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                    <Button Name="OpenButton" />
+                    <Rectangle Width="1" Height="20" Margin="6,0" Fill="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+                    <Button Name="PreviousButton" Classes="tool" Content="‹" FontSize="18" Padding="6,0,6,3" />
+                    <TextBox Name="PageBox" Width="52" HorizontalContentAlignment="Center" VerticalAlignment="Center" />
+                    <TextBlock Name="PageCountText" VerticalAlignment="Center" MinWidth="40" />
+                    <Button Name="NextButton" Classes="tool" Content="›" FontSize="18" Padding="6,0,6,3" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button Name="ZoomOutButton" Classes="tool" Content="−" FontSize="16" />
+                    <TextBlock Name="ZoomText" VerticalAlignment="Center" MinWidth="48" TextAlignment="Center" />
+                    <Button Name="ZoomInButton" Classes="tool" Content="+" FontSize="16" />
+                    <Button Name="FitButton" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <ListBox Name="Thumbnails" DockPanel.Dock="Left" Width="168" Padding="0,6"
+                 Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="local:PageItem">
+                    <StackPanel HorizontalAlignment="Center" Spacing="4" Margin="0,4">
+                        <Border Width="{Binding Width}" Height="{Binding Height}" Background="White"
+                                BoxShadow="0 1 3 0 #40000000">
+                            <Image Source="{Binding Bitmap}" Stretch="Fill" />
+                        </Border>
+                        <TextBlock Text="{Binding Number}" HorizontalAlignment="Center" FontSize="12" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <Panel Background="{DynamicResource SystemControlBackgroundBaseLowBrush}">
+            <ScrollViewer Name="Scroller" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Focusable="True">
+                <ItemsControl Name="Pages" HorizontalAlignment="Center" Margin="20,8">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="local:PageItem">
+                            <Border Width="{Binding Width}" Height="{Binding Height}" Margin="0,8" Background="White"
+                                    BoxShadow="0 2 6 0 #40000000">
+                                <Image Source="{Binding Bitmap}" Stretch="Fill" />
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+            <TextBlock Name="EmptyText" HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Opacity="0.6" FontSize="15" TextAlignment="Center" />
+        </Panel>
+    </DockPanel>
+</Window>

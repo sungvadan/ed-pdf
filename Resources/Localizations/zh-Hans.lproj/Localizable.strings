@@ -616,3 +616,18 @@
 
 /* AnnotationViews.swift:43 */
 "Appliquer le caviardage (%d)" = "应用涂黑（%d）";
+
+/* windows/MainWindow.axaml.cs */
+"Ouvrir…" = "打开…";
+
+/* windows/MainWindow.axaml.cs */
+"Ouvrir un PDF" = "打开 PDF";
+
+/* windows/MainWindow.axaml.cs */
+"Glissez un PDF ici ou ouvrez-en un (Ctrl+O)." = "将 PDF 拖到此处或打开一个 PDF（Ctrl+O）。";
+
+/* windows/MainWindow.axaml.cs */
+"Documents PDF" = "PDF 文稿";
+
+/* windows/MainWindow.axaml.cs */
+"Impossible d'ouvrir ce fichier." = "无法打开此文件。";

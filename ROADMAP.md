@@ -59,3 +59,22 @@
     système équivalentes, styles en ligne conservés, reflux, alignements, vérification avec repli
   - ✅ Outil « Modifier le texte » : clic dans un paragraphe → édition sur place, ⌘Z
   - ⬜ Contrôles de style pendant l'édition, ajout de texte natif, déplacer un paragraphe, PDF protégés
+
+# Version Windows (`windows/`, C# + Avalonia 11 + PDFium)
+
+Construite sur le Mac : `scripts/build-windows.sh` → `build/windows/pdf-svd-arm64.exe` (Windows ARM, VM sur Mac
+Apple Silicon) et `pdf-svd-x64.exe` (PC Intel/AMD), fichiers uniques sans installation. Test sur le Mac :
+`cd windows && dotnet run -- fichier.pdf`. Mêmes traductions que la version Mac.
+
+## ✅ Étape W1 — Lecture
+- Ouvrir (bouton, Ctrl+O, glisser-déposer, fichier en argument), PDF protégés (mot de passe)
+- Défilement continu, rendu PDFium net (selon la mise à l'échelle de l'écran), pages hors écran libérées
+- Vignettes cliquables, n° de page modifiable, précédente/suivante, Début/Fin
+- Zoom +/− (Ctrl +/−), taille réelle (Ctrl+0), ajuster à la largeur
+
+## ⬜ Étape W2 — Recherche, sélection et copie du texte, impression, associer les .pdf à l'app
+## ⬜ Étape W3 — Annotations (surlignage, notes, zones de texte, dessin, formes) et enregistrement
+## ⬜ Étape W4 — Signatures, tampons, images
+## ⬜ Étape W5 — Pages (pivoter, supprimer, réordonner, insérer, extraire), export, réduire la taille
+## ⬜ Étape W6 — Caviardage, édition du texte existant
+

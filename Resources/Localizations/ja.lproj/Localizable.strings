@@ -616,3 +616,18 @@
 
 /* AnnotationViews.swift:43 */
 "Appliquer le caviardage (%d)" = "墨消しを適用（%d）";
+
+/* windows/MainWindow.axaml.cs */
+"Ouvrir…" = "開く…";
+
+/* windows/MainWindow.axaml.cs */
+"Ouvrir un PDF" = "PDFを開く";
+
+/* windows/MainWindow.axaml.cs */
+"Glissez un PDF ici ou ouvrez-en un (Ctrl+O)." = "ここにPDFをドラッグするか、PDFを開いてください（Ctrl+O）。";
+
+/* windows/MainWindow.axaml.cs */
+"Documents PDF" = "PDF書類";
+
+/* windows/MainWindow.axaml.cs */
+"Impossible d'ouvrir ce fichier." = "このファイルを開けません。";

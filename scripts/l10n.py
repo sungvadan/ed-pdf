@@ -14,6 +14,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCES = sorted((ROOT / "Sources/Folio").glob("*.swift"))
+# Windows app: only the Tr("…") calls are UI text.
+WINDOWS_SOURCES = sorted(p for p in (ROOT / "windows").rglob("*.cs") if "/obj/" not in str(p) and "/bin/" not in str(p))
+WINDOWS_TR = re.compile(r'\bTr\("((?:[^"\\]|\\.)*)"')
 LOCALIZATIONS = ROOT / "Resources/Localizations"
 
 # Lines whose literals are not UI text.
@@ -76,6 +79,12 @@ def source_keys():
                     problems.append(f"{where}: interpolation dans un texte traduisible, utiliser tr(\"…%d…\", x) : \"{text}\"")
                     continue
                 keys.setdefault(unescape(text), where)
+    for path in WINDOWS_SOURCES:
+        for number, line in enumerate(path.read_text().splitlines(), 1):
+            if line.strip().startswith("//"):
+                continue
+            for match in WINDOWS_TR.finditer(line):
+                keys.setdefault(unescape(match.group(1)), f"windows/{path.relative_to(ROOT / 'windows')}:{number}")
     return keys, problems
 
 
