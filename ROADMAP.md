@@ -72,7 +72,15 @@ Apple Silicon) et `pdf-svd-x64.exe` (PC Intel/AMD), fichiers uniques sans instal
 - Vignettes cliquables, n° de page modifiable, précédente/suivante, Début/Fin
 - Zoom +/− (Ctrl +/−), taille réelle (Ctrl+0), ajuster à la largeur
 
-## ⬜ Étape W2 — Recherche, sélection et copie du texte, impression, associer les .pdf à l'app
+## 🟨 Étape W2 — Recherche, sélection et copie du texte, impression, associer les .pdf à l'app
+Fait (à tester dans la VM : impression et association, propres à Windows) :
+- Menus Fichier / Édition ; champ de recherche (Ctrl+F, pendant la frappe, Entrée/F3 suivant, Maj+F3 précédent,
+  compteur n/N, résultats surlignés, résultat courant en orange)
+- Sélection du texte à la souris sur une page (double-clic = mot), Ctrl+A = page courante, Ctrl+C copie
+- Imprimer… (Ctrl+P) : dialogue Windows, pages choisies, chaque page ajustée à la zone imprimable (GDI + `FPDF_RenderPage`)
+- Inscription pour les .pdf (HKCU, à chaque lancement : « Ouvrir avec », Applications par défaut) ;
+  Fichier > « Utiliser pdf-svd pour ouvrir les PDF… » ouvre Paramètres > Applications par défaut
+Reste : sélection sur plusieurs pages
 ## ⬜ Étape W3 — Annotations (surlignage, notes, zones de texte, dessin, formes) et enregistrement
 ## ⬜ Étape W4 — Signatures, tampons, images
 ## ⬜ Étape W5 — Pages (pivoter, supprimer, réordonner, insérer, extraire), export, réduire la taille

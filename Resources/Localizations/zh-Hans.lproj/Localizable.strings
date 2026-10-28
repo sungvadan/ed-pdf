@@ -634,3 +634,16 @@
 
 /* ViewerCommands.swift */
 "Rechercher…" = "查找…";
+
+/* Windows : menus, recherche, impression, association des .pdf */
+"Fichier" = "文件";
+"Édition" = "编辑";
+"Imprimer…" = "打印…";
+"Utiliser pdf-svd pour ouvrir les PDF…" = "使用 pdf-svd 打开 PDF…";
+"Quitter" = "退出";
+"Copier" = "拷贝";
+"Tout sélectionner" = "全选";
+"Aucun résultat" = "无结果";
+"Impossible d'imprimer ce document." = "无法打印此文稿。";
+"Document PDF" = "PDF 文稿";
+"Lire, annoter et signer des PDF" = "阅读、注释和签署 PDF";

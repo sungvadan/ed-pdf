@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Avalonia;
 using Avalonia.Media.Imaging;
 
 namespace PdfSvd;
@@ -27,6 +30,15 @@ public sealed class PageItem(int index, double widthPoints, double heightPoints)
     public Bitmap? Bitmap { get => bitmap; set { bitmap = value; Changed(); } }
     /// Scale of `Bitmap`, or of the rendering in progress.
     public double RenderedScale { get; set; }
+
+    // Highlights, in points from the page's top left.
+    IReadOnlyList<Rect> matches = [], currentMatch = [], selection = [];
+    /// Search matches on this page.
+    public IReadOnlyList<Rect> Matches { get => matches; set { matches = value; Changed(); } }
+    /// The selected search match, if it is on this page.
+    public IReadOnlyList<Rect> CurrentMatch { get => currentMatch; set { currentMatch = value; Changed(); } }
+    /// Selected text.
+    public IReadOnlyList<Rect> Selection { get => selection; set { selection = value; Changed(); } }
 
     public event PropertyChangedEventHandler? PropertyChanged;
     void Changed([CallerMemberName] string? name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));

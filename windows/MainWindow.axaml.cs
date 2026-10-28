@@ -2,14 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
+using Avalonia.VisualTree;
 using PdfSvd.Pdf;
 using static PdfSvd.L10n;
 
@@ -32,6 +35,17 @@ public partial class MainWindow : Window
     int currentPage;
     bool updatingSelection;
 
+    // Search: all matches of the document, the selected one, the search in progress.
+    List<TextMatch> matches = [];
+    int matchIndex = -1;
+    CancellationTokenSource? searchCancel;
+
+    // Text selection: characters [selectionStart, selectionStart + selectionCount) of page selectionPage.
+    int selectionPage = -1, selectionStart, selectionCount;
+    /// Page being selected with the mouse, and the character where the drag started (-1: not on text yet).
+    PageView? selectingView;
+    int selectionAnchor = -1;
+
     public MainWindow() : this(null) { }
 
     public MainWindow(string? path)
@@ -45,6 +59,11 @@ public partial class MainWindow : Window
         ToolTip.SetTip(ZoomOutButton, Tr("Zoom arrière") + " (Ctrl+−)");
         ToolTip.SetTip(ZoomInButton, Tr("Zoom avant") + " (Ctrl++)");
         EmptyText.Text = Tr("Glissez un PDF ici ou ouvrez-en un (Ctrl+O).");
+        SearchBox.Watermark = Tr("Rechercher");
+        ToolTip.SetTip(SearchBox, Tr("Rechercher") + " (Ctrl+F)");
+        ToolTip.SetTip(PreviousMatchButton, Tr("Résultat précédent") + " (Maj+F3)");
+        ToolTip.SetTip(NextMatchButton, Tr("Résultat suivant") + " (F3)");
+        SetUpMenu();
 
         OpenButton.Click += async (_, _) => await ChooseFile();
         PreviousButton.Click += (_, _) => GoTo(currentPage - 1);
@@ -59,6 +78,19 @@ public partial class MainWindow : Window
             UpdatePageInfo();
             Scroller.Focus();
         };
+        SearchBox.TextChanged += (_, _) => _ = Search(delay: true);
+        SearchBox.KeyDown += (_, e) =>
+        {
+            if (e.Key == Key.Enter) ShowMatch(e.KeyModifiers.HasFlag(KeyModifiers.Shift) ? -1 : +1);
+            else if (e.Key == Key.Escape) { SearchBox.Text = ""; Scroller.Focus(); }
+            else return;
+            e.Handled = true;
+        };
+        PreviousMatchButton.Click += (_, _) => ShowMatch(-1);
+        NextMatchButton.Click += (_, _) => ShowMatch(+1);
+        Scroller.AddHandler(PointerPressedEvent, PagePressed, RoutingStrategies.Bubble, handledEventsToo: true);
+        Scroller.AddHandler(PointerMovedEvent, PageDragged, RoutingStrategies.Bubble, handledEventsToo: true);
+        Scroller.AddHandler(PointerReleasedEvent, (_, _) => selectingView = null, RoutingStrategies.Bubble, handledEventsToo: true);
         Scroller.ScrollChanged += (_, _) => ViewportChanged();
         Scroller.SizeChanged += (_, _) => ViewportChanged();
         Thumbnails.SelectionChanged += (_, _) =>
@@ -71,6 +103,35 @@ public partial class MainWindow : Window
 
         UpdatePageInfo();
         if (path != null) Opened += async (_, _) => await Open(path);
+        Task.Run(() => { try { if (OperatingSystem.IsWindows()) FileAssociation.Register(); } catch { } });
+    }
+
+    void SetUpMenu()
+    {
+        FileMenu.Header = Tr("Fichier");
+        EditMenu.Header = Tr("Édition");
+        Item(OpenItem, Tr("Ouvrir…"), new KeyGesture(Key.O, KeyModifiers.Control), async () => await ChooseFile());
+        Item(PrintItem, Tr("Imprimer…"), new KeyGesture(Key.P, KeyModifiers.Control), async () => await Print());
+        Item(DefaultAppItem, Tr("Utiliser pdf-svd pour ouvrir les PDF…"), null, () =>
+        {
+            if (OperatingSystem.IsWindows()) FileAssociation.OpenDefaultAppsSettings();
+        });
+        Item(QuitItem, Tr("Quitter"), null, Close);
+        Item(CopyItem, Tr("Copier"), new KeyGesture(Key.C, KeyModifiers.Control), async () => await CopySelection());
+        Item(SelectAllItem, Tr("Tout sélectionner"), new KeyGesture(Key.A, KeyModifiers.Control), SelectAllOnPage);
+        Item(FindItem, Tr("Rechercher…"), new KeyGesture(Key.F, KeyModifiers.Control), FocusSearch);
+        Item(FindNextItem, Tr("Résultat suivant"), new KeyGesture(Key.F3), () => ShowMatch(+1));
+        Item(FindPreviousItem, Tr("Résultat précédent"), new KeyGesture(Key.F3, KeyModifiers.Shift), () => ShowMatch(-1));
+        // Printing and file association use Windows APIs (the app also runs on the Mac for development).
+        PrintItem.IsVisible = DefaultAppItem.IsVisible = DefaultAppSeparator.IsVisible = OperatingSystem.IsWindows();
+    }
+
+    /// The gesture is only displayed: shortcuts are handled in OnKeyDown, so that text fields keep theirs.
+    static void Item(MenuItem item, string title, KeyGesture? gesture, Action action)
+    {
+        item.Header = title;
+        item.InputGesture = gesture;
+        item.Click += (_, _) => action();
     }
 
     // MARK: Opening
@@ -123,8 +184,13 @@ public partial class MainWindow : Window
         Thumbnails.ItemsSource = thumbnails;
         EmptyText.IsVisible = false;
         currentPage = 0;
+        selectionPage = -1;
+        matches = [];
+        matchIndex = -1;
         SetScale(Math.Min(FitWidthScale(), 2 * ActualSize));
         Scroller.Offset = default;
+        if (!string.IsNullOrWhiteSpace(SearchBox.Text)) await Search(delay: false);
+        else UpdateMatchInfo();
     }
 
     // MARK: Zoom and navigation
@@ -179,6 +245,8 @@ public partial class MainWindow : Window
         PageBox.Text = hasDocument ? $"{currentPage + 1}" : "";
         PageBox.IsEnabled = PreviousButton.IsEnabled = NextButton.IsEnabled = hasDocument;
         ZoomInButton.IsEnabled = ZoomOutButton.IsEnabled = FitButton.IsEnabled = hasDocument;
+        PrintItem.IsEnabled = SelectAllItem.IsEnabled = hasDocument;
+        CopyItem.IsEnabled = selectionPage >= 0 && selectionCount > 0;
         PageCountText.Text = hasDocument ? $"/ {pages.Count}" : "";
         ZoomText.Text = hasDocument ? $"{Math.Round(scale / ActualSize * 100)} %" : "";
         updatingSelection = true;
@@ -239,19 +307,173 @@ public partial class MainWindow : Window
         item.Bitmap = bitmap;
     }
 
+    // MARK: Search
+
+    void FocusSearch()
+    {
+        SearchBox.Focus();
+        SearchBox.SelectAll();
+    }
+
+    /// Searches the document for the text of the search field (after a pause while typing).
+    async Task Search(bool delay)
+    {
+        searchCancel?.Cancel();
+        var cancel = searchCancel = new CancellationTokenSource();
+        var query = SearchBox.Text?.Trim() ?? "";
+        var source = document;
+        List<TextMatch> found = [];
+        if (query.Length > 0 && source != null)
+        {
+            try
+            {
+                if (delay) await Task.Delay(250, cancel.Token);
+                found = await Task.Run(() => source.Find(query, cancel.Token), cancel.Token);
+            }
+            catch (OperationCanceledException) { return; }
+            if (cancel.IsCancellationRequested || source != document) return;
+        }
+        matches = found;
+        foreach (var page in pages) page.Matches = [];
+        foreach (var group in found.GroupBy(m => m.Page)) pages[group.Key].Matches = group.SelectMany(m => m.Rects).ToArray();
+        // First match from the current page on.
+        matchIndex = found.Count == 0 ? -1 : Math.Max(0, found.FindIndex(m => m.Page >= currentPage));
+        SelectMatch();
+    }
+
+    void ShowMatch(int direction)
+    {
+        if (matches.Count == 0)
+        {
+            if (!string.IsNullOrWhiteSpace(SearchBox.Text)) _ = Search(delay: false); // Enter before the end of the pause
+            return;
+        }
+        matchIndex = (matchIndex + direction + matches.Count) % matches.Count;
+        SelectMatch();
+    }
+
+    /// Highlights the selected match and scrolls to it if it is not visible.
+    void SelectMatch()
+    {
+        foreach (var page in pages) if (page.CurrentMatch.Count > 0) page.CurrentMatch = [];
+        UpdateMatchInfo();
+        if (matchIndex < 0) return;
+        var match = matches[matchIndex];
+        var item = pages[match.Page];
+        item.CurrentMatch = match.Rects;
+        if (match.Rects.Length == 0) { GoTo(match.Page); return; }
+        var rect = match.Rects[0];
+        double top = PageTop(match.Page) + rect.Y * scale, bottom = top + rect.Height * scale;
+        var viewport = Scroller.Viewport.Height;
+        if (top < Scroller.Offset.Y || bottom > Scroller.Offset.Y + viewport)
+            Scroller.Offset = new Vector(Scroller.Offset.X, Math.Max(0, top - viewport / 3));
+    }
+
+    void UpdateMatchInfo()
+    {
+        var searching = !string.IsNullOrWhiteSpace(SearchBox.Text) && document != null;
+        MatchText.Text = !searching ? "" : matches.Count == 0 ? Tr("Aucun résultat") : $"{matchIndex + 1}/{matches.Count}";
+        PreviousMatchButton.IsEnabled = NextMatchButton.IsEnabled = matches.Count > 0;
+        FindNextItem.IsEnabled = FindPreviousItem.IsEnabled = matches.Count > 0;
+    }
+
+    // MARK: Text selection
+
+    static PageView? PageViewAt(PointerEventArgs e) => (e.Source as Visual)?.FindAncestorOfType<PageView>(includeSelf: true);
+
+    /// Character under the pointer, or near it (the end of a line when dragging beyond it), or -1.
+    int CharIndexAt(PageView view, PointerEventArgs e, bool near)
+    {
+        if (document == null || view.DataContext is not PageItem item) return -1;
+        var point = e.GetPosition(view) / item.Scale;
+        var index = document.CharIndexAt(item.Index, point, 4);
+        return index >= 0 || !near ? index : document.CharIndexAt(item.Index, point, 40);
+    }
+
+    void PagePressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (!e.GetCurrentPoint(Scroller).Properties.IsLeftButtonPressed) return;
+        SetSelection(-1, 0, 0);
+        if (PageViewAt(e) is not { DataContext: PageItem item } view || document == null) return;
+        Scroller.Focus();
+        var index = CharIndexAt(view, e, near: false);
+        if (e.ClickCount >= 2 && index >= 0)
+        {
+            var (start, count) = document.WordAt(item.Index, index);
+            SetSelection(item.Index, start, count);
+            return;
+        }
+        selectingView = view;
+        selectionAnchor = index;
+        e.Pointer.Capture(view);
+    }
+
+    void PageDragged(object? sender, PointerEventArgs e)
+    {
+        if (selectingView is not { DataContext: PageItem item } view) return;
+        var index = CharIndexAt(view, e, near: true);
+        if (index < 0) return;
+        if (selectionAnchor < 0) selectionAnchor = index;
+        int start = Math.Min(selectionAnchor, index), end = Math.Max(selectionAnchor, index);
+        SetSelection(item.Index, start, end - start + 1);
+    }
+
+    void SetSelection(int page, int start, int count)
+    {
+        if (selectionPage >= 0 && selectionPage < pages.Count && selectionPage != page) pages[selectionPage].Selection = [];
+        selectionPage = page;
+        selectionStart = start;
+        selectionCount = count;
+        if (page >= 0 && document != null) pages[page].Selection = document.TextRects(page, start, count);
+        CopyItem.IsEnabled = page >= 0 && count > 0;
+    }
+
+    void SelectAllOnPage()
+    {
+        if (document != null && pages.Count > 0) SetSelection(currentPage, 0, document.CharCount(currentPage));
+    }
+
+    async Task CopySelection()
+    {
+        if (document == null || selectionPage < 0 || selectionCount == 0 || Clipboard == null) return;
+        await Clipboard.SetTextAsync(document.Text(selectionPage, selectionStart, selectionCount));
+    }
+
+    // MARK: Printing
+
+    async Task Print()
+    {
+        if (!OperatingSystem.IsWindows() || document == null) return;
+        try
+        {
+            await Printing.Print(TryGetPlatformHandle()?.Handle ?? IntPtr.Zero, document);
+        }
+        catch (Exception)
+        {
+            await Dialogs.ShowMessage(this, Tr("Impossible d'imprimer ce document."), Path.GetFileName(document.Path));
+        }
+    }
+
     // MARK: Keyboard
 
     protected override void OnKeyDown(KeyEventArgs e)
     {
         var command = e.KeyModifiers.HasFlag(KeyModifiers.Control) || e.KeyModifiers.HasFlag(KeyModifiers.Meta);
+        var inTextField = FocusManager?.GetFocusedElement() is TextBox;
         switch (e.Key)
         {
             case Key.O when command: _ = ChooseFile(); break;
+            case Key.P when command: _ = Print(); break;
+            case Key.F when command: FocusSearch(); break;
+            case Key.F3: ShowMatch(e.KeyModifiers.HasFlag(KeyModifiers.Shift) ? -1 : +1); break;
+            case Key.C when command && !inTextField: _ = CopySelection(); break;
+            case Key.A when command && !inTextField: SelectAllOnPage(); break;
+            case Key.Escape when !inTextField: SetSelection(-1, 0, 0); break;
             case Key.OemPlus or Key.Add when command: Zoom(+1); break;
             case Key.OemMinus or Key.Subtract when command: Zoom(-1); break;
             case Key.D0 or Key.NumPad0 when command: SetScale(ActualSize); break;
-            case Key.Home when !PageBox.IsFocused: GoTo(0); break;
-            case Key.End when !PageBox.IsFocused: GoTo(pages.Count - 1); break;
+            case Key.Home when !inTextField: GoTo(0); break;
+            case Key.End when !inTextField: GoTo(pages.Count - 1); break;
             default: base.OnKeyDown(e); return;
         }
         e.Handled = true;

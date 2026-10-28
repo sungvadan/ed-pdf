@@ -634,3 +634,16 @@
 
 /* ViewerCommands.swift */
 "Rechercher…" = "Buscar…";
+
+/* Windows : menus, recherche, impression, association des .pdf */
+"Fichier" = "Archivo";
+"Édition" = "Edición";
+"Imprimer…" = "Imprimir…";
+"Utiliser pdf-svd pour ouvrir les PDF…" = "Usar pdf-svd para abrir los PDF…";
+"Quitter" = "Salir";
+"Copier" = "Copiar";
+"Tout sélectionner" = "Seleccionar todo";
+"Aucun résultat" = "Sin resultados";
+"Impossible d'imprimer ce document." = "No se puede imprimir este documento.";
+"Document PDF" = "Documento PDF";
+"Lire, annoter et signer des PDF" = "Leer, anotar y firmar PDF";

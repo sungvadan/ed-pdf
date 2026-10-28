@@ -634,3 +634,16 @@
 
 /* ViewerCommands.swift */
 "Rechercher…" = "検索…";
+
+/* Windows : menus, recherche, impression, association des .pdf */
+"Fichier" = "ファイル";
+"Édition" = "編集";
+"Imprimer…" = "プリント…";
+"Utiliser pdf-svd pour ouvrir les PDF…" = "PDF を pdf-svd で開く…";
+"Quitter" = "終了";
+"Copier" = "コピー";
+"Tout sélectionner" = "すべてを選択";
+"Aucun résultat" = "結果なし";
+"Impossible d'imprimer ce document." = "この書類をプリントできません。";
+"Document PDF" = "PDF 書類";
+"Lire, annoter et signer des PDF" = "PDF の閲覧、注釈、署名";
