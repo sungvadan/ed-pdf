@@ -81,7 +81,7 @@ XObjects, texte tourné : lecture seule.
 
 - C. ✅ UI (`Sources/Folio/TextEditing.swift`) : outil « Modifier le texte » ; survol = cadre du paragraphe ; clic =
   NSTextView posé sur le paragraphe (première ligne de base alignée, police d'affichage = `TextDisplay.font`, attribut
-  `.folioRunStyle` par caractère → la saisie hérite du style) ; étiquette police · taille ; clic ailleurs / changement
+  `.folioRunStyle` par caractère → la saisie hérite du style) ; clic ailleurs / changement
   d'outil / zoom = validation, Échap = validation aussi (⌘Z pour revenir) ; validation = `TextEditor.replace` + `applyPages` (⌘Z).
   Mise en page analysée une fois par révision (`ViewerModel.textLayout(for:)`).
   Auto-test sans UI du vrai code de l'app : `build/pdf-svd.app/Contents/MacOS/Folio --selftest-edit in.pdf "trouver" "remplacer" out.pdf`

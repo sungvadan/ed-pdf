@@ -37,7 +37,7 @@ enum SelfTest {
                                              windowNumber: window.windowNumber, context: nil, eventNumber: 0, clickCount: 1, pressure: 1) else { fail("event") }
         viewer.pdfView.mouseDown(with: click)
         guard let session = viewer.pdfView.textSession else { fail("no editor opened") }
-        print("editor:", session.label.stringValue.trimmingCharacters(in: .whitespaces), "| frame", session.textView.frame.integral)
+        print("editor:", session.textView.font?.fontName ?? "?", "| frame", session.textView.frame.integral)
         if let path = ProcessInfo.processInfo.environment["FOLIO_SNAPSHOT"] {
             // Page with the editor on top, to check that the editor text sits on the original text.
             let content = window.contentView!

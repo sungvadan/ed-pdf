@@ -24,7 +24,6 @@ final class TextEditSession: NSObject, NSTextViewDelegate {
     let geometry: ParagraphGeometry
     /// TextKit 2: TextKit 1 draws the caret back at the line start on a line made only of spaces (fractional font sizes).
     let textView = NSTextView(usingTextLayoutManager: true)
-    let label = NSTextField(labelWithString: "")
     let originalText: String
     weak var pdfView: FolioPDFView?
 
@@ -112,13 +111,6 @@ final class TextEditSession: NSObject, NSTextViewDelegate {
             textView.textContainer?.size = CGSize(width: (geometry.width + geometry.wrapTolerance) * scale, height: .greatestFiniteMagnitude)
             textView.textContainer?.widthTracksTextView = false
         }
-
-        label.font = .systemFont(ofSize: 10, weight: .medium)
-        label.textColor = .white
-        label.drawsBackground = true
-        label.backgroundColor = NSColor.controlAccentColor
-        label.stringValue = Self.describe(styles: styles, block: block, embedded: embedded)
-        label.sizeToFit()
     }
 
     /// Most frequent color of the page area (text covers far fewer pixels than its background).
@@ -147,19 +139,6 @@ final class TextEditSession: NSObject, NSTextViewDelegate {
         return NSColor(srgbRed: min(channel(10), 1), green: min(channel(5), 1), blue: min(channel(0), 1), alpha: 1)
     }
 
-    private static func describe(styles: [RunStyle], block: TextBlock, embedded: [Bool]) -> String {
-        guard let main = block.dominantRun.map(RunStyle.init(run:)) else { return "" }
-        let size = String(format: "%g", (main.fontSize * 10).rounded() / 10)
-        let displayFont = TextDisplay.font(for: main, size: 12)
-        let display = CTFontCopyFamilyName(displayFont) as String
-        let exact = (CTFontCopyPostScriptName(displayFont) as String).caseInsensitiveCompare(main.font.postScriptName) == .orderedSame
-        let ownFont = styles.firstIndex(of: main).map { embedded[$0] } ?? false
-        let shown = exact ? display : ownFont ? main.font.familyName.isEmpty ? main.font.postScriptName : main.font.familyName
-            : tr("%@ (affichée en %@)", main.font.postScriptName, display)
-        let more = styles.count > 1 ? " · " + tr("%d styles", styles.count) : ""
-        return "  \(shown) · \(size) pt\(more)  " // l10n-ignore
-    }
-
     /// Positions the editor so its first baseline sits on the paragraph's first baseline.
     func layoutEditor() {
         guard let pdfView, let page = pdfView.document?.page(at: layout.pageIndex),
@@ -183,7 +162,6 @@ final class TextEditSession: NSObject, NSTextViewDelegate {
 
         let baseline = pdfView.convert(geometry.origin, from: page)
         textView.frame = CGRect(x: baseline.x, y: baseline.y + baselineOffset - height, width: width + 2, height: height)
-        label.frame.origin = CGPoint(x: textView.frame.minX, y: textView.frame.maxY + 3)
     }
 
     /// The edited text as styled segments, mapped back to the original run styles.
@@ -265,7 +243,6 @@ extension FolioPDFView {
         let session = TextEditSession(layout: layout, blockIndex: index, scale: scaleFactor, pdfView: self, password: viewer.documentPassword)
         textSession = session
         addSubview(session.textView, positioned: .above, relativeTo: nil)
-        addSubview(session.label, positioned: .above, relativeTo: nil)
         session.layoutEditor()
         window?.makeFirstResponder(session.textView)
         let inText = session.textView.convert(event.locationInWindow, from: nil)
@@ -277,7 +254,6 @@ extension FolioPDFView {
         guard let session = textSession else { return }
         textSession = nil
         session.textView.removeFromSuperview()
-        session.label.removeFromSuperview()
         window?.makeFirstResponder(self)
         guard commit, session.hasChanges, let viewer else { return }
         viewer.applyTextEdit(layout: session.layout, blockIndex: session.blockIndex, segments: session.segments())

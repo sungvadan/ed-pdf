@@ -1,6 +1,3 @@
-/* TextEditing.swift:158 */
-"%@ (affichée en %@)" = "%@ (exibida como %@)";
-
 /* SendExport.swift:121 */
 "%@ (envoi)" = "%@ (envio)";
 
@@ -15,9 +12,6 @@
 
 /* AnnotationViews.swift:348 */
 "%d pt (auto)" = "%d pt (auto)";
-
-/* TextEditing.swift:159 */
-"%d styles" = "%d estilos";
 
 /* ImageExport.swift:80 */
 "150 ppp (standard)" = "150 dpi (padrão)";
