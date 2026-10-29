@@ -157,7 +157,7 @@ static class SignatureDialogs
     /// the result is cropped around the ink. Null if no ink was found.
     public static byte[]? ExtractSignature(string path)
     {
-        using var decoded = SKBitmap.Decode(path);
+        using var decoded = ImageDecoder.Decode(path);
         if (decoded == null) return null;
         var scale = Math.Min(1, 1600.0 / Math.Max(decoded.Width, decoded.Height));
         var info = new SKImageInfo((int)(decoded.Width * scale), (int)(decoded.Height * scale), SKColorType.Rgba8888, SKAlphaType.Unpremul);
@@ -191,7 +191,7 @@ static class SignatureDialogs
     /// An image file as PNG, reduced to `maxPixels` on its longest side. Null if it cannot be read.
     public static byte[]? LoadImage(string path, int maxPixels = 1200)
     {
-        using var decoded = SKBitmap.Decode(path);
+        using var decoded = ImageDecoder.Decode(path);
         if (decoded == null) return null;
         var scale = Math.Min(1, (double)maxPixels / Math.Max(decoded.Width, decoded.Height));
         if (scale >= 1) return decoded.Encode(SKEncodedImageFormat.Png, 100)?.ToArray();

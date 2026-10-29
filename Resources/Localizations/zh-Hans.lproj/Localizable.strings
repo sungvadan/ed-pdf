@@ -662,3 +662,5 @@
 "Impossible de lire cette image." = "无法读取此图像。";
 "Choisissez la photo ou le scan d'une signature" = "选取签名的照片或扫描件";
 "Aucune signature trouvée dans cette image." = "在此图像中未找到签名。";
+
+"Pour lire les photos HEIC, installez « Extensions d'image HEIF » et « Extensions vidéo HEVC » depuis le Microsoft Store." = "要打开 HEIC 照片，请从 Microsoft Store 安装“HEIF 图像扩展”和“HEVC 视频扩展”。";

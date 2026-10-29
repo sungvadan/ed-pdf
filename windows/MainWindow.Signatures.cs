@@ -195,16 +195,21 @@ public partial class MainWindow
         var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
             Title = title,
-            FileTypeFilter = [new FilePickerFileType(Tr("Images")) { Patterns = ["*.png", "*.jpg", "*.jpeg", "*.bmp", "*.gif", "*.webp"] }],
+            FileTypeFilter = [new FilePickerFileType(Tr("Images")) { Patterns = ImageDecoder.Patterns }],
         });
         return files.FirstOrDefault()?.TryGetLocalPath();
     }
+
+    /// File name, plus how to read HEIC photos when Windows lacks the codec.
+    static string UnreadableDetail(string path) => ImageDecoder.IsHeif(path)
+        ? Path.GetFileName(path) + "\n\n" + Tr("Pour lire les photos HEIC, installez « Extensions d'image HEIF » et « Extensions vidéo HEVC » depuis le Microsoft Store.")
+        : Path.GetFileName(path);
 
     async Task ChooseImageToPlace()
     {
         if (document == null || await PickImage(Tr("Choisissez une image à placer sur la page")) is not { } path) return;
         if (await Task.Run(() => SignatureDialogs.LoadImage(path)) is { } png) PlaceImage(png);
-        else await Dialogs.ShowMessage(this, Tr("Impossible de lire cette image."), Path.GetFileName(path));
+        else await Dialogs.ShowMessage(this, Tr("Impossible de lire cette image."), UnreadableDetail(path));
     }
 
     async Task SignatureFromImage()
@@ -212,7 +217,7 @@ public partial class MainWindow
         if (await PickImage(Tr("Choisissez la photo ou le scan d'une signature")) is not { } path) return;
         if (await Task.Run(() => SignatureDialogs.ExtractSignature(path)) is not { } png)
         {
-            await Dialogs.ShowMessage(this, Tr("Aucune signature trouvée dans cette image."), Path.GetFileName(path));
+            await Dialogs.ShowMessage(this, Tr("Aucune signature trouvée dans cette image."), UnreadableDetail(path));
             return;
         }
         var signature = new SavedSignature { Png = Convert.ToBase64String(png) };

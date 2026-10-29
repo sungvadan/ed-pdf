@@ -662,3 +662,5 @@
 "Impossible de lire cette image." = "この画像を読み込めません。";
 "Choisissez la photo ou le scan d'une signature" = "署名の写真またはスキャンを選択";
 "Aucune signature trouvée dans cette image." = "この画像に署名が見つかりません。";
+
+"Pour lire les photos HEIC, installez « Extensions d'image HEIF » et « Extensions vidéo HEVC » depuis le Microsoft Store." = "HEIC 写真を開くには、Microsoft Store から「HEIF 画像拡張機能」と「HEVC ビデオ拡張機能」をインストールしてください。";

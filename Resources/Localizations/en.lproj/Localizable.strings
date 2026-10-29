@@ -662,3 +662,5 @@
 "Impossible de lire cette image." = "Unable to read this image.";
 "Choisissez la photo ou le scan d'une signature" = "Choose a photo or scan of a signature";
 "Aucune signature trouvée dans cette image." = "No signature found in this image.";
+
+"Pour lire les photos HEIC, installez « Extensions d'image HEIF » et « Extensions vidéo HEVC » depuis le Microsoft Store." = "To open HEIC photos, install “HEIF Image Extensions” and “HEVC Video Extensions” from the Microsoft Store.";
