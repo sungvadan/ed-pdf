@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -39,13 +40,17 @@ public partial class MainWindow
         ToolTip.SetTip(StampButton, Tr("Tampon"));
         ImageButton.Content = Tr("Image");
         ToolTip.SetTip(ImageButton, Tr("Placer une image"));
-        var signMenu = new MenuFlyout();
-        signMenu.Opening += (_, _) => BuildSignMenu(signMenu);
-        SignButton.Flyout = signMenu;
-        var stampMenu = new MenuFlyout();
-        stampMenu.Opening += (_, _) => BuildStampMenu(stampMenu);
-        StampButton.Flyout = stampMenu;
+        // Menus rebuilt before each opening: items added during Opening are not shown.
+        SignButton.Click += (_, _) => ShowMenu(SignButton, BuildSignMenu);
+        StampButton.Click += (_, _) => ShowMenu(StampButton, BuildStampMenu);
         ImageButton.Click += async (_, _) => await ChooseImageToPlace();
+    }
+
+    static void ShowMenu(Control target, Action<MenuFlyout> build)
+    {
+        var menu = new MenuFlyout { Placement = PlacementMode.BottomEdgeAlignedLeft };
+        build(menu);
+        menu.ShowAt(target);
     }
 
     static MenuItem Item(object header, Action action)
@@ -57,7 +62,6 @@ public partial class MainWindow
 
     void BuildSignMenu(MenuFlyout menu)
     {
-        menu.Items.Clear();
         foreach (var signature in Library.Signatures) menu.Items.Add(Item(SignaturePreview(signature), () => PlaceSignature(signature)));
         if (Library.Signatures.Count > 0) menu.Items.Add(new Separator());
         menu.Items.Add(Item(Tr("Nouvelle signature…"), async () =>
@@ -77,7 +81,6 @@ public partial class MainWindow
 
     void BuildStampMenu(MenuFlyout menu)
     {
-        menu.Items.Clear();
         var culture = CultureInfo.CurrentCulture;
         foreach (var (text, color) in PresetStamps)
             menu.Items.Add(Item(culture.TextInfo.ToTitleCase(text.ToLower(culture)), () => PlaceStamp(text, color)));
