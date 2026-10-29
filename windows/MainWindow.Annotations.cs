@@ -29,7 +29,7 @@ public partial class MainWindow
         Color.Parse("#E5322D"), Color.Parse("#8E44AD"), Colors.Black,
     ];
     static readonly double[] LineWidths = [1, 2, 4, 8];
-    static readonly double[] FontSizes = [9, 10, 12, 14, 18, 24, 36];
+    static readonly double[] FontSizes = [9, 10, 12, 14, 18, 20, 24, 36];
     const double DefaultTextBoxWidth = 200, NoteSize = 24;
 
     Tool tool = Tool.Select;
@@ -67,6 +67,7 @@ public partial class MainWindow
     Annotation? editingAnnotation;
     Point editingTopLeft;
     double editingWidth, editingSize;
+    bool editingStamp;
     Color editingColor;
 
     // MARK: Annotation bar
@@ -119,6 +120,7 @@ public partial class MainWindow
             EndTextEditing(commit: true);
             e.Handled = true;
         };
+        SetUpInsertMenus();
         undo.Changed += UpdateEditingState;
         UpdateEditingState();
     }
@@ -194,7 +196,7 @@ public partial class MainWindow
     (bool Color, bool Width, bool FontSize) EditedProperties()
     {
         if (editingPage >= 0) return (true, false, true);
-        if (selected != null) return (true, selected.HasLineWidth, selected.Kind == AnnotationKind.TextBox);
+        if (selected != null) return (selected.Kind != AnnotationKind.Stamp, selected.HasLineWidth, selected.Kind == AnnotationKind.TextBox);
         return (tool != Tool.Select, tool is Tool.Ink or Tool.Rectangle or Tool.Ellipse or Tool.Line or Tool.Arrow, tool == Tool.Text);
     }
 
@@ -259,17 +261,19 @@ public partial class MainWindow
             PlaceEditor();
         }
         else if (selected is { Kind: AnnotationKind.TextBox } box)
-            UpdateAnnotation(selectedPage, box, box with { FontSize = size, Bounds = TextBoxBounds(box.Bounds, box.Contents, size) });
+            UpdateAnnotation(selectedPage, box, box with { FontSize = size, Bounds = TextBoxBounds(box.Bounds, box.Contents, size, box.StampStyle) });
         else
             fontSize = size;
         UpdateEditingState();
     }
 
-    /// Text box bounds fitting its text: same top and width.
-    static Rect TextBoxBounds(Rect bounds, string text, double size)
+    /// Text box bounds fitting its text: same top and width. A stamp gets the width of its text, same centre.
+    static Rect TextBoxBounds(Rect bounds, string text, double size, bool stamp = false)
     {
-        var height = TextAppearance.Height(text, size, bounds.Width);
-        return new Rect(bounds.X, bounds.Y + bounds.Height - height, bounds.Width, height);
+        var width = stamp ? TextAppearance.NaturalWidth(text, size, stamp: true) + 20 : bounds.Width;
+        var height = TextAppearance.Height(text, size, width, stamp);
+        var left = stamp ? bounds.Center.X - width / 2 : bounds.X;
+        return new Rect(left, bounds.Y + bounds.Height - height, width, height);
     }
 
     // MARK: Changes (all undoable)
@@ -297,6 +301,8 @@ public partial class MainWindow
     void RemoveAnnotation(int page, Annotation annotation)
     {
         var doc = document!;
+        // An image is needed to put a stamp back if the deletion is undone.
+        if (annotation is { Kind: AnnotationKind.Stamp, ImagePng: null }) annotation = annotation with { ImagePng = doc.StampImage(page, annotation.Name) };
         doc.RemoveAnnotation(page, annotation.Name);
         PageChanged(page);
         undo.Push(() => { doc.AddAnnotation(page, annotation); PageChanged(page); },
@@ -476,7 +482,12 @@ public partial class MainWindow
     {
         var corners = Corners(ToView(selectedPage, selected!.Bounds));
         var opposite = corners[3 - resizeCorner];
-        return new Rect(opposite, dragPoint).Normalize();
+        var rect = new Rect(opposite, dragPoint).Normalize();
+        if (selected.Kind != AnnotationKind.Stamp) return rect;
+        // Images keep their proportions: the width decides, from the fixed corner.
+        var original = ToView(selectedPage, selected.Bounds);
+        var height = rect.Width * original.Height / Math.Max(original.Width, 0.01);
+        return new Rect(rect.X, dragPoint.Y < opposite.Y ? opposite.Y - height : opposite.Y, rect.Width, height);
     }
 
     void UpdateOverlay(int page)
@@ -623,7 +634,7 @@ public partial class MainWindow
                 break;
             case Drag.Resize when selected != null:
                 var bounds = ToPage(dragPage, ResizedRect());
-                if (selected.Kind == AnnotationKind.TextBox) bounds = TextBoxBounds(bounds, selected.Contents, selected.FontSize);
+                if (selected is { Kind: AnnotationKind.TextBox, StampStyle: false }) bounds = TextBoxBounds(bounds, selected.Contents, selected.FontSize);
                 if (bounds.Width >= 2 && bounds.Height >= 2) UpdateAnnotation(dragPage, selected, selected with { Bounds = bounds });
                 break;
         }
@@ -642,6 +653,9 @@ public partial class MainWindow
         editingColor = existing?.Color ?? toolColors[Tool.Text];
         Editor.Text = existing?.Contents ?? "";
         Editor.FontFamily = new FontFamily(TextAppearance.FontFamily);
+        editingStamp = existing?.StampStyle ?? false;
+        Editor.FontWeight = editingStamp ? FontWeight.Bold : FontWeight.Normal;
+        Editor.TextAlignment = editingStamp ? TextAlignment.Center : TextAlignment.Left;
         Editor.Foreground = new SolidColorBrush(editingColor);
         if (existing != null)
         {
@@ -663,7 +677,7 @@ public partial class MainWindow
         if (view?.TranslatePoint(new Point(editingTopLeft.X * scale, editingTopLeft.Y * scale), EditorLayer) is not { } origin) return;
         Editor.FontSize = editingSize * scale;
         Editor.LineHeight = editingSize * TextAppearance.LineHeight * scale;
-        Editor.Padding = new Thickness(Math.Max(0, TextAppearance.Padding * scale - 1));
+        Editor.Padding = new Thickness(Math.Max(0, TextAppearance.PaddingFor(editingStamp) * scale - 1));
         Editor.Width = editingWidth * scale;
         Canvas.SetLeft(Editor, origin.X);
         Canvas.SetTop(Editor, origin.Y);
@@ -687,11 +701,11 @@ public partial class MainWindow
         if (commit)
         {
             var bounds = ToPage(page, new Rect(editingTopLeft, new Size(editingWidth, 1)));
-            bounds = TextBoxBounds(existing?.Bounds ?? bounds, text, editingSize);
+            bounds = TextBoxBounds(existing?.Bounds ?? bounds, text, editingSize, editingStamp);
             var box = new Annotation
             {
                 Name = existing?.Name ?? NewName(), Kind = AnnotationKind.TextBox, Bounds = bounds,
-                Color = editingColor, FontSize = editingSize, Contents = text,
+                Color = editingColor, FontSize = editingSize, Contents = text, StampStyle = editingStamp,
             };
             if (text.Length == 0) { if (existing != null) RemoveAnnotation(page, existing); }
             else if (existing == null) AddAnnotation(page, box);

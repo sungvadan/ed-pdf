@@ -655,3 +655,10 @@
 "Enregistrer les modifications apportées à « %@ » ?" = "“%@”への変更を保存しますか?";
 "Impossible d'enregistrer le document." = "書類を保存できません。";
 "Rétablir" = "やり直す";
+
+/* Windows : signatures et images */
+"Depuis une image (signature sur papier)…" = "画像から(紙の署名)…";
+"Images" = "画像";
+"Impossible de lire cette image." = "この画像を読み込めません。";
+"Choisissez la photo ou le scan d'une signature" = "署名の写真またはスキャンを選択";
+"Aucune signature trouvée dans cette image." = "この画像に署名が見つかりません。";

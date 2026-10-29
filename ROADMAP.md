@@ -92,7 +92,14 @@ Reste : sélection sur plusieurs pages
 - Détails : `windows/Pdf/Annotations.cs` (PDFium ne génère pas l'apparence des FreeText et ne sait pas créer de
   Line : le texte est dessiné en contours de glyphes, `Pdf/TextAppearance.cs` ; lignes et flèches = Ink ; la
   couleur est aussi gardée dans /FolioColor car PDFium ne la lit pas quand une apparence existe)
-## ⬜ Étape W4 — Signatures, tampons, images
+## ✅ Étape W4 — Signatures, tampons, images
+- Signer : signatures enregistrées (aperçus dans le menu), « Nouvelle signature… » (tracé à la souris/au stylet),
+  « Depuis une image (signature sur papier)… » (papier rendu transparent, encre gardée, recadrée), suppression
+- Tampon : APPROUVÉ, REJETÉ, CONFIDENTIEL, BROUILLON, PAYÉ, date du jour, tampons personnalisés (texte + couleur)
+- Image : PNG/JPEG/BMP/GIF/WebP, réduite à 1200 px, placée au centre de la page visible
+- Signatures et tampons gardés dans `%APPDATA%\pdf-svd` (signatures.json, stamps.json)
+- Les images sont des annotations Stamp avec le PNG dans /FolioImage, comme sur Mac (compatibles dans les deux sens) ;
+  les tampons texte sont des FreeText en gras, centrés, encadrés (/FolioStamp)
 ## ⬜ Étape W5 — Pages (pivoter, supprimer, réordonner, insérer, extraire), export, réduire la taille
 ## ⬜ Étape W6 — Caviardage, édition du texte existant
 

@@ -655,3 +655,10 @@
 "Enregistrer les modifications apportées à « %@ » ?" = "Save changes to “%@”?";
 "Impossible d'enregistrer le document." = "Unable to save the document.";
 "Rétablir" = "Redo";
+
+/* Windows : signatures et images */
+"Depuis une image (signature sur papier)…" = "From an Image (Signature on Paper)…";
+"Images" = "Images";
+"Impossible de lire cette image." = "Unable to read this image.";
+"Choisissez la photo ou le scan d'une signature" = "Choose a photo or scan of a signature";
+"Aucune signature trouvée dans cette image." = "No signature found in this image.";

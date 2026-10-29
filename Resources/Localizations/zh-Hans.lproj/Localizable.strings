@@ -655,3 +655,10 @@
 "Enregistrer les modifications apportées à « %@ » ?" = "要存储对“%@”所做的更改吗?";
 "Impossible d'enregistrer le document." = "无法存储文稿。";
 "Rétablir" = "重做";
+
+/* Windows : signatures et images */
+"Depuis une image (signature sur papier)…" = "从图像(纸上的签名)…";
+"Images" = "图像";
+"Impossible de lire cette image." = "无法读取此图像。";
+"Choisissez la photo ou le scan d'une signature" = "选取签名的照片或扫描件";
+"Aucune signature trouvée dans cette image." = "在此图像中未找到签名。";

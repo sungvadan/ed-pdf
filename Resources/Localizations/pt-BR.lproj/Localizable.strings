@@ -655,3 +655,10 @@
 "Enregistrer les modifications apportées à « %@ » ?" = "Salvar as alterações em “%@”?";
 "Impossible d'enregistrer le document." = "Não foi possível salvar o documento.";
 "Rétablir" = "Refazer";
+
+/* Windows : signatures et images */
+"Depuis une image (signature sur papier)…" = "De uma imagem (assinatura em papel)…";
+"Images" = "Imagens";
+"Impossible de lire cette image." = "Não foi possível ler esta imagem.";
+"Choisissez la photo ou le scan d'une signature" = "Escolha uma foto ou digitalização de uma assinatura";
+"Aucune signature trouvée dans cette image." = "Nenhuma assinatura encontrada nesta imagem.";

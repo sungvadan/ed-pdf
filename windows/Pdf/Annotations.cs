@@ -39,6 +39,19 @@ internal static partial class Native
     [DllImport(Lib)] public static extern int FPDFAnnot_SetAP(IntPtr annot, int mode, [MarshalAs(UnmanagedType.LPWStr)] string? value);
     [DllImport(Lib)] public static extern int FPDFAnnot_GetFlags(IntPtr annot);
     [DllImport(Lib)] public static extern int FPDFAnnot_SetFlags(IntPtr annot, int flags);
+    [DllImport(Lib)] public static extern int FPDFAnnot_AppendObject(IntPtr annot, IntPtr pageObject);
+    [DllImport(Lib)] public static extern int FPDFAnnot_GetObjectCount(IntPtr annot);
+    [DllImport(Lib)] public static extern IntPtr FPDFAnnot_GetObject(IntPtr annot, int index);
+    [DllImport(Lib)] public static extern int FPDFPageObj_GetType(IntPtr pageObject);
+    [DllImport(Lib)] public static extern IntPtr FPDFPageObj_NewImageObj(IntPtr document);
+    [DllImport(Lib)] public static extern int FPDFImageObj_SetBitmap(IntPtr pages, int count, IntPtr imageObject, IntPtr bitmap);
+    [DllImport(Lib)] public static extern int FPDFImageObj_SetMatrix(IntPtr imageObject, double a, double b, double c, double d, double e, double f);
+    [DllImport(Lib)] public static extern IntPtr FPDFImageObj_GetBitmap(IntPtr imageObject);
+    [DllImport(Lib)] public static extern int FPDFBitmap_GetFormat(IntPtr bitmap);
+    [DllImport(Lib)] public static extern int FPDFBitmap_GetWidth(IntPtr bitmap);
+    [DllImport(Lib)] public static extern int FPDFBitmap_GetHeight(IntPtr bitmap);
+    [DllImport(Lib)] public static extern int FPDFBitmap_GetStride(IntPtr bitmap);
+    [DllImport(Lib)] public static extern IntPtr FPDFBitmap_GetBuffer(IntPtr bitmap);
     [DllImport(Lib)] public static extern int FPDF_SaveAsCopy(IntPtr document, ref FileWrite writer, CULong flags);
 
     [StructLayout(LayoutKind.Sequential)] public struct RectF { public float Left, Top, Right, Bottom; }
@@ -50,10 +63,11 @@ internal static partial class Native
     public const int AppearanceNormal = 0;
     public const int FlagHidden = 2, FlagPrint = 4;
     public const int SaveNoIncremental = 2;
+    public const int PageObjectImage = 3;
 }
 
 /// Annotation types pdf-svd can create and edit (PDF subtype numbers in PDFium).
-public enum AnnotationKind { Note = 1, TextBox = 3, Rectangle = 5, Ellipse = 6, Highlight = 9, Underline = 10, Squiggly = 11, StrikeOut = 12, Ink = 15 }
+public enum AnnotationKind { Note = 1, TextBox = 3, Rectangle = 5, Ellipse = 6, Highlight = 9, Underline = 10, Squiggly = 11, StrikeOut = 12, Stamp = 13, Ink = 15 }
 
 /// An editable annotation, in page space: PDF points with the origin at the bottom left (so `Bounds.Y` is the bottom edge).
 /// Identified by its /NM name, given to it on first read if it had none.
@@ -70,9 +84,13 @@ public sealed record Annotation
     public Point[][] Quads { get; init; } = [];
     public string Contents { get; init; } = "";
     public double FontSize { get; init; } = 12;
+    /// Text box drawn as a stamp: bold, centred, framed.
+    public bool StampStyle { get; init; }
+    /// Image of a Stamp annotation (PNG), when known: given when placing an image, read with PdfDocument.StampImage.
+    public byte[]? ImagePng { get; init; }
 
     public bool IsMarkup => Kind is AnnotationKind.Highlight or AnnotationKind.Underline or AnnotationKind.Squiggly or AnnotationKind.StrikeOut;
-    public bool IsResizable => Kind is AnnotationKind.Rectangle or AnnotationKind.Ellipse or AnnotationKind.TextBox;
+    public bool IsResizable => Kind is AnnotationKind.Rectangle or AnnotationKind.Ellipse or AnnotationKind.TextBox or AnnotationKind.Stamp;
     public bool HasLineWidth => Kind is AnnotationKind.Rectangle or AnnotationKind.Ellipse or AnnotationKind.Ink;
 
     public Annotation Offset(Vector delta) => this with
@@ -159,9 +177,66 @@ public sealed partial class PdfDocument
         Native.FPDFAnnot_SetStringValue(annot, "T", Environment.UserName);
         Native.FPDFAnnot_SetStringValue(annot, "M", PdfDate(DateTime.Now));
         Write(annot, annotation, isNew: true);
+        if (annotation is { Kind: AnnotationKind.Stamp, ImagePng: { } png }) AppendImage(annot, annotation.Bounds, png);
         Native.FPDFPage_CloseAnnot(annot);
         return true;
     });
+
+    /// Draws a PNG in a new stamp annotation (PDFium makes its appearance from the image object).
+    void AppendImage(IntPtr annot, Rect bounds, byte[] png)
+    {
+        using var decoded = SkiaSharp.SKBitmap.Decode(png);
+        if (decoded == null) return;
+        // PDFium bitmaps are BGRA with straight (not premultiplied) alpha.
+        using var bgra = new SkiaSharp.SKBitmap(new SkiaSharp.SKImageInfo(decoded.Width, decoded.Height, SkiaSharp.SKColorType.Bgra8888, SkiaSharp.SKAlphaType.Unpremul));
+        decoded.CopyTo(bgra, SkiaSharp.SKColorType.Bgra8888);
+        var bitmap = Native.FPDFBitmap_CreateEx(bgra.Width, bgra.Height, Native.BitmapBGRA, bgra.GetPixels(), bgra.RowBytes);
+        var image = Native.FPDFPageObj_NewImageObj(handle);
+        Native.FPDFImageObj_SetBitmap(IntPtr.Zero, 0, image, bitmap);
+        Native.FPDFImageObj_SetMatrix(image, bounds.Width, 0, 0, bounds.Height, bounds.X, bounds.Y);
+        Native.FPDFAnnot_AppendObject(annot, image);
+        Native.FPDFBitmap_Destroy(bitmap);
+        // Also kept as PNG, like the Mac version (which draws it from there): lets pdf-svd place it again after an undo.
+        Native.FPDFAnnot_SetStringValue(annot, ImageKey, Convert.ToBase64String(png));
+    }
+
+    /// The image of a stamp: its /FolioImage PNG, or else its first image (without transparency). Null if it has none.
+    public byte[]? StampImage(int index, string name) => WithAnnotation(index, name, (_, annot, _) =>
+    {
+        if (GetString(annot, ImageKey) is { Length: > 0 } encoded)
+            try { return Convert.FromBase64String(encoded); } catch (FormatException) { }
+        for (var i = 0; i < Native.FPDFAnnot_GetObjectCount(annot); i++)
+        {
+            var obj = Native.FPDFAnnot_GetObject(annot, i);
+            if (Native.FPDFPageObj_GetType(obj) != Native.PageObjectImage) continue;
+            var bitmap = Native.FPDFImageObj_GetBitmap(obj);
+            if (bitmap == IntPtr.Zero) continue;
+            try { return EncodePng(bitmap); }
+            finally { Native.FPDFBitmap_Destroy(bitmap); }
+        }
+        return null;
+    }, (byte[]?)null);
+
+    static unsafe byte[]? EncodePng(IntPtr bitmap)
+    {
+        int width = Native.FPDFBitmap_GetWidth(bitmap), height = Native.FPDFBitmap_GetHeight(bitmap), stride = Native.FPDFBitmap_GetStride(bitmap);
+        var format = Native.FPDFBitmap_GetFormat(bitmap);
+        var source = (byte*)Native.FPDFBitmap_GetBuffer(bitmap);
+        using var result = new SkiaSharp.SKBitmap(new SkiaSharp.SKImageInfo(width, height, SkiaSharp.SKColorType.Bgra8888, SkiaSharp.SKAlphaType.Unpremul));
+        var target = (byte*)result.GetPixels();
+        for (var y = 0; y < height; y++)
+            for (var x = 0; x < width; x++)
+            {
+                byte* from = source + y * stride, to = target + (y * width + x) * 4;
+                switch (format)
+                {
+                    case 1: to[0] = to[1] = to[2] = from[x]; to[3] = 255; break; // gray
+                    case 2: to[0] = from[x * 3]; to[1] = from[x * 3 + 1]; to[2] = from[x * 3 + 2]; to[3] = 255; break; // BGR
+                    default: to[0] = from[x * 4]; to[1] = from[x * 4 + 1]; to[2] = from[x * 4 + 2]; to[3] = format == 4 ? from[x * 4 + 3] : (byte)255; break;
+                }
+            }
+        return result.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100)?.ToArray();
+    }
 
     /// `keepAppearance`: only the position changed; the appearance follows the rectangle (keeps that of annotations
     /// made by other apps, which PDFium may not know how to draw again).
@@ -181,19 +256,20 @@ public sealed partial class PdfDocument
         Native.FPDFAnnot_SetFlags(annot, hidden ? flags | Native.FlagHidden : flags & ~Native.FlagHidden);
     });
 
-    void WithAnnotation(int index, string name, Action<IntPtr, IntPtr, int> body) => WithPage(index, false, page =>
+    void WithAnnotation(int index, string name, Action<IntPtr, IntPtr, int> body) =>
+        WithAnnotation(index, name, (page, annot, position) => { body(page, annot, position); return true; }, false);
+
+    T WithAnnotation<T>(int index, string name, Func<IntPtr, IntPtr, int, T> body, T fallback) => WithPage(index, fallback, page =>
     {
         var count = Native.FPDFPage_GetAnnotCount(page);
         for (var i = 0; i < count; i++)
         {
             var annot = Native.FPDFPage_GetAnnot(page, i);
             if (annot == IntPtr.Zero) continue;
-            var found = GetString(annot, "NM") == name;
-            if (found) body(page, annot, i);
-            Native.FPDFPage_CloseAnnot(annot);
-            if (found) return true;
+            try { if (GetString(annot, "NM") == name) return body(page, annot, i); }
+            finally { Native.FPDFPage_CloseAnnot(annot); }
         }
-        return false;
+        return fallback;
     });
 
     static Annotation? Read(IntPtr annot)
@@ -239,26 +315,29 @@ public sealed partial class PdfDocument
             Contents = GetString(annot, "Contents"),
         };
         if (kind == AnnotationKind.TextBox && ParseAppearance(GetString(annot, "DA")) is var (size, textColor))
-            annotation = annotation with { FontSize = size, Color = textColor };
+            annotation = annotation with { FontSize = size, Color = textColor, StampStyle = GetString(annot, StampKey) == "1" };
         return annotation;
     }
 
-    const string ColorKey = "FolioColor";
+    const string ColorKey = "FolioColor", StampKey = "FolioStamp", ImageKey = "FolioImage";
 
     static void Write(IntPtr annot, Annotation a, bool isNew, bool keepAppearance = false)
     {
         var b = a.Bounds;
         // Colours cannot be set while there is an appearance: remove it first (PDFium generates it again when drawing).
-        if (!keepAppearance && a.Kind != AnnotationKind.TextBox) Native.FPDFAnnot_SetAP(annot, Native.AppearanceNormal, null);
+        // Stamps keep theirs (drawn from their image): it follows the rectangle.
+        if (!keepAppearance && a.Kind is not (AnnotationKind.TextBox or AnnotationKind.Stamp)) Native.FPDFAnnot_SetAP(annot, Native.AppearanceNormal, null);
         Native.FPDFAnnot_SetRect(annot, new Native.RectF { Left = (float)b.X, Bottom = (float)b.Y, Right = (float)b.Right, Top = (float)b.Bottom });
         Native.FPDFAnnot_SetStringValue(annot, "NM", a.Name);
         Native.FPDFAnnot_SetStringValue(annot, "Contents", a.Contents);
         Native.FPDFAnnot_SetFlags(annot, Native.FlagPrint);
+        if (a.Kind == AnnotationKind.Stamp) return;
         if (a.Kind == AnnotationKind.TextBox)
         {
+            if (a.StampStyle) Native.FPDFAnnot_SetStringValue(annot, StampKey, "1");
             Native.FPDFAnnot_SetStringValue(annot, "DA", $"/Helv {F(a.FontSize)} Tf {F(a.Color.R / 255.0)} {F(a.Color.G / 255.0)} {F(a.Color.B / 255.0)} rg");
             Native.FPDFAnnot_SetBorder(annot, 0, 0, 0);
-            if (!keepAppearance) Native.FPDFAnnot_SetAP(annot, Native.AppearanceNormal, TextAppearance.Build(b, a.Contents, a.FontSize, a.Color));
+            if (!keepAppearance) Native.FPDFAnnot_SetAP(annot, Native.AppearanceNormal, TextAppearance.Build(b, a.Contents, a.FontSize, a.Color, a.StampStyle));
             return;
         }
         Native.FPDFAnnot_SetColor(annot, Native.ColorStroke, a.Color.R, a.Color.G, a.Color.B, 255);
