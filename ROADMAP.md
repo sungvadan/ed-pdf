@@ -81,7 +81,17 @@ Fait (à tester dans la VM : impression et association, propres à Windows) :
 - Inscription pour les .pdf (HKCU, à chaque lancement : « Ouvrir avec », Applications par défaut) ;
   Fichier > « Utiliser pdf-svd pour ouvrir les PDF… » ouvre Paramètres > Applications par défaut
 Reste : sélection sur plusieurs pages
-## ⬜ Étape W3 — Annotations (surlignage, notes, zones de texte, dessin, formes) et enregistrement
+## ✅ Étape W3 — Annotations (surlignage, notes, zones de texte, dessin, formes) et enregistrement
+- Barre d'outils : sélection, surligner/souligner/barrer (glisser sur le texte, ou outil choisi avec du texte
+  sélectionné), note, zone de texte (édition sur place), dessin, rectangle, ellipse, ligne, flèche ;
+  couleurs, épaisseur, taille du texte, Supprimer
+- Sélection d'une annotation (clic), déplacement (glisser), poignées de redimensionnement (rectangle, ellipse,
+  zone de texte), double-clic = modifier le texte d'une note ou d'une zone de texte, Suppr pour effacer
+- Annuler / Rétablir (Ctrl+Z, Ctrl+Y), Enregistrer (Ctrl+S, via un fichier temporaire), Enregistrer sous…,
+  « * » dans le titre, proposition d'enregistrer à la fermeture ou à l'ouverture d'un autre fichier
+- Détails : `windows/Pdf/Annotations.cs` (PDFium ne génère pas l'apparence des FreeText et ne sait pas créer de
+  Line : le texte est dessiné en contours de glyphes, `Pdf/TextAppearance.cs` ; lignes et flèches = Ink ; la
+  couleur est aussi gardée dans /FolioColor car PDFium ne la lit pas quand une apparence existe)
 ## ⬜ Étape W4 — Signatures, tampons, images
 ## ⬜ Étape W5 — Pages (pivoter, supprimer, réordonner, insérer, extraire), export, réduire la taille
 ## ⬜ Étape W6 — Caviardage, édition du texte existant

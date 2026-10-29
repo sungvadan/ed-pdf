@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.Media;
 
 namespace PdfSvd;
@@ -16,8 +15,6 @@ public sealed class PageView : Control
     static readonly IBrush SelectionBrush = new SolidColorBrush(Color.FromArgb(80, 0, 110, 230));
 
     PageItem? item;
-
-    public PageView() => Cursor = new Cursor(StandardCursorType.Ibeam);
 
     protected override void OnDataContextChanged(EventArgs e)
     {
@@ -39,6 +36,9 @@ public sealed class PageView : Control
         Fill(context, item.Matches, MatchBrush);
         Fill(context, item.CurrentMatch, CurrentMatchBrush);
         Fill(context, item.Selection, SelectionBrush);
+        if (item.Overlay is { } overlay)
+            using (context.PushTransform(Matrix.CreateScale(item.Scale, item.Scale)))
+                overlay(context);
     }
 
     void Fill(DrawingContext context, IReadOnlyList<Rect> rects, IBrush brush)

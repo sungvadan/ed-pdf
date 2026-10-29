@@ -647,3 +647,11 @@
 "Impossible d'imprimer ce document." = "无法打印此文稿。";
 "Document PDF" = "PDF 文稿";
 "Lire, annoter et signer des PDF" = "阅读、注释和签署 PDF";
+
+/* Windows : enregistrement */
+"Enregistrer" = "存储";
+"Enregistrer sous…" = "存储为…";
+"Ne pas enregistrer" = "不存储";
+"Enregistrer les modifications apportées à « %@ » ?" = "要存储对“%@”所做的更改吗?";
+"Impossible d'enregistrer le document." = "无法存储文稿。";
+"Rétablir" = "重做";

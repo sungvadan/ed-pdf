@@ -40,6 +40,13 @@ public sealed class PageItem(int index, double widthPoints, double heightPoints)
     /// Selected text.
     public IReadOnlyList<Rect> Selection { get => selection; set { selection = value; Changed(); } }
 
+    Action<Avalonia.Media.DrawingContext>? overlay;
+    /// Extra drawing over the page, in points (selected annotation, shape being drawn).
+    public Action<Avalonia.Media.DrawingContext>? Overlay { get => overlay; set { overlay = value; Changed(); } }
+
+    /// Incremented by each rendering request: a rendering that finishes after a newer one was requested is dropped.
+    public int RenderVersion { get; set; }
+
     public event PropertyChangedEventHandler? PropertyChanged;
     void Changed([CallerMemberName] string? name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }

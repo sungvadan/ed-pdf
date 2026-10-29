@@ -647,3 +647,11 @@
 "Impossible d'imprimer ce document." = "この書類をプリントできません。";
 "Document PDF" = "PDF 書類";
 "Lire, annoter et signer des PDF" = "PDF の閲覧、注釈、署名";
+
+/* Windows : enregistrement */
+"Enregistrer" = "保存";
+"Enregistrer sous…" = "別名で保存…";
+"Ne pas enregistrer" = "保存しない";
+"Enregistrer les modifications apportées à « %@ » ?" = "“%@”への変更を保存しますか?";
+"Impossible d'enregistrer le document." = "書類を保存できません。";
+"Rétablir" = "やり直す";

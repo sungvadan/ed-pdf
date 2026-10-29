@@ -647,3 +647,11 @@
 "Impossible d'imprimer ce document." = "Dieses Dokument kann nicht gedruckt werden.";
 "Document PDF" = "PDF-Dokument";
 "Lire, annoter et signer des PDF" = "PDFs lesen, kommentieren und unterschreiben";
+
+/* Windows : enregistrement */
+"Enregistrer" = "Speichern";
+"Enregistrer sous…" = "Speichern unter …";
+"Ne pas enregistrer" = "Nicht speichern";
+"Enregistrer les modifications apportées à « %@ » ?" = "Änderungen an „%@“ speichern?";
+"Impossible d'enregistrer le document." = "Das Dokument kann nicht gesichert werden.";
+"Rétablir" = "Wiederholen";

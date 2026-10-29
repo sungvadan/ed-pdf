@@ -647,3 +647,11 @@
 "Impossible d'imprimer ce document." = "Unable to print this document.";
 "Document PDF" = "PDF Document";
 "Lire, annoter et signer des PDF" = "Read, annotate and sign PDFs";
+
+/* Windows : enregistrement */
+"Enregistrer" = "Save";
+"Enregistrer sous…" = "Save As…";
+"Ne pas enregistrer" = "Don't Save";
+"Enregistrer les modifications apportées à « %@ » ?" = "Save changes to “%@”?";
+"Impossible d'enregistrer le document." = "Unable to save the document.";
+"Rétablir" = "Redo";

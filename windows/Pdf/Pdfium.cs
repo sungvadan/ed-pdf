@@ -8,7 +8,7 @@ using Avalonia;
 namespace PdfSvd.Pdf;
 
 /// PDFium C API (fpdfview.h). PDFium is not thread-safe: every call goes through `Pdfium.Lock`.
-internal static class Native
+internal static partial class Native
 {
     const string Lib = "pdfium";
 
@@ -76,12 +76,12 @@ public sealed class PdfPasswordException : Exception;
 public sealed record TextMatch(int Page, int Start, int Count, Rect[] Rects);
 
 /// An open PDF. The file bytes stay in unmanaged memory: PDFium reads them lazily.
-public sealed class PdfDocument : IDisposable
+public sealed partial class PdfDocument : IDisposable
 {
     readonly IntPtr handle;
     bool closed;
     readonly IntPtr buffer;
-    public string Path { get; }
+    public string Path { get; private set; }
     public int PageCount { get; }
 
     PdfDocument(string path, IntPtr handle, IntPtr buffer)

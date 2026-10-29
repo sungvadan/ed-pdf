@@ -50,4 +50,40 @@ static class Dialogs
         window.Opened += (_, _) => field.Focus(NavigationMethod.Tab);
         return window.ShowDialog<string?>(owner);
     }
+
+    public enum SaveChoice { Save, Discard, Cancel }
+
+    /// Before closing or replacing a modified document.
+    public static async Task<SaveChoice> AskSave(Window owner, string fileName)
+    {
+        var text = new TextBlock
+        {
+            Text = Tr("Enregistrer les modifications apportées à « %@ » ?", fileName),
+            FontWeight = Avalonia.Media.FontWeight.SemiBold, TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+        };
+        var discard = new Button { Content = Tr("Ne pas enregistrer") };
+        var cancel = new Button { Content = Tr("Annuler"), IsCancel = true };
+        var save = new Button { Content = Tr("Enregistrer"), IsDefault = true, Classes = { "accent" } };
+        var window = Make("pdf-svd", text, discard, cancel, save);
+        discard.Click += (_, _) => window.Close(SaveChoice.Discard);
+        cancel.Click += (_, _) => window.Close(SaveChoice.Cancel);
+        save.Click += (_, _) => window.Close(SaveChoice.Save);
+        return await window.ShowDialog<SaveChoice?>(owner) ?? SaveChoice.Cancel;
+    }
+
+    /// Text of a note: the text typed, or null if cancelled.
+    public static Task<string?> AskText(Window owner, string title, string text)
+    {
+        var field = new TextBox { Text = text, AcceptsReturn = true, TextWrapping = Avalonia.Media.TextWrapping.Wrap, Height = 140 };
+        var content = new StackPanel { Spacing = 8 };
+        content.Children.Add(new TextBlock { Text = title, FontWeight = Avalonia.Media.FontWeight.SemiBold });
+        content.Children.Add(field);
+        var cancel = new Button { Content = Tr("Annuler"), IsCancel = true };
+        var ok = new Button { Content = "OK", Classes = { "accent" } };
+        var window = Make("pdf-svd", content, cancel, ok);
+        cancel.Click += (_, _) => window.Close(null);
+        ok.Click += (_, _) => window.Close(field.Text ?? "");
+        window.Opened += (_, _) => { field.Focus(NavigationMethod.Tab); field.CaretIndex = field.Text?.Length ?? 0; };
+        return window.ShowDialog<string?>(owner);
+    }
 }

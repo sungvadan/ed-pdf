@@ -64,6 +64,7 @@ public partial class MainWindow : Window
         ToolTip.SetTip(PreviousMatchButton, Tr("Résultat précédent") + " (Maj+F3)");
         ToolTip.SetTip(NextMatchButton, Tr("Résultat suivant") + " (F3)");
         SetUpMenu();
+        SetUpAnnotationBar();
 
         OpenButton.Click += async (_, _) => await ChooseFile();
         PreviousButton.Click += (_, _) => GoTo(currentPage - 1);
@@ -88,10 +89,10 @@ public partial class MainWindow : Window
         };
         PreviousMatchButton.Click += (_, _) => ShowMatch(-1);
         NextMatchButton.Click += (_, _) => ShowMatch(+1);
-        Scroller.AddHandler(PointerPressedEvent, PagePressed, RoutingStrategies.Bubble, handledEventsToo: true);
-        Scroller.AddHandler(PointerMovedEvent, PageDragged, RoutingStrategies.Bubble, handledEventsToo: true);
-        Scroller.AddHandler(PointerReleasedEvent, (_, _) => selectingView = null, RoutingStrategies.Bubble, handledEventsToo: true);
-        Scroller.ScrollChanged += (_, _) => ViewportChanged();
+        Scroller.AddHandler(PointerPressedEvent, PointerDown, RoutingStrategies.Bubble, handledEventsToo: true);
+        Scroller.AddHandler(PointerMovedEvent, PointerDrag, RoutingStrategies.Bubble, handledEventsToo: true);
+        Scroller.AddHandler(PointerReleasedEvent, PointerUp, RoutingStrategies.Bubble, handledEventsToo: true);
+        Scroller.ScrollChanged += (_, _) => { ViewportChanged(); PlaceEditor(); };
         Scroller.SizeChanged += (_, _) => ViewportChanged();
         Thumbnails.SelectionChanged += (_, _) =>
         {
@@ -111,12 +112,17 @@ public partial class MainWindow : Window
         FileMenu.Header = Tr("Fichier");
         EditMenu.Header = Tr("Édition");
         Item(OpenItem, Tr("Ouvrir…"), new KeyGesture(Key.O, KeyModifiers.Control), async () => await ChooseFile());
+        Item(SaveItem, Tr("Enregistrer"), new KeyGesture(Key.S, KeyModifiers.Control), async () => await Save());
+        Item(SaveAsItem, Tr("Enregistrer sous…"), new KeyGesture(Key.S, KeyModifiers.Control | KeyModifiers.Shift), async () => await SaveAs());
         Item(PrintItem, Tr("Imprimer…"), new KeyGesture(Key.P, KeyModifiers.Control), async () => await Print());
         Item(DefaultAppItem, Tr("Utiliser pdf-svd pour ouvrir les PDF…"), null, () =>
         {
             if (OperatingSystem.IsWindows()) FileAssociation.OpenDefaultAppsSettings();
         });
         Item(QuitItem, Tr("Quitter"), null, Close);
+        Item(UndoItem, Tr("Annuler"), new KeyGesture(Key.Z, KeyModifiers.Control), Undo);
+        Item(RedoItem, Tr("Rétablir"), new KeyGesture(Key.Y, KeyModifiers.Control), Redo);
+        Item(DeleteItem, Tr("Supprimer"), new KeyGesture(Key.Delete), DeleteSelectedAnnotation);
         Item(CopyItem, Tr("Copier"), new KeyGesture(Key.C, KeyModifiers.Control), async () => await CopySelection());
         Item(SelectAllItem, Tr("Tout sélectionner"), new KeyGesture(Key.A, KeyModifiers.Control), SelectAllOnPage);
         Item(FindItem, Tr("Rechercher…"), new KeyGesture(Key.F, KeyModifiers.Control), FocusSearch);
@@ -151,6 +157,7 @@ public partial class MainWindow : Window
 
     async Task Open(string path)
     {
+        if (!await ConfirmDiscardChanges()) return;
         PdfDocument? opened = null;
         string? password = null;
         while (opened == null)
@@ -171,9 +178,10 @@ public partial class MainWindow : Window
             }
         }
 
+        EndTextEditing(commit: false);
         document?.Dispose();
         document = opened;
-        Title = $"{Path.GetFileName(path)} — pdf-svd";
+        ResetEditing();
         var sizes = Enumerable.Range(0, opened.PageCount).Select(opened.PageSize).ToList();
         pages = sizes.Select((s, i) => new PageItem(i, s.Width, s.Height)).ToList();
         thumbnails = sizes.Select((s, i) => new PageItem(i, s.Width, s.Height)
@@ -220,6 +228,7 @@ public partial class MainWindow : Window
         Scroller.UpdateLayout();
         if (pages.Count > 0) Scroller.Offset = new Vector(Scroller.Offset.X, PageTop(page) + within * pages[page].Height);
         ViewportChanged();
+        PlaceEditor();
     }
 
     /// Top of a page in the scrolled content.
@@ -245,7 +254,7 @@ public partial class MainWindow : Window
         PageBox.Text = hasDocument ? $"{currentPage + 1}" : "";
         PageBox.IsEnabled = PreviousButton.IsEnabled = NextButton.IsEnabled = hasDocument;
         ZoomInButton.IsEnabled = ZoomOutButton.IsEnabled = FitButton.IsEnabled = hasDocument;
-        PrintItem.IsEnabled = SelectAllItem.IsEnabled = hasDocument;
+        PrintItem.IsEnabled = SelectAllItem.IsEnabled = SaveItem.IsEnabled = SaveAsItem.IsEnabled = hasDocument;
         CopyItem.IsEnabled = selectionPage >= 0 && selectionCount > 0;
         PageCountText.Text = hasDocument ? $"/ {pages.Count}" : "";
         ZoomText.Text = hasDocument ? $"{Math.Round(scale / ActualSize * 100)} %" : "";
@@ -277,17 +286,20 @@ public partial class MainWindow : Window
         UpdatePageInfo();
     }
 
-    void Render(PageItem page)
+    /// `force`: the page changed (annotations), render it again even at the same zoom.
+    void Render(PageItem page, bool force = false)
     {
-        if (page.RenderedScale == page.Scale) return;
+        if (page.RenderedScale == page.Scale && !force) return;
         page.RenderedScale = page.Scale;
-        _ = RenderInto(page, page.Scale * RenderScaling, () => page.RenderedScale == page.Scale);
+        var version = ++page.RenderVersion;
+        _ = RenderInto(page, page.Scale * RenderScaling, () => page.RenderedScale == page.Scale && page.RenderVersion == version);
     }
 
-    void RenderThumbnail(PageItem thumbnail)
+    void RenderThumbnail(PageItem thumbnail, bool force = false)
     {
-        if (thumbnail.Bitmap != null) return;
-        _ = RenderInto(thumbnail, thumbnail.Scale * RenderScaling, () => true);
+        if (thumbnail.Bitmap != null && !force) return;
+        var version = ++thumbnail.RenderVersion;
+        _ = RenderInto(thumbnail, thumbnail.Scale * RenderScaling, () => thumbnail.RenderVersion == version);
     }
 
     /// Renders off the UI thread; the result is dropped if the document or zoom changed meanwhile.
@@ -390,12 +402,10 @@ public partial class MainWindow : Window
         return index >= 0 || !near ? index : document.CharIndexAt(item.Index, point, 40);
     }
 
-    void PagePressed(object? sender, PointerPressedEventArgs e)
+    /// Mouse down on a page with the selection tool or a markup tool (see PointerDown).
+    void StartTextSelection(PointerPressedEventArgs e, PageView view, PageItem item)
     {
-        if (!e.GetCurrentPoint(Scroller).Properties.IsLeftButtonPressed) return;
-        SetSelection(-1, 0, 0);
-        if (PageViewAt(e) is not { DataContext: PageItem item } view || document == null) return;
-        Scroller.Focus();
+        if (document == null) return;
         var index = CharIndexAt(view, e, near: false);
         if (e.ClickCount >= 2 && index >= 0)
         {
@@ -408,7 +418,7 @@ public partial class MainWindow : Window
         e.Pointer.Capture(view);
     }
 
-    void PageDragged(object? sender, PointerEventArgs e)
+    void ExtendTextSelection(PointerEventArgs e)
     {
         if (selectingView is not { DataContext: PageItem item } view) return;
         var index = CharIndexAt(view, e, near: true);
@@ -463,12 +473,18 @@ public partial class MainWindow : Window
         switch (e.Key)
         {
             case Key.O when command: _ = ChooseFile(); break;
+            case Key.S when command && e.KeyModifiers.HasFlag(KeyModifiers.Shift): _ = SaveAs(); break;
+            case Key.S when command: _ = Save(); break;
+            case Key.Z when command && !inTextField && e.KeyModifiers.HasFlag(KeyModifiers.Shift): Redo(); break;
+            case Key.Z when command && !inTextField: Undo(); break;
+            case Key.Y when command && !inTextField: Redo(); break;
+            case Key.Delete or Key.Back when !inTextField && selected != null: DeleteSelectedAnnotation(); break;
             case Key.P when command: _ = Print(); break;
             case Key.F when command: FocusSearch(); break;
             case Key.F3: ShowMatch(e.KeyModifiers.HasFlag(KeyModifiers.Shift) ? -1 : +1); break;
             case Key.C when command && !inTextField: _ = CopySelection(); break;
             case Key.A when command && !inTextField: SelectAllOnPage(); break;
-            case Key.Escape when !inTextField: SetSelection(-1, 0, 0); break;
+            case Key.Escape when !inTextField: Escape(); break;
             case Key.OemPlus or Key.Add when command: Zoom(+1); break;
             case Key.OemMinus or Key.Subtract when command: Zoom(-1); break;
             case Key.D0 or Key.NumPad0 when command: SetScale(ActualSize); break;
@@ -477,6 +493,19 @@ public partial class MainWindow : Window
             default: base.OnKeyDown(e); return;
         }
         e.Handled = true;
+    }
+
+    bool closingConfirmed;
+
+    protected override async void OnClosing(WindowClosingEventArgs e)
+    {
+        base.OnClosing(e);
+        EndTextEditing(commit: true);
+        if (closingConfirmed || !modified) return;
+        e.Cancel = true;
+        if (!await ConfirmDiscardChanges()) return;
+        closingConfirmed = true;
+        Close();
     }
 
     protected override void OnClosed(EventArgs e)

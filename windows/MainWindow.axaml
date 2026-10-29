@@ -17,6 +17,9 @@
         <Menu DockPanel.Dock="Top">
             <MenuItem Name="FileMenu">
                 <MenuItem Name="OpenItem" />
+                <MenuItem Name="SaveItem" />
+                <MenuItem Name="SaveAsItem" />
+                <Separator />
                 <MenuItem Name="PrintItem" />
                 <Separator Name="DefaultAppSeparator" />
                 <MenuItem Name="DefaultAppItem" />
@@ -24,7 +27,11 @@
                 <MenuItem Name="QuitItem" />
             </MenuItem>
             <MenuItem Name="EditMenu">
+                <MenuItem Name="UndoItem" />
+                <MenuItem Name="RedoItem" />
+                <Separator />
                 <MenuItem Name="CopyItem" />
+                <MenuItem Name="DeleteItem" />
                 <MenuItem Name="SelectAllItem" />
                 <Separator />
                 <MenuItem Name="FindItem" />
@@ -58,6 +65,19 @@
             </DockPanel>
         </Border>
 
+        <!-- Annotation tools and properties (filled in MainWindow.Annotations.cs). -->
+        <Border Name="AnnotationBar" DockPanel.Dock="Top" Padding="8,4" BorderThickness="0,0,0,1"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+            <StackPanel Orientation="Horizontal" Spacing="2">
+                <StackPanel Name="ToolButtons" Orientation="Horizontal" Spacing="2" />
+                <Rectangle Width="1" Height="20" Margin="8,0" Fill="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+                <StackPanel Name="ColorButtons" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center" />
+                <ComboBox Name="LineWidthBox" Margin="8,0,0,0" VerticalAlignment="Center" />
+                <ComboBox Name="FontSizeBox" Margin="8,0,0,0" VerticalAlignment="Center" />
+                <Button Name="DeleteButton" Margin="8,0,0,0" VerticalAlignment="Center" />
+            </StackPanel>
+        </Border>
+
         <ListBox Name="Thumbnails" DockPanel.Dock="Left" Width="168" Padding="0,6"
                  Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}">
             <ListBox.ItemTemplate>
@@ -86,6 +106,11 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
+            <!-- In-place editor of text boxes, placed over the page. -->
+            <Canvas Name="EditorLayer" ClipToBounds="True">
+                <TextBox Name="Editor" IsVisible="False" AcceptsReturn="True" TextWrapping="Wrap"
+                         Background="Transparent" BorderThickness="1" MinHeight="0" MinWidth="0" />
+            </Canvas>
             <TextBlock Name="EmptyText" HorizontalAlignment="Center" VerticalAlignment="Center"
                        Opacity="0.6" FontSize="15" TextAlignment="Center" />
         </Panel>
