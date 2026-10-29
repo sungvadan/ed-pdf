@@ -673,3 +673,5 @@
 "%@ Ko" = "%@ KB";
 "Signatures, tampons, notes et champs sont intégrés à la page : ils ne peuvent plus être sélectionnés, déplacés ni modifiés." = "署名、スタンプ、メモ、フィールドがページに統合され、選択・移動・編集できなくなります。";
 "pdf-svd inscrit le nom de votre compte Windows dans chaque annotation." = "pdf-svd は各注釈に Windows アカウント名を記録します。";
+
+"Le contenu sous les %d zones marquées sera supprimé du document. Les %d pages concernées sont reconstruites : leur texte restant reste sélectionnable, mais leurs annotations et liens sont intégrés à la page. Vous pouvez annuler (Ctrl+Z) tant que le document est ouvert ; une fois enregistré, le contenu caviardé est perdu." = "マークした%1$d個の領域の下にある内容が書類から削除されます。対象の%2$dページは再構成されます。残りのテキストは引き続き選択できますが、注釈とリンクはページに統合されます。書類を開いている間は取り消せます（Ctrl+Z）が、保存すると墨消しした内容は失われます。";

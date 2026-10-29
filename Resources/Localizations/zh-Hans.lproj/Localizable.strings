@@ -673,3 +673,5 @@
 "%@ Ko" = "%@ KB";
 "Signatures, tampons, notes et champs sont intégrés à la page : ils ne peuvent plus être sélectionnés, déplacés ni modifiés." = "签名、印章、注释和字段将并入页面：之后无法再选择、移动或修改。";
 "pdf-svd inscrit le nom de votre compte Windows dans chaque annotation." = "pdf-svd 会在每个批注中记录您的 Windows 账户名。";
+
+"Le contenu sous les %d zones marquées sera supprimé du document. Les %d pages concernées sont reconstruites : leur texte restant reste sélectionnable, mais leurs annotations et liens sont intégrés à la page. Vous pouvez annuler (Ctrl+Z) tant que le document est ouvert ; une fois enregistré, le contenu caviardé est perdu." = "%d 个已标记区域下的内容将从文稿中删除。受影响的 %d 个页面将被重建：剩余文本仍可选择，但其注释和链接将合并到页面中。文稿打开期间可以撤销（Ctrl+Z）；存储后，被涂黑的内容将永久丢失。";

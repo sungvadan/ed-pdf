@@ -673,3 +673,5 @@
 "%@ Ko" = "%@ KB";
 "Signatures, tampons, notes et champs sont intégrés à la page : ils ne peuvent plus être sélectionnés, déplacés ni modifiés." = "Unterschriften, Stempel, Notizen und Felder werden Teil der Seite: Sie können nicht mehr ausgewählt, verschoben oder bearbeitet werden.";
 "pdf-svd inscrit le nom de votre compte Windows dans chaque annotation." = "pdf-svd speichert den Namen Ihres Windows-Kontos in jeder Anmerkung.";
+
+"Le contenu sous les %d zones marquées sera supprimé du document. Les %d pages concernées sont reconstruites : leur texte restant reste sélectionnable, mais leurs annotations et liens sont intégrés à la page. Vous pouvez annuler (Ctrl+Z) tant que le document est ouvert ; une fois enregistré, le contenu caviardé est perdu." = "Der Inhalt unter den %d markierten Bereichen wird aus dem Dokument entfernt. Die %d betroffenen Seiten werden neu aufgebaut: Ihr restlicher Text bleibt auswählbar, ihre Anmerkungen und Links werden jedoch in die Seite integriert. Du kannst dies widerrufen (Ctrl+Z), solange das Dokument geöffnet ist; nach dem Sichern ist der geschwärzte Inhalt verloren.";

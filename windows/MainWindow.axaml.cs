@@ -66,6 +66,7 @@ public partial class MainWindow : Window
         SetUpMenu();
         SetUpAnnotationBar();
         SetUpPages();
+        SetUpRedaction();
 
         OpenButton.Click += async (_, _) => await ChooseFile();
         PreviousButton.Click += (_, _) => GoTo(currentPage - 1);
@@ -228,6 +229,7 @@ public partial class MainWindow : Window
         }).ToList();
         Pages.ItemsSource = pages;
         Thumbnails.ItemsSource = thumbnails;
+        RecountMarks();
     }
 
     // MARK: Zoom and navigation

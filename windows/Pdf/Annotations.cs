@@ -86,12 +86,14 @@ public sealed record Annotation
     public double FontSize { get; init; } = 12;
     /// Text box drawn as a stamp: bold, centred, framed.
     public bool StampStyle { get; init; }
+    /// Area to redact (a rectangle), removed with what is under it when redactions are applied.
+    public bool RedactionMark { get; init; }
     /// Image of a Stamp annotation (PNG), when known: given when placing an image, read with PdfDocument.StampImage.
     public byte[]? ImagePng { get; init; }
 
     public bool IsMarkup => Kind is AnnotationKind.Highlight or AnnotationKind.Underline or AnnotationKind.Squiggly or AnnotationKind.StrikeOut;
     public bool IsResizable => Kind is AnnotationKind.Rectangle or AnnotationKind.Ellipse or AnnotationKind.TextBox or AnnotationKind.Stamp;
-    public bool HasLineWidth => Kind is AnnotationKind.Rectangle or AnnotationKind.Ellipse or AnnotationKind.Ink;
+    public bool HasLineWidth => Kind is AnnotationKind.Rectangle or AnnotationKind.Ellipse or AnnotationKind.Ink && !RedactionMark;
 
     public Annotation Offset(Vector delta) => this with
     {
@@ -321,6 +323,7 @@ public sealed partial class PdfDocument
             Name = name, Kind = kind, Color = color, LineWidth = lineWidth, Ink = ink.ToArray(), Quads = quads.ToArray(),
             Bounds = new Rect(new Point(r.Left, r.Bottom), new Point(r.Right, r.Top)).Normalize(),
             Contents = GetString(annot, "Contents"),
+            RedactionMark = kind == AnnotationKind.Rectangle && GetString(annot, RedactKey).Length > 0,
         };
         if (kind == AnnotationKind.TextBox && ParseAppearance(GetString(annot, "DA")) is var (size, textColor))
             annotation = annotation with { FontSize = size, Color = textColor, StampStyle = GetString(annot, StampKey) == "1" };
@@ -351,6 +354,12 @@ public sealed partial class PdfDocument
         Native.FPDFAnnot_SetColor(annot, Native.ColorStroke, a.Color.R, a.Color.G, a.Color.B, 255);
         Native.FPDFAnnot_SetStringValue(annot, ColorKey, $"#{a.Color.R:x2}{a.Color.G:x2}{a.Color.B:x2}");
         if (a.HasLineWidth) Native.FPDFAnnot_SetBorder(annot, 0, 0, (float)a.LineWidth);
+        if (a.RedactionMark)
+        {
+            Native.FPDFAnnot_SetStringValue(annot, RedactKey, "1");
+            Native.FPDFAnnot_SetBorder(annot, 0, 0, 1);
+            if (!keepAppearance) Native.FPDFAnnot_SetAP(annot, Native.AppearanceNormal, RedactionAppearance(b));
+        }
         if (a.Kind == AnnotationKind.Ink)
         {
             Native.FPDFAnnot_RemoveInkList(annot);

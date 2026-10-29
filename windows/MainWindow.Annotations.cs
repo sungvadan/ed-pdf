@@ -18,7 +18,7 @@ using Path = System.IO.Path;
 
 namespace PdfSvd;
 
-public enum Tool { Select, Highlight, Underline, StrikeOut, Note, Text, Ink, Rectangle, Ellipse, Line, Arrow }
+public enum Tool { Select, Highlight, Underline, StrikeOut, Note, Text, Ink, Rectangle, Ellipse, Line, Arrow, Redact }
 
 /// Annotations (tools, selection, moving, in-place text editing), undo and saving.
 public partial class MainWindow
@@ -37,7 +37,7 @@ public partial class MainWindow
     {
         [Tool.Highlight] = Palette[0], [Tool.Note] = Palette[0], [Tool.Underline] = Palette[2], [Tool.Text] = Colors.Black,
         [Tool.StrikeOut] = Palette[3], [Tool.Ink] = Palette[3], [Tool.Rectangle] = Palette[3], [Tool.Ellipse] = Palette[3],
-        [Tool.Line] = Palette[3], [Tool.Arrow] = Palette[3], [Tool.Select] = Palette[3],
+        [Tool.Line] = Palette[3], [Tool.Arrow] = Palette[3], [Tool.Select] = Palette[3], [Tool.Redact] = RedactionColor,
     };
     double lineWidth = 2, fontSize = 14;
     readonly Dictionary<Tool, ToggleButton> toolButtons = [];
@@ -137,7 +137,8 @@ public partial class MainWindow
         Tool.Rectangle => Tr("Rectangle"),
         Tool.Ellipse => Tr("Ellipse"),
         Tool.Line => Tr("Ligne"),
-        _ => Tr("Flèche"),
+        Tool.Arrow => Tr("Flèche"),
+        _ => Tr("Caviarder"),
     };
 
     static Control ToolIcon(Tool t)
@@ -171,7 +172,9 @@ public partial class MainWindow
             Tool.Rectangle => Stroked(new Rectangle { Width = 16, Height = 12 }),
             Tool.Ellipse => Stroked(new Ellipse { Width = 16, Height = 12 }),
             Tool.Line => Drawing("M3,15 L15,3"),
-            _ => Drawing("M3,15 L15,3 M8,3 H15 V10"),
+            Tool.Arrow => Drawing("M3,15 L15,3 M8,3 H15 V10"),
+            _ => Stroked(new Rectangle { Width = 16, Height = 12 }).Also(r =>
+                r.Bind(Shape.FillProperty, r.GetResourceObservable("SystemControlForegroundBaseHighBrush"))),
         };
     }
 
@@ -179,15 +182,16 @@ public partial class MainWindow
     {
         EndTextEditing(commit: true);
         // A markup tool with text already selected: mark it up at once.
-        if (t is Tool.Highlight or Tool.Underline or Tool.StrikeOut && selectionPage >= 0 && selectionCount > 0)
+        if (t is Tool.Highlight or Tool.Underline or Tool.StrikeOut or Tool.Redact && selectionPage >= 0 && selectionCount > 0)
         {
-            AddMarkup(t);
+            if (t == Tool.Redact) AddRedactionMarks();
+            else AddMarkup(t);
             UpdateEditingState();
             return;
         }
         tool = t;
         if (t != Tool.Select) SelectAnnotation(-1, null);
-        Pages.Cursor = new Cursor(t is Tool.Select or Tool.Highlight or Tool.Underline or Tool.StrikeOut
+        Pages.Cursor = new Cursor(t is Tool.Select or Tool.Highlight or Tool.Underline or Tool.StrikeOut or Tool.Redact
             ? StandardCursorType.Ibeam : StandardCursorType.Cross);
         UpdateEditingState();
     }
@@ -196,8 +200,8 @@ public partial class MainWindow
     (bool Color, bool Width, bool FontSize) EditedProperties()
     {
         if (editingPage >= 0) return (true, false, true);
-        if (selected != null) return (selected.Kind != AnnotationKind.Stamp, selected.HasLineWidth, selected.Kind == AnnotationKind.TextBox);
-        return (tool != Tool.Select, tool is Tool.Ink or Tool.Rectangle or Tool.Ellipse or Tool.Line or Tool.Arrow, tool == Tool.Text);
+        if (selected != null) return (selected.Kind != AnnotationKind.Stamp && !selected.RedactionMark, selected.HasLineWidth, selected.Kind == AnnotationKind.TextBox);
+        return (tool is not (Tool.Select or Tool.Redact), tool is Tool.Ink or Tool.Rectangle or Tool.Ellipse or Tool.Line or Tool.Arrow, tool == Tool.Text);
     }
 
     Color CurrentColor => editingPage >= 0 ? editingColor : selected?.Color ?? toolColors[tool];
@@ -218,6 +222,9 @@ public partial class MainWindow
         FontSizeBox.IsVisible = size;
         FontSizeBox.SelectedIndex = Nearest(FontSizes, CurrentFontSize);
         DeleteButton.IsVisible = selected != null;
+        var marks = RedactionMarkTotal;
+        ApplyRedactionButton.IsVisible = marks > 0;
+        ApplyRedactionButton.Content = Tr("Appliquer le caviardage (%d)", marks);
         updatingBar = false;
 
         AnnotationBar.IsEnabled = document != null;
@@ -327,6 +334,7 @@ public partial class MainWindow
         if (document == null) return;
         modified = true;
         changedPages.Add(page);
+        CountMarks(page);
         Render(pages[page], force: true);
         RenderThumbnail(thumbnails[page], force: true);
         if (selected != null && selectedPage == page)
@@ -400,6 +408,11 @@ public partial class MainWindow
     {
         var rect = new Rect(dragStart, dragPoint).Normalize();
         if (rect.Width < 3 && rect.Height < 3) return;
+        if (tool == Tool.Redact)
+        {
+            AddAnnotations(page, [RedactionMark(ToPage(page, rect))]);
+            return;
+        }
         if (tool is Tool.Line or Tool.Arrow)
         {
             AddInk(page, ShapeStrokes(tool, dragStart, dragPoint, lineWidth));
@@ -526,6 +539,9 @@ public partial class MainWindow
             case Drag.Draw:
                 for (var i = 1; i < inkPoints.Count; i++) context.DrawLine(pen, inkPoints[i - 1], inkPoints[i]);
                 break;
+            case Drag.Shape when tool == Tool.Redact:
+                context.DrawRectangle(new SolidColorBrush(RedactionColor, 0.25), new Pen(new SolidColorBrush(RedactionColor), thin), new Rect(dragStart, dragPoint).Normalize());
+                break;
             case Drag.Shape when tool == Tool.Rectangle:
                 context.DrawRectangle(null, pen, new Rect(dragStart, dragPoint).Normalize());
                 break;
@@ -583,6 +599,12 @@ public partial class MainWindow
                 drag = Drag.Text;
                 StartTextSelection(e, view, item);
                 return;
+            // Over text: words to redact; elsewhere: an area.
+            case Tool.Redact when CharIndexAt(view, e, near: false) >= 0:
+                SetSelection(-1, 0, 0);
+                drag = Drag.Text;
+                StartTextSelection(e, view, item);
+                return;
             case Tool.Note:
                 _ = AddNote(page, point);
                 return;
@@ -621,6 +643,9 @@ public partial class MainWindow
         {
             case Drag.Text when tool is Tool.Highlight or Tool.Underline or Tool.StrikeOut:
                 AddMarkup(tool);
+                break;
+            case Drag.Text when tool == Tool.Redact:
+                AddRedactionMarks();
                 break;
             case Drag.Draw when inkPoints.Count >= 2:
                 AddInk(dragPage, [inkPoints.ToArray()]);

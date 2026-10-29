@@ -51,6 +51,21 @@ static class Dialogs
         return window.ShowDialog<string?>(owner);
     }
 
+    /// A question with a button to go ahead (destructive actions): true if accepted.
+    public static async Task<bool> Confirm(Window owner, string message, string detail, string action)
+    {
+        var text = new StackPanel { Spacing = 6 };
+        text.Children.Add(new TextBlock { Text = message, FontWeight = Avalonia.Media.FontWeight.SemiBold, TextWrapping = Avalonia.Media.TextWrapping.Wrap });
+        text.Children.Add(new TextBlock { Text = detail, Opacity = 0.7, TextWrapping = Avalonia.Media.TextWrapping.Wrap });
+        var cancel = new Button { Content = Tr("Annuler"), IsCancel = true, IsDefault = true };
+        var ok = new Button { Content = action, Classes = { "accent" } };
+        var window = Make("pdf-svd", text, cancel, ok);
+        window.Width = 440;
+        cancel.Click += (_, _) => window.Close(false);
+        ok.Click += (_, _) => window.Close(true);
+        return await window.ShowDialog<bool?>(owner) == true;
+    }
+
     public enum SaveChoice { Save, Discard, Cancel }
 
     /// Before closing or replacing a modified document.

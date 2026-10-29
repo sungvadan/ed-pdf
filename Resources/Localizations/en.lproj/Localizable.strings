@@ -673,3 +673,5 @@
 "%@ Ko" = "%@ KB";
 "Signatures, tampons, notes et champs sont intégrés à la page : ils ne peuvent plus être sélectionnés, déplacés ni modifiés." = "Signatures, stamps, notes and fields become part of the page: they can no longer be selected, moved or edited.";
 "pdf-svd inscrit le nom de votre compte Windows dans chaque annotation." = "pdf-svd records your Windows account name in each annotation.";
+
+"Le contenu sous les %d zones marquées sera supprimé du document. Les %d pages concernées sont reconstruites : leur texte restant reste sélectionnable, mais leurs annotations et liens sont intégrés à la page. Vous pouvez annuler (Ctrl+Z) tant que le document est ouvert ; une fois enregistré, le contenu caviardé est perdu." = "The content under the %d marked areas will be removed from the document. The %d affected pages are rebuilt: their remaining text stays selectable, but their annotations and links become part of the page. You can undo (Ctrl+Z) while the document is open; once it’s saved, the redacted content is gone.";

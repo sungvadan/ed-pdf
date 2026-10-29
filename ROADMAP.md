@@ -112,5 +112,11 @@ Reste : sélection sur plusieurs pages
   Exporter en images… (PNG/JPEG, 72/150/300 ppp), Réduire la taille… (images en JPEG à 150 ppp de leur taille
   affichée, images avec transparence inchangées ; contenu de la page régénéré seulement là où une image change)
 - Détails : `windows/Pdf/Pages.cs`, `windows/MainWindow.Pages.cs`
-## ⬜ Étape W6 — Caviardage, édition du texte existant
+## ✅ Étape W6 — Caviardage
+- Outil « Caviarder » (dernier de la barre) : glisser sur du texte → une marque par ligne ; ailleurs → une zone.
+  Marques = Square avec /FolioRedact (comme sur Mac, compatibles), contour et hachures rouges
+- « Appliquer le caviardage (n) » (barre d'annotation, après confirmation) : chaque page marquée est reconstruite
+  en image 300 ppp avec les zones en noir + texte invisible (Helvetica) pour les mots hors des zones
+  (`windows/Pdf/Redaction.cs`) ; annulable (instantané du document, comme les opérations de pages)
+## ⬜ Étape W7 — Édition du texte existant (portage de `Sources/FolioText`, voir `docs/text-editing.md`)
 
