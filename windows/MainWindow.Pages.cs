@@ -44,10 +44,30 @@ public partial class MainWindow
         Item(ImageExportItem, Tr("Exporter en images…"), null, async () => await ExportImages());
         Item(ReduceSizeItem, Tr("Réduire la taille…"), null, async () => await ReduceSize());
 
+        RotateLeftButton.Content = RotateIcon(clockwise: false);
+        RotateRightButton.Content = RotateIcon(clockwise: true);
+        ToolTip.SetTip(RotateLeftButton, Tr("Pivoter à gauche") + " (Ctrl+L)");
+        ToolTip.SetTip(RotateRightButton, Tr("Pivoter à droite") + " (Ctrl+R)");
+        RotateLeftButton.Click += (_, _) => RotatePages(-1);
+        RotateRightButton.Click += (_, _) => RotatePages(+1);
+
         Thumbnails.AddHandler(PointerPressedEvent, ThumbnailPressed, RoutingStrategies.Tunnel);
         Thumbnails.AddHandler(PointerMovedEvent, ThumbnailDragged, RoutingStrategies.Tunnel);
         Thumbnails.AddHandler(PointerReleasedEvent, ThumbnailReleased, RoutingStrategies.Tunnel);
         Thumbnails.AddHandler(PointerCaptureLostEvent, (_, _) => EndThumbnailDrag(), RoutingStrategies.Bubble, handledEventsToo: true);
+    }
+
+    /// A circular arrow: three quarters of a circle, the head at the top.
+    static Control RotateIcon(bool clockwise)
+    {
+        var data = clockwise ? "M9,3 A6,6 0 1 0 15,9 M6.5,0.5 L9,3 L6.5,5.5" : "M9,3 A6,6 0 1 1 3,9 M11.5,0.5 L9,3 L11.5,5.5";
+        var icon = new Avalonia.Controls.Shapes.Path
+        {
+            Data = Geometry.Parse(data), Width = 18, Height = 18, StrokeThickness = 1.6,
+            StrokeLineCap = PenLineCap.Round, StrokeJoin = PenLineJoin.Round,
+        };
+        icon.Bind(Avalonia.Controls.Shapes.Shape.StrokeProperty, icon.GetResourceObservable("SystemControlForegroundBaseHighBrush"));
+        return icon;
     }
 
     List<Control> PageMenuItems(bool menu)

@@ -56,6 +56,9 @@
                     <TextBox Name="PageBox" Width="52" HorizontalContentAlignment="Center" VerticalAlignment="Center" />
                     <TextBlock Name="PageCountText" VerticalAlignment="Center" MinWidth="40" />
                     <Button Name="NextButton" Classes="tool" Content="›" FontSize="18" Padding="6,0,6,3" />
+                    <Rectangle Width="1" Height="20" Margin="6,0" Fill="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+                    <Button Name="RotateLeftButton" Classes="tool" />
+                    <Button Name="RotateRightButton" Classes="tool" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <Button Name="ZoomOutButton" Classes="tool" Content="−" FontSize="16" />

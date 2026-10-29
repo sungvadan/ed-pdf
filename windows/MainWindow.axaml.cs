@@ -282,6 +282,7 @@ public partial class MainWindow : Window
         var hasDocument = pages.Count > 0;
         PageBox.Text = hasDocument ? $"{currentPage + 1}" : "";
         PageBox.IsEnabled = PreviousButton.IsEnabled = NextButton.IsEnabled = hasDocument;
+        RotateLeftButton.IsEnabled = RotateRightButton.IsEnabled = hasDocument;
         ZoomInButton.IsEnabled = ZoomOutButton.IsEnabled = FitButton.IsEnabled = hasDocument;
         PrintItem.IsEnabled = SelectAllItem.IsEnabled = SaveItem.IsEnabled = SaveAsItem.IsEnabled = hasDocument;
         SendExportItem.IsEnabled = ImageExportItem.IsEnabled = ReduceSizeItem.IsEnabled = PagesMenu.IsEnabled = hasDocument;
