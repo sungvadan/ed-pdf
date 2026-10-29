@@ -100,6 +100,17 @@ Reste : sélection sur plusieurs pages
 - Signatures et tampons gardés dans `%APPDATA%\pdf-svd` (signatures.json, stamps.json)
 - Les images sont des annotations Stamp avec le PNG dans /FolioImage, comme sur Mac (compatibles dans les deux sens) ;
   les tampons texte sont des FreeText en gras, centrés, encadrés (/FolioStamp)
-## ⬜ Étape W5 — Pages (pivoter, supprimer, réordonner, insérer, extraire), export, réduire la taille
+## ✅ Étape W5 — Pages (pivoter, supprimer, réordonner, insérer, extraire), export, réduire la taille
+- Menu Pages et menu contextuel des vignettes (sélection multiple Ctrl/Maj) : pivoter (Ctrl+L / Ctrl+R),
+  dupliquer (Ctrl+D), insérer une page vierge, insérer depuis un fichier (PDF ou images, HEIC compris),
+  extraire, aplatir les annotations (pages sélectionnées ou tout le document), supprimer (Suppr dans les vignettes)
+- Glisser une vignette pour réordonner ; PDF et images déposés sur les vignettes insérés à cet endroit
+- Annuler / Rétablir : instantané du document avant et après (`PdfDocument.Snapshot` / `Restore`), qui garde
+  le chiffrement des PDF protégés
+- Fichier > Exporter pour envoi… (Ctrl+Maj+E : aplatir, réduire les images des signatures, retirer le nom d'auteur
+  et les données d'édition, réduire la taille ; pas de mot de passe : PDFium ne sait pas chiffrer),
+  Exporter en images… (PNG/JPEG, 72/150/300 ppp), Réduire la taille… (images en JPEG à 150 ppp de leur taille
+  affichée, images avec transparence inchangées ; contenu de la page régénéré seulement là où une image change)
+- Détails : `windows/Pdf/Pages.cs`, `windows/MainWindow.Pages.cs`
 ## ⬜ Étape W6 — Caviardage, édition du texte existant
 

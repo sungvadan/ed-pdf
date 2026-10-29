@@ -217,12 +217,20 @@ public sealed partial class PdfDocument
         return null;
     }, (byte[]?)null);
 
-    static unsafe byte[]? EncodePng(IntPtr bitmap)
+    static byte[]? EncodePng(IntPtr bitmap)
+    {
+        using var image = ToSkia(bitmap);
+        return image.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100)?.ToArray();
+    }
+
+    /// Copy of a PDFium bitmap (gray, BGR, BGRx or BGRA) as a BGRA Skia bitmap.
+    internal static unsafe SkiaSharp.SKBitmap ToSkia(IntPtr bitmap)
     {
         int width = Native.FPDFBitmap_GetWidth(bitmap), height = Native.FPDFBitmap_GetHeight(bitmap), stride = Native.FPDFBitmap_GetStride(bitmap);
         var format = Native.FPDFBitmap_GetFormat(bitmap);
         var source = (byte*)Native.FPDFBitmap_GetBuffer(bitmap);
-        using var result = new SkiaSharp.SKBitmap(new SkiaSharp.SKImageInfo(width, height, SkiaSharp.SKColorType.Bgra8888, SkiaSharp.SKAlphaType.Unpremul));
+        var result = new SkiaSharp.SKBitmap(new SkiaSharp.SKImageInfo(width, height, SkiaSharp.SKColorType.Bgra8888,
+            format == 4 ? SkiaSharp.SKAlphaType.Unpremul : SkiaSharp.SKAlphaType.Opaque));
         var target = (byte*)result.GetPixels();
         for (var y = 0; y < height; y++)
             for (var x = 0; x < width; x++)
@@ -235,7 +243,7 @@ public sealed partial class PdfDocument
                     default: to[0] = from[x * 4]; to[1] = from[x * 4 + 1]; to[2] = from[x * 4 + 2]; to[3] = format == 4 ? from[x * 4 + 3] : (byte)255; break;
                 }
             }
-        return result.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100)?.ToArray();
+        return result;
     }
 
     /// `keepAppearance`: only the position changed; the appearance follows the rectangle (keeps that of annotations
@@ -410,32 +418,66 @@ public sealed partial class PdfDocument
     public void Save(string path, IEnumerable<int> changedPages)
     {
         var temporary = path + ".pdf-svd-tmp";
-        lock (Pdfium.Lock)
+        try
         {
-            if (closed) throw new ObjectDisposedException(nameof(PdfDocument));
-            // Annotation appearances are generated when a page is drawn: make sure every changed page has been.
-            foreach (var index in changedPages) WithPage(index, 0, page =>
-            {
-                var bitmap = Native.FPDFBitmap_CreateEx(1, 1, Native.BitmapBGRA, IntPtr.Zero, 0);
-                Native.FPDF_RenderPageBitmap(bitmap, page, 0, 0, 1, 1, 0, Native.RenderAnnotations);
-                Native.FPDFBitmap_Destroy(bitmap);
-                return 0;
-            });
             using (var stream = File.Create(temporary))
-            {
-                saveStream = stream;
-                bool saved;
-                unsafe
+                lock (Pdfium.Lock)
                 {
-                    var writer = new Native.FileWrite { Version = 1, WriteBlock = (IntPtr)(delegate* unmanaged[Cdecl]<IntPtr, IntPtr, CULong, int>)&WriteBlock };
-                    saved = Native.FPDF_SaveAsCopy(handle, ref writer, new CULong(Native.SaveNoIncremental)) != 0;
+                    if (closed) throw new ObjectDisposedException(nameof(PdfDocument));
+                    GenerateAppearances(changedPages);
+                    Write(handle, stream);
                 }
-                saveStream = null;
-                if (!saved) { stream.Close(); File.Delete(temporary); throw new IOException("FPDF_SaveAsCopy"); }
-            }
+        }
+        catch
+        {
+            File.Delete(temporary);
+            throw;
         }
         File.Move(temporary, path, overwrite: true);
         Path = path;
+    }
+
+    /// The whole document as a PDF file in memory (used to undo changes of the page list).
+    public byte[] Snapshot(IEnumerable<int> changedPages)
+    {
+        lock (Pdfium.Lock)
+        {
+            if (closed) throw new ObjectDisposedException(nameof(PdfDocument));
+            GenerateAppearances(changedPages);
+            using var stream = new MemoryStream();
+            Write(handle, stream);
+            return stream.ToArray();
+        }
+    }
+
+    /// Annotation appearances are generated when a page is drawn: makes sure each of these pages has been
+    /// (before saving or copying pages). Under the lock.
+    void GenerateAppearances(IEnumerable<int> pages)
+    {
+        foreach (var index in pages) WithPage(index, 0, page =>
+        {
+            var bitmap = Native.FPDFBitmap_CreateEx(1, 1, Native.BitmapBGRA, IntPtr.Zero, 0);
+            Native.FPDF_RenderPageBitmap(bitmap, page, 0, 0, 1, 1, 0, Native.RenderAnnotations);
+            Native.FPDFBitmap_Destroy(bitmap);
+            return 0;
+        });
+    }
+
+    /// Writes a PDFium document (not incrementally) to a stream. Under the lock.
+    internal static void Write(IntPtr document, Stream stream)
+    {
+        saveStream = stream;
+        try
+        {
+            bool saved;
+            unsafe
+            {
+                var writer = new Native.FileWrite { Version = 1, WriteBlock = (IntPtr)(delegate* unmanaged[Cdecl]<IntPtr, IntPtr, CULong, int>)&WriteBlock };
+                saved = Native.FPDF_SaveAsCopy(document, ref writer, new CULong(Native.SaveNoIncremental)) != 0;
+            }
+            if (!saved) throw new IOException("FPDF_SaveAsCopy");
+        }
+        finally { saveStream = null; }
     }
 
     /// Destination of the save in progress (saving holds the PDFium lock, so there is only one).

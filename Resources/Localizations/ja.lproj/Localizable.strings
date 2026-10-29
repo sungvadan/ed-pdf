@@ -664,3 +664,12 @@
 "Aucune signature trouvée dans cette image." = "この画像に署名が見つかりません。";
 
 "Pour lire les photos HEIC, installez « Extensions d'image HEIF » et « Extensions vidéo HEVC » depuis le Microsoft Store." = "HEIC 写真を開くには、Microsoft Store から「HEIF 画像拡張機能」と「HEVC ビデオ拡張機能」をインストールしてください。";
+
+"Impossible de modifier les pages." = "ページを変更できませんでした。";
+"PDF et images" = "PDF と画像";
+"Impossible d'insérer ces fichiers." = "これらのファイルを挿入できませんでした。";
+"Impossible d'enregistrer les images." = "画像を保存できませんでした。";
+"%@ Mo" = "%@ MB";
+"%@ Ko" = "%@ KB";
+"Signatures, tampons, notes et champs sont intégrés à la page : ils ne peuvent plus être sélectionnés, déplacés ni modifiés." = "署名、スタンプ、メモ、フィールドがページに統合され、選択・移動・編集できなくなります。";
+"pdf-svd inscrit le nom de votre compte Windows dans chaque annotation." = "pdf-svd は各注釈に Windows アカウント名を記録します。";

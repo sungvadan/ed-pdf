@@ -65,6 +65,7 @@ public partial class MainWindow : Window
         ToolTip.SetTip(NextMatchButton, Tr("Résultat suivant") + " (F3)");
         SetUpMenu();
         SetUpAnnotationBar();
+        SetUpPages();
 
         OpenButton.Click += async (_, _) => await ChooseFile();
         PreviousButton.Click += (_, _) => GoTo(currentPage - 1);
@@ -96,11 +97,33 @@ public partial class MainWindow : Window
         Scroller.SizeChanged += (_, _) => ViewportChanged();
         Thumbnails.SelectionChanged += (_, _) =>
         {
-            if (!updatingSelection && Thumbnails.SelectedIndex >= 0) GoTo(Thumbnails.SelectedIndex);
+            // Several pages selected: they are the targets of page actions, the view stays where it is.
+            if (!updatingSelection && Thumbnails.Selection.Count == 1 && Thumbnails.SelectedIndex >= 0) GoTo(Thumbnails.SelectedIndex);
         };
         Thumbnails.ContainerPrepared += (_, e) => { if (e.Index < thumbnails.Count) RenderThumbnail(thumbnails[e.Index]); };
-        AddHandler(DragDrop.DragOverEvent, (_, e) => e.DragEffects = PdfPath(e) != null ? DragDropEffects.Copy : DragDropEffects.None);
-        AddHandler(DragDrop.DropEvent, async (_, e) => { if (PdfPath(e) is { } dropped) await Open(dropped); });
+        AddHandler(DragDrop.DragOverEvent, (_, e) =>
+        {
+            // Over the thumbnails, PDFs and images are inserted where they are dropped; elsewhere a PDF is opened.
+            if (IsOverThumbnails(e) && DroppedFiles(e).Count > 0)
+            {
+                ShowDropIndicator(e.GetPosition(Thumbnails));
+                e.DragEffects = DragDropEffects.Copy;
+                return;
+            }
+            HideDropIndicator();
+            e.DragEffects = PdfPath(e) != null ? DragDropEffects.Copy : DragDropEffects.None;
+        });
+        AddHandler(DragDrop.DragLeaveEvent, (_, _) => HideDropIndicator());
+        AddHandler(DragDrop.DropEvent, async (_, e) =>
+        {
+            if (IsOverThumbnails(e) && DroppedFiles(e) is { Count: > 0 } files)
+            {
+                var at = InsertionIndexAt(e.GetPosition(Thumbnails), out double _);
+                HideDropIndicator();
+                await InsertFiles(files, at);
+            }
+            else if (PdfPath(e) is { } dropped) await Open(dropped);
+        });
 
         UpdatePageInfo();
         if (path != null) Opened += async (_, _) => await Open(path);
@@ -182,14 +205,7 @@ public partial class MainWindow : Window
         document?.Dispose();
         document = opened;
         ResetEditing();
-        var sizes = Enumerable.Range(0, opened.PageCount).Select(opened.PageSize).ToList();
-        pages = sizes.Select((s, i) => new PageItem(i, s.Width, s.Height)).ToList();
-        thumbnails = sizes.Select((s, i) => new PageItem(i, s.Width, s.Height)
-        {
-            Scale = Math.Min(ThumbnailWidth / Math.Max(s.Width, 1), ThumbnailHeight / Math.Max(s.Height, 1)),
-        }).ToList();
-        Pages.ItemsSource = pages;
-        Thumbnails.ItemsSource = thumbnails;
+        BuildPageItems();
         EmptyText.IsVisible = false;
         currentPage = 0;
         selectionPage = -1;
@@ -199,6 +215,19 @@ public partial class MainWindow : Window
         Scroller.Offset = default;
         if (!string.IsNullOrWhiteSpace(SearchBox.Text)) await Search(delay: false);
         else UpdateMatchInfo();
+    }
+
+    /// Page items of the view and of the thumbnails, for the document's pages.
+    void BuildPageItems()
+    {
+        var sizes = Enumerable.Range(0, document!.PageCount).Select(document.PageSize).ToList();
+        pages = sizes.Select((s, i) => new PageItem(i, s.Width, s.Height) { Scale = scale }).ToList();
+        thumbnails = sizes.Select((s, i) => new PageItem(i, s.Width, s.Height)
+        {
+            Scale = Math.Min(ThumbnailWidth / Math.Max(s.Width, 1), ThumbnailHeight / Math.Max(s.Height, 1)),
+        }).ToList();
+        Pages.ItemsSource = pages;
+        Thumbnails.ItemsSource = thumbnails;
     }
 
     // MARK: Zoom and navigation
@@ -255,11 +284,14 @@ public partial class MainWindow : Window
         PageBox.IsEnabled = PreviousButton.IsEnabled = NextButton.IsEnabled = hasDocument;
         ZoomInButton.IsEnabled = ZoomOutButton.IsEnabled = FitButton.IsEnabled = hasDocument;
         PrintItem.IsEnabled = SelectAllItem.IsEnabled = SaveItem.IsEnabled = SaveAsItem.IsEnabled = hasDocument;
+        SendExportItem.IsEnabled = ImageExportItem.IsEnabled = ReduceSizeItem.IsEnabled = PagesMenu.IsEnabled = hasDocument;
+        foreach (var item in pageItems) item.IsEnabled = hasDocument;
         CopyItem.IsEnabled = selectionPage >= 0 && selectionCount > 0;
         PageCountText.Text = hasDocument ? $"/ {pages.Count}" : "";
         ZoomText.Text = hasDocument ? $"{Math.Round(scale / ActualSize * 100)} %" : "";
         updatingSelection = true;
-        Thumbnails.SelectedIndex = hasDocument ? currentPage : -1;
+        // A selection of several pages stays while scrolling (it is what the page actions apply to).
+        if (Thumbnails.Selection.Count <= 1) Thumbnails.SelectedIndex = hasDocument ? currentPage : -1;
         if (hasDocument) Thumbnails.ScrollIntoView(currentPage);
         updatingSelection = false;
     }
@@ -479,6 +511,11 @@ public partial class MainWindow : Window
             case Key.Z when command && !inTextField: Undo(); break;
             case Key.Y when command && !inTextField: Redo(); break;
             case Key.Delete or Key.Back when !inTextField && selected != null: DeleteSelectedAnnotation(); break;
+            case Key.Delete or Key.Back when !inTextField && Thumbnails.IsKeyboardFocusWithin: DeletePages(); break;
+            case Key.L when command && !inTextField: RotatePages(-1); break;
+            case Key.R when command && !inTextField: RotatePages(+1); break;
+            case Key.D when command && !inTextField: DuplicatePages(); break;
+            case Key.E when command && e.KeyModifiers.HasFlag(KeyModifiers.Shift): _ = ExportForSending(); break;
             case Key.P when command: _ = Print(); break;
             case Key.F when command: FocusSearch(); break;
             case Key.F3: ShowMatch(e.KeyModifiers.HasFlag(KeyModifiers.Shift) ? -1 : +1); break;

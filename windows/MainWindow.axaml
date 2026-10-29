@@ -20,6 +20,10 @@
                 <MenuItem Name="SaveItem" />
                 <MenuItem Name="SaveAsItem" />
                 <Separator />
+                <MenuItem Name="SendExportItem" />
+                <MenuItem Name="ImageExportItem" />
+                <MenuItem Name="ReduceSizeItem" />
+                <Separator />
                 <MenuItem Name="PrintItem" />
                 <Separator Name="DefaultAppSeparator" />
                 <MenuItem Name="DefaultAppItem" />
@@ -38,6 +42,8 @@
                 <MenuItem Name="FindNextItem" />
                 <MenuItem Name="FindPreviousItem" />
             </MenuItem>
+            <!-- Filled in MainWindow.Pages.cs (same items as the thumbnails' context menu). -->
+            <MenuItem Name="PagesMenu" />
         </Menu>
 
         <Border DockPanel.Dock="Top" Padding="8,6" BorderThickness="0,0,0,1"
@@ -82,20 +88,27 @@
             </StackPanel>
         </Border>
 
-        <ListBox Name="Thumbnails" DockPanel.Dock="Left" Width="168" Padding="0,6"
-                 Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}">
-            <ListBox.ItemTemplate>
-                <DataTemplate x:DataType="local:PageItem">
-                    <StackPanel HorizontalAlignment="Center" Spacing="4" Margin="0,4">
-                        <Border Width="{Binding Width}" Height="{Binding Height}" Background="White"
-                                BoxShadow="0 1 3 0 #40000000">
-                            <Image Source="{Binding Bitmap}" Stretch="Fill" />
-                        </Border>
-                        <TextBlock Text="{Binding Number}" HorizontalAlignment="Center" FontSize="12" />
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <!-- Thumbnails: multiple selection, drag to reorder, files dropped are inserted (MainWindow.Pages.cs). -->
+        <Panel DockPanel.Dock="Left" Width="168">
+            <ListBox Name="Thumbnails" Padding="0,6" SelectionMode="Multiple"
+                     Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="local:PageItem">
+                        <StackPanel HorizontalAlignment="Center" Spacing="4" Margin="0,4">
+                            <Border Width="{Binding Width}" Height="{Binding Height}" Background="White"
+                                    BoxShadow="0 1 3 0 #40000000">
+                                <Image Source="{Binding Bitmap}" Stretch="Fill" />
+                            </Border>
+                            <TextBlock Text="{Binding Number}" HorizontalAlignment="Center" FontSize="12" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Canvas IsHitTestVisible="False">
+                <Rectangle Name="DropIndicator" Height="3" Width="140" Canvas.Left="14" RadiusX="1.5" RadiusY="1.5"
+                           Fill="{DynamicResource SystemControlHighlightAccentBrush}" IsVisible="False" />
+            </Canvas>
+        </Panel>
 
         <Panel Background="{DynamicResource SystemControlBackgroundBaseLowBrush}">
             <ScrollViewer Name="Scroller" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Focusable="True">

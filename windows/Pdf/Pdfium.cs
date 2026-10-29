@@ -78,36 +78,71 @@ public sealed record TextMatch(int Page, int Start, int Count, Rect[] Rects);
 /// An open PDF. The file bytes stay in unmanaged memory: PDFium reads them lazily.
 public sealed partial class PdfDocument : IDisposable
 {
-    readonly IntPtr handle;
+    IntPtr handle;
     bool closed;
-    readonly IntPtr buffer;
+    IntPtr buffer;
+    /// Password the document was opened with: needed to load it again (snapshots keep its encryption).
+    readonly string? password;
     public string Path { get; private set; }
-    public int PageCount { get; }
+    public int PageCount { get; private set; }
 
-    PdfDocument(string path, IntPtr handle, IntPtr buffer)
+    PdfDocument(string path, string? password, IntPtr handle, IntPtr buffer)
     {
         Path = path;
+        this.password = password;
         this.handle = handle;
         this.buffer = buffer;
         lock (Pdfium.Lock) PageCount = Native.FPDF_GetPageCount(handle);
     }
 
     /// Throws PdfPasswordException when a password is required (or wrong), IOException when the file is not a readable PDF.
-    public static PdfDocument Open(string path, string? password = null)
+    public static PdfDocument Open(string path, string? password = null) =>
+        Load(File.ReadAllBytes(path), password, out var handle, out var buffer) is var error && error == 0
+            ? new PdfDocument(path, password, handle, buffer)
+            : throw (error == Native.ErrorPassword ? new PdfPasswordException() : new IOException($"PDFium error {error}"));
+
+    /// Opens a PDF held in memory (an inserted file, a snapshot). Null if it cannot be read.
+    public static PdfDocument? FromBytes(byte[] bytes, string? password = null) =>
+        Load(bytes, password, out var handle, out var buffer) == 0 ? new PdfDocument("", password, handle, buffer) : null;
+
+    /// Loads `bytes` into PDFium; the PDFium error, or 0 and the document with its buffer.
+    static uint Load(byte[] bytes, string? password, out IntPtr handle, out IntPtr buffer)
     {
         Pdfium.EnsureInitialized();
-        var bytes = File.ReadAllBytes(path);
-        var buffer = Marshal.AllocHGlobal(Math.Max(bytes.Length, 1));
+        buffer = Marshal.AllocHGlobal(Math.Max(bytes.Length, 1));
         Marshal.Copy(bytes, 0, buffer, bytes.Length);
         lock (Pdfium.Lock)
         {
-            var handle = Native.FPDF_LoadMemDocument64(buffer, (nuint)bytes.Length, password);
-            if (handle != IntPtr.Zero) return new PdfDocument(path, handle, buffer);
-            var error = Native.FPDF_GetLastError().Value;
+            handle = Native.FPDF_LoadMemDocument64(buffer, (nuint)bytes.Length, password);
+            if (handle != IntPtr.Zero) return 0;
+            var error = (uint)Native.FPDF_GetLastError().Value;
             Marshal.FreeHGlobal(buffer);
-            if (error == Native.ErrorPassword) throw new PdfPasswordException();
-            throw new IOException($"PDFium error {error}");
+            buffer = IntPtr.Zero;
+            return error == 0 ? uint.MaxValue : error;
         }
+    }
+
+    /// Replaces the contents of the document by a snapshot (undoing or redoing a change of its pages).
+    public void Restore(byte[] snapshot)
+    {
+        if (Load(snapshot, password, out var newHandle, out var newBuffer) != 0) throw new IOException("snapshot");
+        lock (Pdfium.Lock)
+        {
+            CloseTextPage();
+            pageToView.Clear();
+            Native.FPDF_CloseDocument(handle);
+            Marshal.FreeHGlobal(buffer);
+            (handle, buffer) = (newHandle, newBuffer);
+            PageCount = Native.FPDF_GetPageCount(handle);
+        }
+    }
+
+    /// After a change of the page list: forgets what was cached about pages.
+    void PagesChanged()
+    {
+        CloseTextPage();
+        pageToView.Clear();
+        PageCount = Native.FPDF_GetPageCount(handle);
     }
 
     /// Page size in points (1/72 inch).

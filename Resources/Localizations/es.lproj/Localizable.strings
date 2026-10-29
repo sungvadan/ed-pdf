@@ -664,3 +664,12 @@
 "Aucune signature trouvée dans cette image." = "No se ha encontrado ninguna firma en esta imagen.";
 
 "Pour lire les photos HEIC, installez « Extensions d'image HEIF » et « Extensions vidéo HEVC » depuis le Microsoft Store." = "Para abrir fotos HEIC, instala «Extensiones de imagen HEIF» y «Extensiones de vídeo HEVC» desde Microsoft Store.";
+
+"Impossible de modifier les pages." = "No se pudieron modificar las páginas.";
+"PDF et images" = "PDF e imágenes";
+"Impossible d'insérer ces fichiers." = "No se pudieron insertar estos archivos.";
+"Impossible d'enregistrer les images." = "No se pudieron guardar las imágenes.";
+"%@ Mo" = "%@ MB";
+"%@ Ko" = "%@ KB";
+"Signatures, tampons, notes et champs sont intégrés à la page : ils ne peuvent plus être sélectionnés, déplacés ni modifiés." = "Las firmas, sellos, notas y campos se integran en la página: ya no se pueden seleccionar, mover ni modificar.";
+"pdf-svd inscrit le nom de votre compte Windows dans chaque annotation." = "pdf-svd registra el nombre de su cuenta de Windows en cada anotación.";
