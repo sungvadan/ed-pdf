@@ -156,6 +156,7 @@ public partial class MainWindow
     /// After the page list changed: new page items, then shows `show` and selects `select`.
     void PagesRebuilt(int show, int[] select)
     {
+        documentVersion++;
         selected = null;
         selectedPage = -1;
         selectionPage = -1;

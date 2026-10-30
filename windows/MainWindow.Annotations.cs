@@ -18,7 +18,7 @@ using Path = System.IO.Path;
 
 namespace PdfSvd;
 
-public enum Tool { Select, Highlight, Underline, StrikeOut, Note, Text, Ink, Rectangle, Ellipse, Line, Arrow, Redact }
+public enum Tool { Select, EditText, Highlight, Underline, StrikeOut, Note, Text, Ink, Rectangle, Ellipse, Line, Arrow, Redact }
 
 /// Annotations (tools, selection, moving, in-place text editing), undo and saving.
 public partial class MainWindow
@@ -38,6 +38,7 @@ public partial class MainWindow
         [Tool.Highlight] = Palette[0], [Tool.Note] = Palette[0], [Tool.Underline] = Palette[2], [Tool.Text] = Colors.Black,
         [Tool.StrikeOut] = Palette[3], [Tool.Ink] = Palette[3], [Tool.Rectangle] = Palette[3], [Tool.Ellipse] = Palette[3],
         [Tool.Line] = Palette[3], [Tool.Arrow] = Palette[3], [Tool.Select] = Palette[3], [Tool.Redact] = RedactionColor,
+        [Tool.EditText] = Colors.Black,
     };
     double lineWidth = 2, fontSize = 14;
     readonly Dictionary<Tool, ToggleButton> toolButtons = [];
@@ -128,6 +129,7 @@ public partial class MainWindow
     static string ToolName(Tool t) => t switch
     {
         Tool.Select => Tr("Sélection"),
+        Tool.EditText => Tr("Modifier le texte"),
         Tool.Highlight => Tr("Surligner"),
         Tool.Underline => Tr("Souligner"),
         Tool.StrikeOut => Tr("Barrer"),
@@ -155,6 +157,7 @@ public partial class MainWindow
         return t switch
         {
             Tool.Select => Drawing("M5,2 L5,15 L8.5,11.5 L11,17 L13,16 L10.5,10.5 L15,10.5 Z"),
+            Tool.EditText => Drawing("M2,4 H11 M6.5,4 V15 M14.5,3 V16 M12.5,3 H16.5 M12.5,16 H16.5"),
             Tool.Highlight => new Border
             {
                 Background = new SolidColorBrush(Color.Parse("#FFE14D")), Padding = new Thickness(2, 0),
@@ -181,6 +184,7 @@ public partial class MainWindow
     void SelectTool(Tool t)
     {
         EndTextEditing(commit: true);
+        if (t != Tool.EditText) HideTextHover();
         // A markup tool with text already selected: mark it up at once.
         if (t is Tool.Highlight or Tool.Underline or Tool.StrikeOut or Tool.Redact && selectionPage >= 0 && selectionCount > 0)
         {
@@ -191,7 +195,7 @@ public partial class MainWindow
         }
         tool = t;
         if (t != Tool.Select) SelectAnnotation(-1, null);
-        Pages.Cursor = new Cursor(t is Tool.Select or Tool.Highlight or Tool.Underline or Tool.StrikeOut or Tool.Redact
+        Pages.Cursor = new Cursor(t is Tool.Select or Tool.EditText or Tool.Highlight or Tool.Underline or Tool.StrikeOut or Tool.Redact
             ? StandardCursorType.Ibeam : StandardCursorType.Cross);
         UpdateEditingState();
     }
@@ -201,7 +205,7 @@ public partial class MainWindow
     {
         if (editingPage >= 0) return (true, false, true);
         if (selected != null) return (selected.Kind != AnnotationKind.Stamp && !selected.RedactionMark, selected.HasLineWidth, selected.Kind == AnnotationKind.TextBox);
-        return (tool is not (Tool.Select or Tool.Redact), tool is Tool.Ink or Tool.Rectangle or Tool.Ellipse or Tool.Line or Tool.Arrow, tool == Tool.Text);
+        return (tool is not (Tool.Select or Tool.Redact or Tool.EditText), tool is Tool.Ink or Tool.Rectangle or Tool.Ellipse or Tool.Line or Tool.Arrow, tool == Tool.Text);
     }
 
     Color CurrentColor => editingPage >= 0 ? editingColor : selected?.Color ?? toolColors[tool];
@@ -334,6 +338,7 @@ public partial class MainWindow
         if (document == null) return;
         modified = true;
         changedPages.Add(page);
+        documentVersion++;
         CountMarks(page);
         Render(pages[page], force: true);
         RenderThumbnail(thumbnails[page], force: true);
@@ -508,7 +513,8 @@ public partial class MainWindow
         if (page < 0 || page >= pages.Count) return;
         var hasSelection = selected != null && selectedPage == page;
         var dragging = drag is not (Drag.None or Drag.Text) && dragPage == page;
-        pages[page].Overlay = hasSelection || dragging ? context => DrawOverlay(context, page) : null;
+        var hovering = hoverPage == page;
+        pages[page].Overlay = hasSelection || dragging || hovering ? context => DrawOverlay(context, page) : null;
     }
 
     void DrawOverlay(DrawingContext context, int page)
@@ -516,6 +522,7 @@ public partial class MainWindow
         if (document == null) return;
         var thin = 1 / scale;
         var outline = new Pen(Brushes.DodgerBlue, thin, new DashStyle([4, 3], 0));
+        if (hoverPage == page && hoverBounds is { } hover) context.DrawRectangle(null, new Pen(Brushes.DodgerBlue, thin), ToView(page, hover).Inflate(2));
         if (selected != null && selectedPage == page)
         {
             var rect = drag switch
@@ -561,6 +568,8 @@ public partial class MainWindow
     void PointerDown(object? sender, PointerPressedEventArgs e)
     {
         if (!e.GetCurrentPoint(Scroller).Properties.IsLeftButtonPressed) return;
+        // A click outside the open paragraph editor validates it (and does nothing else).
+        if (EndParagraphEditing(commit: true)) return;
         EndTextEditing(commit: true);
         if (PageViewAt(e) is not { DataContext: PageItem item } view || document == null)
         {
@@ -605,6 +614,9 @@ public partial class MainWindow
                 drag = Drag.Text;
                 StartTextSelection(e, view, item);
                 return;
+            case Tool.EditText:
+                BeginParagraphEditing(page, point);
+                return;
             case Tool.Note:
                 _ = AddNote(page, point);
                 return;
@@ -624,6 +636,7 @@ public partial class MainWindow
 
     void PointerDrag(object? sender, PointerEventArgs e)
     {
+        if (drag == Drag.None && tool == Tool.EditText) { UpdateTextHover(e); return; }
         if (drag == Drag.Text) { ExtendTextSelection(e); return; }
         if (drag == Drag.None || dragView?.DataContext is not PageItem item) return;
         var point = e.GetPosition(dragView) / item.Scale;
@@ -711,6 +724,7 @@ public partial class MainWindow
     /// Ends in-place editing; with `commit`, creates, updates or (if emptied) removes the text box.
     void EndTextEditing(bool commit)
     {
+        EndParagraphEditing(commit);
         if (editingPage < 0) return;
         var (page, existing) = (editingPage, editingAnnotation);
         editingPage = -1;

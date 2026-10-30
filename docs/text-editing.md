@@ -90,3 +90,16 @@ XObjects, texte tourné : lecture seule.
   existent déjà côté moteur), nouveau paragraphe de texte « natif », déplacer/redimensionner un paragraphe.
 - D. Robustesse : textes dans les Form XObjects, pages pivotées, texte tourné, polices Type3/CFF (OTF), sous-ensemble
   des polices système incorporées (taille du fichier), césure, listes, PDF à xref streams.
+
+## Version Windows
+
+Portage C# fidèle dans `windows/Pdf/Text/` (`PdfFile`, `ContentSurgery`, `TextModel`, `FontResolver`, `BlockWriter`,
+`TextEditor`) ; l'UI est dans `windows/MainWindow.TextEditing.cs`. Différences :
+- polices système : Skia (`SKFontManager.MatchFamily`, tables via `TryGetTableData`) au lieu de CoreText ; correspondance
+  par famille (pas par nom PostScript) ; classe serif lue dans la table OS/2 (`sFamilyClass`) de la police embarquée ;
+- l'édition se fait sur un instantané (`PdfDocument.Snapshot`) puis le document est rechargé (`Restore`) : annuler
+  = recharger l'instantané d'avant ;
+- éditeur = `TextBox` simple : texte d'origine → `StyledText.Applying` (même diff préfixe/suffixe que sur Mac).
+
+Test sans UI : la même suite que `scripts/textlab-suite.sh` en C# (programme console référençant `windows/PdfSvd.csproj`) ;
+20/20, 0 pixel différent hors du paragraphe édité.

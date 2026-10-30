@@ -118,5 +118,13 @@ Reste : sélection sur plusieurs pages
 - « Appliquer le caviardage (n) » (barre d'annotation, après confirmation) : chaque page marquée est reconstruite
   en image 300 ppp avec les zones en noir + texte invisible (Helvetica) pour les mots hors des zones
   (`windows/Pdf/Redaction.cs`) ; annulable (instantané du document, comme les opérations de pages)
-## ⬜ Étape W7 — Édition du texte existant (portage de `Sources/FolioText`, voir `docs/text-editing.md`)
+## ✅ Étape W7 — Édition du texte existant
+- Portage C# de `Sources/FolioText` dans `windows/Pdf/Text/` (même moteur : analyse en paragraphes, polices embarquées
+  réutilisées sinon police système incorporée, chirurgie des content streams, vérification avec repli) ; polices
+  système lues avec Skia (tables sfnt) au lieu de CoreText
+- Outil « Modifier le texte » (2e de la barre) : survol = cadre du paragraphe, clic = éditeur posé sur le paragraphe
+  (police installée la plus proche, couleur, alignement, interlignage, fond de la page), clic ailleurs / Échap /
+  Ctrl+Entrée = validation, Ctrl+Z annule
+- Limite propre à Windows : l'éditeur est un texte simple (le gras en ligne s'affiche en maigre pendant l'édition, mais
+  il est conservé à l'écriture : chaque caractère garde le style de son run d'origine)
 

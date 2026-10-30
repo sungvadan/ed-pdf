@@ -67,6 +67,7 @@ public partial class MainWindow : Window
         SetUpAnnotationBar();
         SetUpPages();
         SetUpRedaction();
+        SetUpParagraphEditor();
 
         OpenButton.Click += async (_, _) => await ChooseFile();
         PreviousButton.Click += (_, _) => GoTo(currentPage - 1);
@@ -94,7 +95,7 @@ public partial class MainWindow : Window
         Scroller.AddHandler(PointerPressedEvent, PointerDown, RoutingStrategies.Bubble, handledEventsToo: true);
         Scroller.AddHandler(PointerMovedEvent, PointerDrag, RoutingStrategies.Bubble, handledEventsToo: true);
         Scroller.AddHandler(PointerReleasedEvent, PointerUp, RoutingStrategies.Bubble, handledEventsToo: true);
-        Scroller.ScrollChanged += (_, _) => { ViewportChanged(); PlaceEditor(); };
+        Scroller.ScrollChanged += (_, _) => { ViewportChanged(); PlaceEditor(); PlaceParagraphEditor(); };
         Scroller.SizeChanged += (_, _) => ViewportChanged();
         Thumbnails.SelectionChanged += (_, _) =>
         {
@@ -252,6 +253,7 @@ public partial class MainWindow : Window
     /// Changes the zoom, keeping the same point of the current page at the top of the window.
     void SetScale(double newScale)
     {
+        EndParagraphEditing(commit: true);
         var page = currentPage;
         var within = pages.Count == 0 ? 0 : (Scroller.Offset.Y - PageTop(page)) / pages[page].Height;
         scale = newScale;
