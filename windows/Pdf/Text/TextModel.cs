@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Avalonia;
 
-namespace PdfSvd.Pdf.Text;
+namespace EdPdf.Pdf.Text;
 
 /// fpdf_edit.h and fpdf_text.h functions used to read and write text objects.
 static class TextNative

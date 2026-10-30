@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Avalonia;
-using PdfSvd.Pdf.Text;
+using EdPdf.Pdf.Text;
 using SkiaSharp;
 
-namespace PdfSvd.Pdf;
+namespace EdPdf.Pdf;
 
 /// Reading paragraphs of the open document for editing (the edit itself is made on a snapshot, see Text/TextEditor.cs).
 public sealed partial class PdfDocument

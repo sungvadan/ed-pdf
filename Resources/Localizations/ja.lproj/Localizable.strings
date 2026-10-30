@@ -119,7 +119,7 @@
 "Ce paragraphe ne peut pas être modifié (texte pivoté ou imbriqué)." = "この段落は編集できません（回転または入れ子になったテキスト）。";
 
 /* TextEditing.swift:360 */
-"Ce PDF utilise une structure que pdf-svd ne sait pas encore modifier." = "このPDFは、pdf-svdがまだ編集に対応していない構造を使用しています。";
+"Ce PDF utilise une structure qu'ed-pdf ne sait pas encore modifier." = "このPDFは、ed-pdfがまだ編集に対応していない構造を使用しています。";
 
 /* Annotations.swift:86 */
 "Champ de formulaire" = "フォームフィールド";
@@ -281,7 +281,7 @@
 "Italique" = "斜体";
 
 /* SignatureCapture.swift:132 */
-"L'accès à la caméra est refusé. Autorisez pdf-svd dans Réglages Système › Confidentialité et sécurité › Caméra, ou choisissez une image." = "カメラへのアクセスが拒否されています。「システム設定」 › 「プライバシーとセキュリティ」 › 「カメラ」でpdf-svdを許可するか、画像を選択してください。";
+"L'accès à la caméra est refusé. Autorisez ed-pdf dans Réglages Système › Confidentialité et sécurité › Caméra, ou choisissez une image." = "カメラへのアクセスが拒否されています。「システム設定」 › 「プライバシーとセキュリティ」 › 「カメラ」でed-pdfを許可するか、画像を選択してください。";
 
 /* ReduceSize.swift:34 */
 "la copie ne sera pas protégée par mot de passe" = "コピーはパスワードで保護されません";
@@ -290,7 +290,7 @@
 "La modification du texte n'est pas encore possible sur un document protégé par mot de passe." = "パスワードで保護された書類のテキストはまだ編集できません。";
 
 /* Settings.swift:28 */
-"La nouvelle langue sera utilisée au prochain lancement de pdf-svd." = "新しい言語は、次回pdf-svdを起動したときに適用されます。";
+"La nouvelle langue sera utilisée au prochain lancement d'ed-pdf." = "新しい言語は、次回ed-pdfを起動したときに適用されます。";
 
 /* Settings.swift:21 */
 "Langue" = "言語";
@@ -404,7 +404,7 @@
 "PAYÉ" = "支払済";
 
 /* TextEditing.swift:353 */
-"pdf-svd n'a pas pu écrire ce texte fidèlement avec les polices disponibles." = "pdf-svdは、使用可能なフォントでこのテキストを正確に書き込めませんでした。";
+"ed-pdf n'a pas pu écrire ce texte fidèlement avec les polices disponibles." = "ed-pdfは、使用可能なフォントでこのテキストを正確に書き込めませんでした。";
 
 /* ContentView.swift:103 */
 "Pivoter à droite" = "右に回転";
@@ -461,7 +461,7 @@
 "Reprendre" = "撮り直す";
 
 /* SendExport.swift:183 */
-"Retirer les données d'édition de pdf-svd" = "pdf-svdの編集データを削除";
+"Retirer les données d'édition d'ed-pdf" = "ed-pdfの編集データを削除";
 
 /* SendExport.swift:178 */
 "Retirer mon nom d'auteur" = "作成者名を削除";
@@ -524,7 +524,7 @@
 "Souligné" = "下線";
 
 /* SendExport.swift:184 */
-"Supprime la copie de l'image conservée pour la rééditer dans pdf-svd. L'image reste visible." = "pdf-svdで再編集するために保持している画像のコピーを削除します。画像は引き続き表示されます。";
+"Supprime la copie de l'image conservée pour la rééditer dans ed-pdf. L'image reste visible." = "ed-pdfで再編集するために保持している画像のコピーを削除します。画像は引き続き表示されます。";
 
 /* Bookmarks.swift:156 */
 "Supprimer" = "削除";
@@ -639,7 +639,7 @@
 "Fichier" = "ファイル";
 "Édition" = "編集";
 "Imprimer…" = "プリント…";
-"Utiliser pdf-svd pour ouvrir les PDF…" = "PDF を pdf-svd で開く…";
+"Utiliser ed-pdf pour ouvrir les PDF…" = "PDF を ed-pdf で開く…";
 "Quitter" = "終了";
 "Copier" = "コピー";
 "Tout sélectionner" = "すべてを選択";
@@ -672,6 +672,6 @@
 "%@ Mo" = "%@ MB";
 "%@ Ko" = "%@ KB";
 "Signatures, tampons, notes et champs sont intégrés à la page : ils ne peuvent plus être sélectionnés, déplacés ni modifiés." = "署名、スタンプ、メモ、フィールドがページに統合され、選択・移動・編集できなくなります。";
-"pdf-svd inscrit le nom de votre compte Windows dans chaque annotation." = "pdf-svd は各注釈に Windows アカウント名を記録します。";
+"ed-pdf inscrit le nom de votre compte Windows dans chaque annotation." = "ed-pdf は各注釈に Windows アカウント名を記録します。";
 
 "Le contenu sous les %d zones marquées sera supprimé du document. Les %d pages concernées sont reconstruites : leur texte restant reste sélectionnable, mais leurs annotations et liens sont intégrés à la page. Vous pouvez annuler (Ctrl+Z) tant que le document est ouvert ; une fois enregistré, le contenu caviardé est perdu." = "マークした%1$d個の領域の下にある内容が書類から削除されます。対象の%2$dページは再構成されます。残りのテキストは引き続き選択できますが、注釈とリンクはページに統合されます。書類を開いている間は取り消せます（Ctrl+Z）が、保存すると墨消しした内容は失われます。";

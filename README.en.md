@@ -1,4 +1,4 @@
-# pdf-svd
+# ed-pdf
 
 *[Version française](README.md)*
 
@@ -32,7 +32,7 @@ Files are in the repository's [*Releases*](../../releases).
 
 ### macOS
 
-Download the `.dmg`, open it and drag **pdf-svd** into **Applications**.
+Download the `.dmg`, open it and drag **ed-pdf** into **Applications**.
 
 The app is not signed with an Apple developer account, so macOS blocks it the first time it is opened. Go to
 **System Settings › Privacy & Security** and click **"Open Anyway"** (only once).
@@ -41,7 +41,7 @@ Requirements: Mac with Apple silicon, macOS 14 or later.
 
 ### Windows
 
-Download `pdf-svd-x64.exe` (Intel/AMD PCs) or `pdf-svd-arm64.exe` (ARM PCs) and run it: nothing to install.
+Download `ed-pdf-x64.exe` (Intel/AMD PCs) or `ed-pdf-arm64.exe` (ARM PCs) and run it: nothing to install.
 
 The exe is not signed, so Windows SmartScreen shows "Windows protected your PC". Click **More info › Run anyway**
 (only once).
@@ -56,9 +56,9 @@ Requirements: Mac with Apple silicon, macOS 14 or later, Apple's *Command Line T
 not needed: `xcode-select --install`), and an Internet connection for the first build (PDFium download).
 
 ```sh
-scripts/build-app.sh release --open    # build/pdf-svd.app (debug for faster builds)
+scripts/build-app.sh release --open    # build/ed-pdf.app (debug for faster builds)
 scripts/install.sh                     # installs into /Applications
-scripts/make-dmg.sh                    # build/pdf-svd-<version>.dmg
+scripts/make-dmg.sh                    # build/ed-pdf-<version>.dmg
 ```
 
 `build-app.sh` downloads PDFium into `Vendor/pdfium` (pinned version, SHA-256 checked), builds with `swift build`,
@@ -70,7 +70,7 @@ not produce an app.
 Built on the Mac (no Windows needed) with the .NET 10 SDK (`brew install dotnet`):
 
 ```sh
-scripts/build-windows.sh    # build/windows/pdf-svd-x64.exe and pdf-svd-arm64.exe
+scripts/build-windows.sh    # build/windows/ed-pdf-x64.exe and ed-pdf-arm64.exe
 ```
 
 Single files, PDFium and .NET included. To try it on the Mac: `cd windows && dotnet run -- file.pdf`.
@@ -91,7 +91,7 @@ Single files, PDFium and .NET included. To try it on the Mac: `cd windows && dot
 
 ### How text editing works
 
-PDFKit cannot edit page text. pdf-svd uses PDFium to find paragraphs (font, size, color, position) and write the new
+PDFKit cannot edit page text. ed-pdf uses PDFium to find paragraphs (font, size, color, position) and write the new
 text, then removes the old text directly in the page's drawing instructions, operator by operator: the rest of the
 page stays pixel-identical. Every change is read back and checked before it is applied.
 
@@ -113,11 +113,11 @@ scripts/textlab-suite.sh               # text editing scenarios
 
 ## Disclaimer
 
-pdf-svd is provided **"as is", without warranty of any kind**, as stated in its [license](LICENSE). Its authors
+ed-pdf is provided **"as is", without warranty of any kind**, as stated in its [license](LICENSE). Its authors
 cannot be held liable for any damage arising from its use, including loss or corruption of data.
 
 - **Keep a copy of your original files** and check the result before sending it.
-- **You alone are responsible for how you use the software and for the documents you modify.** pdf-svd is meant to
+- **You alone are responsible for how you use the software and for the documents you modify.** ed-pdf is meant to
   correct and complete your own documents, or documents you are authorized to modify. Altering a document without the
   right to do so (contract, invoice, payslip, diploma, official document…) or using such a document may constitute
   forgery, which is a criminal offense in most countries.
@@ -136,14 +136,14 @@ same MIT license.
 Code under the [MIT License](LICENSE): you may use, modify and redistribute it freely, including in commercial
 projects, provided the copyright notice and license text are kept. It comes with no warranty.
 
-pdf-svd ships [PDFium](https://pdfium.googlesource.com/pdfium/) (BSD license) built by
+ed-pdf ships [PDFium](https://pdfium.googlesource.com/pdfium/) (BSD license) built by
 [pdfium-binaries](https://github.com/bblanchon/pdfium-binaries), which contains other libraries (FreeType,
 libjpeg-turbo, zlib, ICU…), and, on Windows, the .NET runtime, Avalonia and SkiaSharp (MIT license). All are under
 permissive licenses; the full list is in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) and their licenses ship with
 the app (macOS: `Contents/Resources/Licenses`; Windows: embedded in the exe).
 
-When text is edited, pdf-svd may embed a font installed on the computer into the PDF, as word processors do; fonts
+When text is edited, ed-pdf may embed a font installed on the computer into the PDF, as word processors do; fonts
 whose license forbids embedding are never used.
 
 PDF is a trademark of Adobe; Apple, Mac and macOS are trademarks of Apple Inc.; Windows is a trademark of Microsoft.
-pdf-svd is an independent project, not affiliated with these companies.
+ed-pdf is an independent project, not affiliated with these companies.

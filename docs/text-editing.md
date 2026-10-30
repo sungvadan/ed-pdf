@@ -84,7 +84,7 @@ XObjects, texte tourné : lecture seule.
   `.folioRunStyle` par caractère → la saisie hérite du style) ; clic ailleurs / changement
   d'outil / zoom = validation, Échap = validation aussi (⌘Z pour revenir) ; validation = `TextEditor.replace` + `applyPages` (⌘Z).
   Mise en page analysée une fois par révision (`ViewerModel.textLayout(for:)`).
-  Auto-test sans UI du vrai code de l'app : `build/pdf-svd.app/Contents/MacOS/Folio --selftest-edit in.pdf "trouver" "remplacer" out.pdf`
+  Auto-test sans UI du vrai code de l'app : `build/ed-pdf.app/Contents/MacOS/Folio --selftest-edit in.pdf "trouver" "remplacer" out.pdf`
   (`FOLIO_SNAPSHOT=x.png` capture l'éditeur).
 - C2. À faire : contrôles de style pendant l'édition (police, taille, gras, italique, couleur — `RunStyle.bold/italic`
   existent déjà côté moteur), nouveau paragraphe de texte « natif », déplacer/redimensionner un paragraphe.
@@ -101,5 +101,5 @@ Portage C# fidèle dans `windows/Pdf/Text/` (`PdfFile`, `ContentSurgery`, `TextM
   = recharger l'instantané d'avant ;
 - éditeur = `TextBox` simple : texte d'origine → `StyledText.Applying` (même diff préfixe/suffixe que sur Mac).
 
-Test sans UI : la même suite que `scripts/textlab-suite.sh` en C# (programme console référençant `windows/PdfSvd.csproj`) ;
+Test sans UI : la même suite que `scripts/textlab-suite.sh` en C# (programme console référençant `windows/EdPdf.csproj`) ;
 20/20, 0 pixel différent hors du paragraphe édité.

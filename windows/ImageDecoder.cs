@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using SkiaSharp;
 
-namespace PdfSvd;
+namespace EdPdf;
 
 /// Reads the images that can be placed or turned into a signature. Skia handles PNG, JPEG, BMP, GIF and WebP;
 /// HEIC/HEIF (iPhone photos) goes through Windows Imaging Component, which uses the system's HEIF extension.

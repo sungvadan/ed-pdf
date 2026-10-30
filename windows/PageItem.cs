@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using Avalonia;
 using Avalonia.Media.Imaging;
 
-namespace PdfSvd;
+namespace EdPdf;
 
 /// One page of the open document, as shown in the page list or the thumbnails.
 public sealed class PageItem(int index, double widthPoints, double heightPoints) : INotifyPropertyChanged

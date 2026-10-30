@@ -11,11 +11,11 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
-using PdfSvd.Pdf;
-using static PdfSvd.L10n;
+using EdPdf.Pdf;
+using static EdPdf.L10n;
 using Path = System.IO.Path;
 
-namespace PdfSvd;
+namespace EdPdf;
 
 /// Signatures, stamps and images placed on the page.
 public partial class MainWindow

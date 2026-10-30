@@ -9,9 +9,9 @@ using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using SkiaSharp;
-using static PdfSvd.L10n;
+using static EdPdf.L10n;
 
-namespace PdfSvd;
+namespace EdPdf;
 
 /// Area where a signature is drawn with the mouse, a pen or a finger.
 sealed class SignatureCanvas : Control
@@ -86,7 +86,7 @@ static class SignatureDialogs
         panel.Children.Add(row);
         return new Window
         {
-            Title = "pdf-svd", Content = panel, SizeToContent = SizeToContent.WidthAndHeight,
+            Title = "ed-pdf", Content = panel, SizeToContent = SizeToContent.WidthAndHeight,
             CanResize = false, ShowInTaskbar = false, WindowStartupLocation = WindowStartupLocation.CenterOwner,
         };
     }

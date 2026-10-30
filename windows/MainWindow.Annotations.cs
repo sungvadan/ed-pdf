@@ -12,11 +12,11 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
-using PdfSvd.Pdf;
-using static PdfSvd.L10n;
+using EdPdf.Pdf;
+using static EdPdf.L10n;
 using Path = System.IO.Path;
 
-namespace PdfSvd;
+namespace EdPdf;
 
 public enum Tool { Select, EditText, Highlight, Underline, StrikeOut, Note, Text, Ink, Rectangle, Ellipse, Line, Arrow, Redact }
 
@@ -235,7 +235,7 @@ public partial class MainWindow
         UndoItem.IsEnabled = undo.CanUndo;
         RedoItem.IsEnabled = undo.CanRedo;
         DeleteItem.IsEnabled = selected != null;
-        Title = document == null ? "pdf-svd" : $"{(modified ? "*" : "")}{Path.GetFileName(document.Path)} — pdf-svd";
+        Title = document == null ? "ed-pdf" : $"{(modified ? "*" : "")}{Path.GetFileName(document.Path)} — ed-pdf";
     }
 
     static int Nearest(double[] values, double value) =>
@@ -289,7 +289,7 @@ public partial class MainWindow
 
     // MARK: Changes (all undoable)
 
-    static string NewName() => "pdf-svd-" + Guid.NewGuid().ToString("N");
+    static string NewName() => "ed-pdf-" + Guid.NewGuid().ToString("N");
 
     void AddAnnotation(int page, Annotation annotation)
     {

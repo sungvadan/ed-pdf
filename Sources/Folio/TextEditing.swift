@@ -4,7 +4,7 @@ import PDFKit
 
 extension NSAttributedString.Key {
     /// Index of the original run style a character belongs to (typed text inherits it).
-    static let folioRunStyle = NSAttributedString.Key("pdf-svd.runStyle")
+    static let folioRunStyle = NSAttributedString.Key("ed-pdf.runStyle")
 }
 
 /// Paragraphs of one page, analyzed with PDFium on a snapshot of the document.
@@ -298,10 +298,10 @@ extension ViewerModel {
         }
     }
 
-    /// Appends the failure to ~/Library/Logs/pdf-svd/text-edit.log, to send with a bug report.
+    /// Appends the failure to ~/Library/Logs/ed-pdf/text-edit.log, to send with a bug report.
     private static func logFailure(_ error: Error, segments: [StyledSegment]) -> URL? {
         guard let logs = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first?
-            .appendingPathComponent("Logs/pdf-svd") else { return nil }
+            .appendingPathComponent("Logs/ed-pdf") else { return nil }
         try? FileManager.default.createDirectory(at: logs, withIntermediateDirectories: true)
         let url = logs.appendingPathComponent("text-edit.log")
         let fonts = Set(segments.map { "\($0.style.font.baseName) \(String(format: "%.1f", Double($0.style.fontSize)))pt embedded=\($0.style.font.isEmbedded)" }) // l10n-ignore
@@ -326,14 +326,14 @@ extension ViewerModel {
         case TextEditError.verificationFailed(let expected, let found):
             let missing = TextEditor.missingCharacters(expected: expected, found: found)
             return missing.isEmpty
-                ? tr("pdf-svd n'a pas pu écrire ce texte fidèlement avec les polices disponibles.")
+                ? tr("ed-pdf n'a pas pu écrire ce texte fidèlement avec les polices disponibles.")
                 : tr("Aucune police disponible ne contient ces caractères : « %@ ».", missing.map(String.init).joined(separator: " "))
         case PDFFileError.unsupported(let what) where what.contains("chiffré"): // l10n-ignore
             return tr("La modification du texte n'est pas encore possible sur un document protégé par mot de passe.")
         case TextEditError.notEditable:
             return tr("Ce paragraphe ne peut pas être modifié (texte pivoté ou imbriqué).")
         case is TextSurgeryError, is PDFFileError:
-            return tr("Ce PDF utilise une structure que pdf-svd ne sait pas encore modifier.")
+            return tr("Ce PDF utilise une structure qu'ed-pdf ne sait pas encore modifier.")
         default:
             return tr("Erreur inattendue (%@).", "\(error)")
         }

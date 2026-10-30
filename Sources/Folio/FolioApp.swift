@@ -3,6 +3,7 @@ import SwiftUI
 @main
 struct FolioApp: App {
     init() {
+        AppSettings.migrateFromPreviousName()
         SelfTest.runIfRequested()
     }
 

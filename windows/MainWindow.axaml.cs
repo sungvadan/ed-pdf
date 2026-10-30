@@ -13,10 +13,10 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
-using PdfSvd.Pdf;
-using static PdfSvd.L10n;
+using EdPdf.Pdf;
+using static EdPdf.L10n;
 
-namespace PdfSvd;
+namespace EdPdf;
 
 public partial class MainWindow : Window
 {
@@ -142,7 +142,7 @@ public partial class MainWindow : Window
         Item(SaveItem, Tr("Enregistrer"), new KeyGesture(Key.S, KeyModifiers.Control), async () => await Save());
         Item(SaveAsItem, Tr("Enregistrer sous…"), new KeyGesture(Key.S, KeyModifiers.Control | KeyModifiers.Shift), async () => await SaveAs());
         Item(PrintItem, Tr("Imprimer…"), new KeyGesture(Key.P, KeyModifiers.Control), async () => await Print());
-        Item(DefaultAppItem, Tr("Utiliser pdf-svd pour ouvrir les PDF…"), null, () =>
+        Item(DefaultAppItem, Tr("Utiliser ed-pdf pour ouvrir les PDF…"), null, () =>
         {
             if (OperatingSystem.IsWindows()) FileAssociation.OpenDefaultAppsSettings();
         });

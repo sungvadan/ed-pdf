@@ -5,10 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Media;
-using PdfSvd.Pdf;
-using static PdfSvd.L10n;
+using EdPdf.Pdf;
+using static EdPdf.L10n;
 
-namespace PdfSvd;
+namespace EdPdf;
 
 /// Redaction: marks placed with the Redact tool, then applied (see Pdf/Redaction.cs).
 public partial class MainWindow

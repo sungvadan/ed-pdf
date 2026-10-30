@@ -12,12 +12,12 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
-using PdfSvd.Pdf;
+using EdPdf.Pdf;
 using SkiaSharp;
-using static PdfSvd.L10n;
+using static EdPdf.L10n;
 using Path = System.IO.Path;
 
-namespace PdfSvd;
+namespace EdPdf;
 
 /// Pages (rotate, delete, reorder, insert, extract, flatten), exports and smaller copies.
 public partial class MainWindow
@@ -539,7 +539,7 @@ static class ExportDialogs
         panel.Children.Add(row);
         return new Window
         {
-            Title = "pdf-svd", Content = panel, Width = 480, SizeToContent = SizeToContent.Height,
+            Title = "ed-pdf", Content = panel, Width = 480, SizeToContent = SizeToContent.Height,
             CanResize = false, ShowInTaskbar = false, WindowStartupLocation = WindowStartupLocation.CenterOwner,
         };
     }
@@ -591,9 +591,9 @@ static class ExportDialogs
             Tr("Signatures, tampons, notes et champs sont intégrés à la page : ils ne peuvent plus être sélectionnés, déplacés ni modifiés."), true);
         var downscale = Option(Tr("Réduire la résolution des signatures et images"),
             Tr("Limite les images à %d pixels : suffisant à l'écran et à l'impression, moins exploitable si quelqu'un l'extrait.", imageMaxPixels), true);
-        var author = Option(Tr("Retirer mon nom d'auteur"), Tr("pdf-svd inscrit le nom de votre compte Windows dans chaque annotation."), true);
-        var strip = Option(Tr("Retirer les données d'édition de pdf-svd"),
-            Tr("Supprime la copie de l'image conservée pour la rééditer dans pdf-svd. L'image reste visible."), true);
+        var author = Option(Tr("Retirer mon nom d'auteur"), Tr("ed-pdf inscrit le nom de votre compte Windows dans chaque annotation."), true);
+        var strip = Option(Tr("Retirer les données d'édition d'ed-pdf"),
+            Tr("Supprime la copie de l'image conservée pour la rééditer dans ed-pdf. L'image reste visible."), true);
         var compress = Option(Tr("Réduire la taille du fichier"),
             Tr("Recompresse les images en JPEG adapté à l'écran. Utile pour l'envoi par e-mail ; un peu moins net à l'impression."), false);
         // Flattened, nothing is left to edit.

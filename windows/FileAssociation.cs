@@ -4,17 +4,17 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using Microsoft.Win32;
-using static PdfSvd.L10n;
+using static EdPdf.L10n;
 
-namespace PdfSvd;
+namespace EdPdf;
 
-/// Registers pdf-svd for .pdf files (current user, no administrator rights): it then appears in "Open with" and in
+/// Registers ed-pdf for .pdf files (current user, no administrator rights): it then appears in "Open with" and in
 /// Settings > Default apps. Windows does not let an app make itself the default: the user confirms in Settings.
 [SupportedOSPlatform("windows")]
 static class FileAssociation
 {
-    const string ProgId = "pdf-svd.Document";
-    const string AppName = "pdf-svd";
+    const string ProgId = "ed-pdf.Document";
+    const string AppName = "ed-pdf";
 
     /// Called at each launch: updates the registration when the .exe was moved or renamed.
     public static void Register()
@@ -22,6 +22,7 @@ static class FileAssociation
         if (Environment.ProcessPath is not { } exe || !exe.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)) return;
         var command = $"\"{exe}\" \"%1\"";
         using var classes = Registry.CurrentUser.CreateSubKey(@"Software\Classes");
+        RemovePreviousName(classes);
         using (var existing = classes.OpenSubKey($@"{ProgId}\shell\open\command"))
             if (existing?.GetValue("") as string == command) return;
 
@@ -50,7 +51,25 @@ static class FileAssociation
         SHChangeNotify(0x08000000 /* SHCNE_ASSOCCHANGED */, 0, IntPtr.Zero, IntPtr.Zero);
     }
 
-    /// Opens Settings > Default apps on pdf-svd's page, where the user chooses it for .pdf.
+    /// The app was called pdf-svd before: removes that registration, which may point to an exe that is gone.
+    static void RemovePreviousName(RegistryKey classes)
+    {
+        const string oldName = "pdf-svd", oldProgId = "pdf-svd.Document";
+        using (var old = classes.OpenSubKey(oldProgId)) if (old == null) return;
+        classes.DeleteSubKeyTree(oldProgId, false);
+        using (var openWith = classes.OpenSubKey(@".pdf\OpenWithProgids", true)) openWith?.DeleteValue(oldProgId, false);
+        using (var applications = classes.OpenSubKey("Applications", true))
+            if (applications != null)
+                foreach (var name in applications.GetSubKeyNames())
+                {
+                    using var application = applications.OpenSubKey(name);
+                    if (application?.GetValue("FriendlyAppName") as string == oldName) applications.DeleteSubKeyTree(name, false);
+                }
+        Registry.CurrentUser.DeleteSubKeyTree($@"Software\{oldName}", false);
+        using (var registered = Registry.CurrentUser.OpenSubKey(@"Software\RegisteredApplications", true)) registered?.DeleteValue(oldName, false);
+    }
+
+    /// Opens Settings > Default apps on ed-pdf's page, where the user chooses it for .pdf.
     public static void OpenDefaultAppsSettings()
     {
         Register();

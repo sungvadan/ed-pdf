@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace PdfSvd;
+namespace EdPdf;
 
 /// Undo and redo of document changes. Each entry knows how to undo and redo itself.
 sealed class UndoStack

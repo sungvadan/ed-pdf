@@ -62,8 +62,8 @@
 
 # Version Windows (`windows/`, C# + Avalonia 11 + PDFium)
 
-Construite sur le Mac : `scripts/build-windows.sh` → `build/windows/pdf-svd-arm64.exe` (Windows ARM, VM sur Mac
-Apple Silicon) et `pdf-svd-x64.exe` (PC Intel/AMD), fichiers uniques sans installation. Test sur le Mac :
+Construite sur le Mac : `scripts/build-windows.sh` → `build/windows/ed-pdf-arm64.exe` (Windows ARM, VM sur Mac
+Apple Silicon) et `ed-pdf-x64.exe` (PC Intel/AMD), fichiers uniques sans installation. Test sur le Mac :
 `cd windows && dotnet run -- fichier.pdf`. Mêmes traductions que la version Mac.
 
 ## ✅ Étape W1 — Lecture
@@ -79,7 +79,7 @@ Fait (à tester dans la VM : impression et association, propres à Windows) :
 - Sélection du texte à la souris sur une page (double-clic = mot), Ctrl+A = page courante, Ctrl+C copie
 - Imprimer… (Ctrl+P) : dialogue Windows, pages choisies, chaque page ajustée à la zone imprimable (GDI + `FPDF_RenderPage`)
 - Inscription pour les .pdf (HKCU, à chaque lancement : « Ouvrir avec », Applications par défaut) ;
-  Fichier > « Utiliser pdf-svd pour ouvrir les PDF… » ouvre Paramètres > Applications par défaut
+  Fichier > « Utiliser ed-pdf pour ouvrir les PDF… » ouvre Paramètres > Applications par défaut
 - Sélection sur plusieurs pages (glisser d'une page à l'autre, défilement automatique près des bords) ; copier,
   surligner/souligner/barrer et caviarder s'appliquent à chaque page, annulés en une fois (`UndoStack.Group`)
 ## ✅ Étape W3 — Annotations (surlignage, notes, zones de texte, dessin, formes) et enregistrement
@@ -98,7 +98,7 @@ Fait (à tester dans la VM : impression et association, propres à Windows) :
   « Depuis une image (signature sur papier)… » (papier rendu transparent, encre gardée, recadrée), suppression
 - Tampon : APPROUVÉ, REJETÉ, CONFIDENTIEL, BROUILLON, PAYÉ, date du jour, tampons personnalisés (texte + couleur)
 - Image : PNG/JPEG/BMP/GIF/WebP, réduite à 1200 px, placée au centre de la page visible
-- Signatures et tampons gardés dans `%APPDATA%\pdf-svd` (signatures.json, stamps.json)
+- Signatures et tampons gardés dans `%APPDATA%\ed-pdf` (signatures.json, stamps.json)
 - Les images sont des annotations Stamp avec le PNG dans /FolioImage, comme sur Mac (compatibles dans les deux sens) ;
   les tampons texte sont des FreeText en gras, centrés, encadrés (/FolioStamp)
 ## ✅ Étape W5 — Pages (pivoter, supprimer, réordonner, insérer, extraire), export, réduire la taille

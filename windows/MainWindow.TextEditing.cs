@@ -10,15 +10,15 @@ using Avalonia.Media;
 using Avalonia.Media.TextFormatting;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
-using PdfSvd.Pdf;
-using PdfSvd.Pdf.Text;
+using EdPdf.Pdf;
+using EdPdf.Pdf.Text;
 using SkiaSharp;
-using static PdfSvd.L10n;
+using static EdPdf.L10n;
 using Path = System.IO.Path;
-using TextBlock = PdfSvd.Pdf.Text.TextBlock;
-using TextLayout = PdfSvd.Pdf.Text.TextLayout;
+using TextBlock = EdPdf.Pdf.Text.TextBlock;
+using TextLayout = EdPdf.Pdf.Text.TextLayout;
 
-namespace PdfSvd;
+namespace EdPdf;
 
 /// Editing the existing text of the page, "as in Word": the Edit Text tool frames the paragraph under the pointer,
 /// a click opens an editor laid over it, validating rewrites the paragraph (Pdf/Text/TextEditor.cs) as one undoable
@@ -247,19 +247,19 @@ public partial class MainWindow
     {
         TextEditException { Failure: TextEditFailure.VerificationFailed } e when TextEditor.MissingCharacters(e.Expected, e.Found) is { Length: > 0 } missing =>
             Tr("Aucune police disponible ne contient ces caractères : « %@ ».", string.Join(" ", missing.EnumerateRunes())),
-        TextEditException { Failure: TextEditFailure.VerificationFailed } => Tr("pdf-svd n'a pas pu écrire ce texte fidèlement avec les polices disponibles."),
+        TextEditException { Failure: TextEditFailure.VerificationFailed } => Tr("ed-pdf n'a pas pu écrire ce texte fidèlement avec les polices disponibles."),
         PdfFileException { Message: "encrypted" } => Tr("La modification du texte n'est pas encore possible sur un document protégé par mot de passe."), // l10n-ignore
         TextEditException { Failure: TextEditFailure.NotEditable } => Tr("Ce paragraphe ne peut pas être modifié (texte pivoté ou imbriqué)."),
-        TextSurgeryException or PdfFileException => Tr("Ce PDF utilise une structure que pdf-svd ne sait pas encore modifier."),
+        TextSurgeryException or PdfFileException => Tr("Ce PDF utilise une structure qu'ed-pdf ne sait pas encore modifier."),
         _ => Tr("Erreur inattendue (%@).", error.Message),
     };
 
-    /// Appends the failure to %LOCALAPPDATA%\pdf-svd\text-edit.log, to send with a bug report.
+    /// Appends the failure to %LOCALAPPDATA%\ed-pdf\text-edit.log, to send with a bug report.
     static string? LogTextEditFailure(Exception error, TextBlock block)
     {
         try
         {
-            var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "pdf-svd");
+            var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ed-pdf");
             Directory.CreateDirectory(folder);
             var path = Path.Combine(folder, "text-edit.log");
             var fonts = block.Runs.Select(r => $"{r.Font.BaseName} {r.FontSize:0.0}pt embedded={r.Font.IsEmbedded}").Distinct().Order(); // l10n-ignore

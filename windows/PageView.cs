@@ -5,7 +5,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 
-namespace PdfSvd;
+namespace EdPdf;
 
 /// A page in the main list: its rendering, the search matches and the selected text (see PageItem).
 public sealed class PageView : Control

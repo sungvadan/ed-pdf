@@ -1,5 +1,5 @@
 #!/bin/bash
-# Builds pdf-svd.app into ./build (executable and modules keep the internal name Folio). Usage: scripts/build-app.sh [debug|release] [--open]
+# Builds ed-pdf.app into ./build (executable and modules keep the internal name Folio). Usage: scripts/build-app.sh [debug|release] [--open]
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -8,7 +8,7 @@ scripts/fetch-pdfium.sh >/dev/null
 swift build -c "$CONFIG" --product Folio
 BIN="$(swift build -c "$CONFIG" --show-bin-path)/Folio"
 
-APP="build/pdf-svd.app"
+APP="build/ed-pdf.app"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Frameworks"
 cp "$BIN" "$APP/Contents/MacOS/Folio"
@@ -18,7 +18,7 @@ cp -R Resources/Localizations/*.lproj "$APP/Contents/Resources/"
 cp Vendor/pdfium/lib/libpdfium.dylib "$APP/Contents/Frameworks/"
 # PDFium and the libraries it contains require their notices to ship with the binary.
 mkdir -p "$APP/Contents/Resources/Licenses"
-cp LICENSE "$APP/Contents/Resources/Licenses/pdf-svd.txt"
+cp LICENSE "$APP/Contents/Resources/Licenses/ed-pdf.txt"
 cp THIRD-PARTY-NOTICES.md "$APP/Contents/Resources/Licenses/"
 cp Vendor/pdfium/LICENSE "$APP/Contents/Resources/Licenses/pdfium-binaries.txt"
 cp Vendor/pdfium/licenses/* "$APP/Contents/Resources/Licenses/"

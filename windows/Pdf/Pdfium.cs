@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Avalonia;
 
-namespace PdfSvd.Pdf;
+namespace EdPdf.Pdf;
 
 /// PDFium C API (fpdfview.h). PDFium is not thread-safe: every call goes through `Pdfium.Lock`.
 internal static partial class Native

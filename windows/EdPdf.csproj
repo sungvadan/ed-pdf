@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <!-- pdf-svd for Windows (Avalonia + PDFium). Built on the Mac by scripts/build-windows.sh; `dotnet run` runs it on the Mac. -->
+  <!-- ed-pdf for Windows (Avalonia + PDFium). Built on the Mac by scripts/build-windows.sh; `dotnet run` runs it on the Mac. -->
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <AssemblyName>pdf-svd</AssemblyName>
-    <RootNamespace>PdfSvd</RootNamespace>
-    <ApplicationIcon>Assets/pdf-svd.ico</ApplicationIcon>
-    <Product>pdf-svd</Product>
+    <AssemblyName>ed-pdf</AssemblyName>
+    <RootNamespace>EdPdf</RootNamespace>
+    <ApplicationIcon>Assets/ed-pdf.ico</ApplicationIcon>
+    <Product>ed-pdf</Product>
     <Version>0.1.0</Version>
     <InvariantGlobalization>false</InvariantGlobalization>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>

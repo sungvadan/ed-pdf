@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleName</key>
-	<string>pdf-svd</string>
+	<string>ed-pdf</string>
 	<key>CFBundleDisplayName</key>
-	<string>pdf-svd</string>
+	<string>ed-pdf</string>
 	<key>CFBundleIdentifier</key>
-	<string>local.svd.pdf-svd</string>
+	<string>local.svd.ed-pdf</string>
 	<key>CFBundleIconFile</key>
 	<string>AppIcon</string>
 	<key>CFBundleExecutable</key>
@@ -38,7 +38,7 @@
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>NSCameraUsageDescription</key>
-	<string>pdf-svd utilise la caméra pour capturer une signature écrite sur papier.</string>
+	<string>ed-pdf utilise la caméra pour capturer une signature écrite sur papier.</string>
 	<key>NSHighResolutionCapable</key>
 	<true/>
 	<key>CFBundleDocumentTypes</key>

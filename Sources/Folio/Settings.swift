@@ -9,6 +9,17 @@ enum AppSettings {
         let name = UserDefaults.standard.string(forKey: authorNameKey) ?? NSFullUserName()
         return name.trimmingCharacters(in: .whitespaces).isEmpty ? nil : name
     }
+
+    /// The app was called pdf-svd before: brings its settings, signatures and stamps over once.
+    static func migrateFromPreviousName() {
+        let defaults = UserDefaults.standard
+        guard !defaults.bool(forKey: "migratedFromPdfSvd") else { return }
+        defaults.set(true, forKey: "migratedFromPdfSvd")
+        guard let old = defaults.persistentDomain(forName: "local.svd.pdf-svd") else { return }  // l10n-ignore
+        for (key, value) in old where defaults.object(forKey: key) == nil {
+            defaults.set(value, forKey: key)
+        }
+    }
 }
 
 struct SettingsView: View {
@@ -25,7 +36,7 @@ struct SettingsView: View {
             }
             .onChange(of: language) { AppLanguage.override = language.isEmpty ? nil : language }
             if language != launchLanguage {
-                Text("La nouvelle langue sera utilisée au prochain lancement de pdf-svd.")
+                Text("La nouvelle langue sera utilisée au prochain lancement d'ed-pdf.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

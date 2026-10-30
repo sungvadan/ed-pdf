@@ -1,10 +1,12 @@
-# pdf-svd (nom de code interne : Folio)
+# ed-pdf (nom de code interne : Folio)
 
 Éditeur PDF macOS complet (lecture, annotation, signature, édition du texte). Swift 5 mode + SwiftUI + PDFKit, SwiftPM uniquement (pas de projet Xcode : seulement les Command Line Tools sont installés).
 
-- Nom affiché : pdf-svd (Info.plist, bundle `build/pdf-svd.app`), identifiant `local.svd.pdf-svd` (projet personnel).
+- Nom affiché : ed-pdf (Info.plist, bundle `build/ed-pdf.app`), identifiant `local.svd.ed-pdf` (projet personnel).
+  Ancien nom pdf-svd : réglages Mac (`local.svd.pdf-svd`), dossier `%APPDATA%\pdf-svd` et association Windows repris
+  au premier lancement (`AppSettings.migrateFromPreviousName`, `Library`, `FileAssociation.RemovePreviousName`).
   Installation : `scripts/install.sh`.
-- Build : `scripts/build-app.sh [debug|release] [--open]` → `build/pdf-svd.app` (bundle assemblé à la main, Info.plist dans `Resources/`, signature ad hoc).
+- Build : `scripts/build-app.sh [debug|release] [--open]` → `build/ed-pdf.app` (bundle assemblé à la main, Info.plist dans `Resources/`, signature ad hoc).
 - Cible : macOS 14+. UI en français (langue source) traduite en en, de, es, it, pt-BR, ja, zh-Hans.
   Les textes français sont les clés : littéraux SwiftUI (`Text("…")`, `Button("…")`, `.help("…")`) traduits
   automatiquement ; ailleurs (String, NSAlert, panneaux, enums) `tr("…")`, avec `%d`/`%@` au lieu d'interpolations.
@@ -33,6 +35,6 @@
   sous `Pdfium.Lock`). Textes : `Tr("…")` (clés françaises, mêmes fichiers `.strings`, vérifiés par `scripts/l10n.py`),
   jamais de texte dans les .axaml. Build : `scripts/build-windows.sh` (licences tierces rassemblées par
   `scripts/collect-licenses-windows.py` et intégrées à l'exe ; toute nouvelle dépendance → `THIRD-PARTY-NOTICES.md`) ; essai sur le Mac :
-  `DOTNET_ROOT=/opt/homebrew/opt/dotnet/libexec windows/bin/Debug/net10.0/pdf-svd fichier.pdf` (après `dotnet build`),
-  `PDFSVD_LANG=en` pour une autre langue. L'utilisateur teste dans une VM Windows 11 ARM (VMware) par glisser-déposer de l'exe.
+  `DOTNET_ROOT=/opt/homebrew/opt/dotnet/libexec windows/bin/Debug/net10.0/ed-pdf fichier.pdf` (après `dotnet build`),
+  `EDPDF_LANG=en` pour une autre langue. L'utilisateur teste dans une VM Windows 11 ARM (VMware) par glisser-déposer de l'exe.
 - Avancement et étapes suivantes : voir `ROADMAP.md` (avancer une étape à la fois, commiter à la fin de chacune).

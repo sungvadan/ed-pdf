@@ -7,7 +7,7 @@ using Avalonia;
 using Avalonia.Media;
 using SkiaSharp;
 
-namespace PdfSvd.Pdf;
+namespace EdPdf.Pdf;
 
 /// Appearance of a text box (FreeText annotation). PDFium does not generate one, and its API cannot add a font resource
 /// to an appearance stream: the text is drawn as glyph outlines. /Contents and /DA keep the text editable in other apps.

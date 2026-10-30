@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using SkiaSharp;
 
-namespace PdfSvd.Pdf;
+namespace EdPdf.Pdf;
 
 /// fpdf_edit.h, fpdf_ppo.h, fpdf_flatten.h: pages and their objects.
 internal static partial class Native
@@ -276,7 +276,7 @@ public sealed partial class PdfDocument
     }
 
     /// Prepares a copy to send to someone else: without the author's name, the images of signatures and stamps
-    /// limited to `imageMaxPixels` and without the copy pdf-svd keeps to edit them again, annotations drawn into
+    /// limited to `imageMaxPixels` and without the copy ed-pdf keeps to edit them again, annotations drawn into
     /// the pages if `flatten`. Works on this document: use a copy.
     public void PrepareForSending(bool flatten, bool removeAuthor, int? imageMaxPixels, bool stripEditingData)
     {
@@ -299,7 +299,7 @@ public sealed partial class PdfDocument
         }
     }
 
-    /// Signatures and images placed by pdf-svd: drawn again from their PNG, reduced (other stamps are left as they are).
+    /// Signatures and images placed by ed-pdf: drawn again from their PNG, reduced (other stamps are left as they are).
     void ReduceStampImage(IntPtr annot, int maxPixels)
     {
         if (GetString(annot, ImageKey) is not { Length: > 0 } encoded) return;

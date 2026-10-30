@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using SkiaSharp;
 
-namespace PdfSvd.Pdf.Text;
+namespace EdPdf.Pdf.Text;
 
 /// A font usable for new text in a document.
 sealed class ResolvedFont(IntPtr handle, IntPtr document, int marker, string description, bool writesSpaces, Func<int, bool> covers)

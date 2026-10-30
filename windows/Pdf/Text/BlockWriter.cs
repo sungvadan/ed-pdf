@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Avalonia;
 
-namespace PdfSvd.Pdf.Text;
+namespace EdPdf.Pdf.Text;
 
 /// Style of a span of edited text. Two styles are equal when they look the same, whatever run they came from.
 public sealed class RunStyle : IEquatable<RunStyle>
@@ -317,7 +317,7 @@ sealed class BlockWriter(TextPage page)
 
     IntPtr? MakeText(string text, RunStyle style, ResolvedFont font, Point origin)
     {
-        // Fonts embedded by pdf-svd map each glyph from one character only (see FontResolver.UniqueCmap).
+        // Fonts embedded by ed-pdf map each glyph from one character only (see FontResolver.UniqueCmap).
         text = text.Replace(' ', ' ').Replace("­", "");
         if (text.Length == 0) return null;
         var obj = TextNative.FPDFPageObj_CreateTextObj(page.Document, font.Handle, (float)style.FontSize);

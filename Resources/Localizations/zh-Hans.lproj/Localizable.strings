@@ -119,7 +119,7 @@
 "Ce paragraphe ne peut pas être modifié (texte pivoté ou imbriqué)." = "无法编辑此段落（文本已旋转或嵌套）。";
 
 /* TextEditing.swift:360 */
-"Ce PDF utilise une structure que pdf-svd ne sait pas encore modifier." = "此 PDF 使用的结构 pdf-svd 暂时无法编辑。";
+"Ce PDF utilise une structure qu'ed-pdf ne sait pas encore modifier." = "此 PDF 使用的结构 ed-pdf 暂时无法编辑。";
 
 /* Annotations.swift:86 */
 "Champ de formulaire" = "表单栏";
@@ -281,7 +281,7 @@
 "Italique" = "斜体";
 
 /* SignatureCapture.swift:132 */
-"L'accès à la caméra est refusé. Autorisez pdf-svd dans Réglages Système › Confidentialité et sécurité › Caméra, ou choisissez une image." = "摄像头访问被拒绝。请在“系统设置” ›“隐私与安全性” ›“摄像头”中允许 pdf-svd，或者选择一张图像。";
+"L'accès à la caméra est refusé. Autorisez ed-pdf dans Réglages Système › Confidentialité et sécurité › Caméra, ou choisissez une image." = "摄像头访问被拒绝。请在“系统设置” ›“隐私与安全性” ›“摄像头”中允许 ed-pdf，或者选择一张图像。";
 
 /* ReduceSize.swift:34 */
 "la copie ne sera pas protégée par mot de passe" = "副本将不受密码保护";
@@ -290,7 +290,7 @@
 "La modification du texte n'est pas encore possible sur un document protégé par mot de passe." = "暂时无法编辑受密码保护文稿中的文本。";
 
 /* Settings.swift:28 */
-"La nouvelle langue sera utilisée au prochain lancement de pdf-svd." = "新语言将在下次启动 pdf-svd 时生效。";
+"La nouvelle langue sera utilisée au prochain lancement d'ed-pdf." = "新语言将在下次启动 ed-pdf 时生效。";
 
 /* Settings.swift:21 */
 "Langue" = "语言";
@@ -404,7 +404,7 @@
 "PAYÉ" = "已付款";
 
 /* TextEditing.swift:353 */
-"pdf-svd n'a pas pu écrire ce texte fidèlement avec les polices disponibles." = "pdf-svd 无法使用可用字体准确写入此文本。";
+"ed-pdf n'a pas pu écrire ce texte fidèlement avec les polices disponibles." = "ed-pdf 无法使用可用字体准确写入此文本。";
 
 /* ContentView.swift:103 */
 "Pivoter à droite" = "向右旋转";
@@ -461,7 +461,7 @@
 "Reprendre" = "重拍";
 
 /* SendExport.swift:183 */
-"Retirer les données d'édition de pdf-svd" = "移除 pdf-svd 编辑数据";
+"Retirer les données d'édition d'ed-pdf" = "移除 ed-pdf 编辑数据";
 
 /* SendExport.swift:178 */
 "Retirer mon nom d'auteur" = "移除我的作者名称";
@@ -524,7 +524,7 @@
 "Souligné" = "下划线";
 
 /* SendExport.swift:184 */
-"Supprime la copie de l'image conservée pour la rééditer dans pdf-svd. L'image reste visible." = "删除为在 pdf-svd 中重新编辑而保留的图像副本。图像仍然可见。";
+"Supprime la copie de l'image conservée pour la rééditer dans ed-pdf. L'image reste visible." = "删除为在 ed-pdf 中重新编辑而保留的图像副本。图像仍然可见。";
 
 /* Bookmarks.swift:156 */
 "Supprimer" = "删除";
@@ -639,7 +639,7 @@
 "Fichier" = "文件";
 "Édition" = "编辑";
 "Imprimer…" = "打印…";
-"Utiliser pdf-svd pour ouvrir les PDF…" = "使用 pdf-svd 打开 PDF…";
+"Utiliser ed-pdf pour ouvrir les PDF…" = "使用 ed-pdf 打开 PDF…";
 "Quitter" = "退出";
 "Copier" = "拷贝";
 "Tout sélectionner" = "全选";
@@ -672,6 +672,6 @@
 "%@ Mo" = "%@ MB";
 "%@ Ko" = "%@ KB";
 "Signatures, tampons, notes et champs sont intégrés à la page : ils ne peuvent plus être sélectionnés, déplacés ni modifiés." = "签名、印章、注释和字段将并入页面：之后无法再选择、移动或修改。";
-"pdf-svd inscrit le nom de votre compte Windows dans chaque annotation." = "pdf-svd 会在每个批注中记录您的 Windows 账户名。";
+"ed-pdf inscrit le nom de votre compte Windows dans chaque annotation." = "ed-pdf 会在每个批注中记录您的 Windows 账户名。";
 
 "Le contenu sous les %d zones marquées sera supprimé du document. Les %d pages concernées sont reconstruites : leur texte restant reste sélectionnable, mais leurs annotations et liens sont intégrés à la page. Vous pouvez annuler (Ctrl+Z) tant que le document est ouvert ; une fois enregistré, le contenu caviardé est perdu." = "%d 个已标记区域下的内容将从文稿中删除。受影响的 %d 个页面将被重建：剩余文本仍可选择，但其注释和链接将合并到页面中。文稿打开期间可以撤销（Ctrl+Z）；存储后，被涂黑的内容将永久丢失。";

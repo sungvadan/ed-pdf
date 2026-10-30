@@ -6,7 +6,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 
-namespace PdfSvd.Pdf.Text;
+namespace EdPdf.Pdf.Text;
 
 public enum PdfKind { Null, Bool, Number, Name, String, Array, Dict, Ref, Stream }
 

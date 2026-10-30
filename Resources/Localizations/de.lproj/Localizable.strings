@@ -119,7 +119,7 @@
 "Ce paragraphe ne peut pas être modifié (texte pivoté ou imbriqué)." = "Dieser Absatz kann nicht bearbeitet werden (gedrehter oder verschachtelter Text).";
 
 /* TextEditing.swift:360 */
-"Ce PDF utilise une structure que pdf-svd ne sait pas encore modifier." = "Dieses PDF verwendet eine Struktur, die pdf-svd noch nicht bearbeiten kann.";
+"Ce PDF utilise une structure qu'ed-pdf ne sait pas encore modifier." = "Dieses PDF verwendet eine Struktur, die ed-pdf noch nicht bearbeiten kann.";
 
 /* Annotations.swift:86 */
 "Champ de formulaire" = "Formularfeld";
@@ -281,7 +281,7 @@
 "Italique" = "Kursiv";
 
 /* SignatureCapture.swift:132 */
-"L'accès à la caméra est refusé. Autorisez pdf-svd dans Réglages Système › Confidentialité et sécurité › Caméra, ou choisissez une image." = "Der Zugriff auf die Kamera wurde verweigert. Erlaube pdf-svd unter Systemeinstellungen › Datenschutz & Sicherheit › Kamera oder wähle ein Bild.";
+"L'accès à la caméra est refusé. Autorisez ed-pdf dans Réglages Système › Confidentialité et sécurité › Caméra, ou choisissez une image." = "Der Zugriff auf die Kamera wurde verweigert. Erlaube ed-pdf unter Systemeinstellungen › Datenschutz & Sicherheit › Kamera oder wähle ein Bild.";
 
 /* ReduceSize.swift:34 */
 "la copie ne sera pas protégée par mot de passe" = "die Kopie wird nicht durch ein Passwort geschützt";
@@ -290,7 +290,7 @@
 "La modification du texte n'est pas encore possible sur un document protégé par mot de passe." = "Text kann in einem passwortgeschützten Dokument noch nicht bearbeitet werden.";
 
 /* Settings.swift:28 */
-"La nouvelle langue sera utilisée au prochain lancement de pdf-svd." = "Die neue Sprache wird beim nächsten Start von pdf-svd verwendet.";
+"La nouvelle langue sera utilisée au prochain lancement d'ed-pdf." = "Die neue Sprache wird beim nächsten Start von ed-pdf verwendet.";
 
 /* Settings.swift:21 */
 "Langue" = "Sprache";
@@ -404,7 +404,7 @@
 "PAYÉ" = "BEZAHLT";
 
 /* TextEditing.swift:353 */
-"pdf-svd n'a pas pu écrire ce texte fidèlement avec les polices disponibles." = "pdf-svd konnte diesen Text mit den verfügbaren Schriften nicht originalgetreu darstellen.";
+"ed-pdf n'a pas pu écrire ce texte fidèlement avec les polices disponibles." = "ed-pdf konnte diesen Text mit den verfügbaren Schriften nicht originalgetreu darstellen.";
 
 /* ContentView.swift:103 */
 "Pivoter à droite" = "Nach rechts drehen";
@@ -461,7 +461,7 @@
 "Reprendre" = "Erneut aufnehmen";
 
 /* SendExport.swift:183 */
-"Retirer les données d'édition de pdf-svd" = "Bearbeitungsdaten von pdf-svd entfernen";
+"Retirer les données d'édition d'ed-pdf" = "Bearbeitungsdaten von ed-pdf entfernen";
 
 /* SendExport.swift:178 */
 "Retirer mon nom d'auteur" = "Meinen Autornamen entfernen";
@@ -524,7 +524,7 @@
 "Souligné" = "Unterstrichen";
 
 /* SendExport.swift:184 */
-"Supprime la copie de l'image conservée pour la rééditer dans pdf-svd. L'image reste visible." = "Entfernt die Bildkopie, die pdf-svd zum erneuten Bearbeiten aufbewahrt. Das Bild bleibt sichtbar.";
+"Supprime la copie de l'image conservée pour la rééditer dans ed-pdf. L'image reste visible." = "Entfernt die Bildkopie, die ed-pdf zum erneuten Bearbeiten aufbewahrt. Das Bild bleibt sichtbar.";
 
 /* Bookmarks.swift:156 */
 "Supprimer" = "Löschen";
@@ -639,7 +639,7 @@
 "Fichier" = "Datei";
 "Édition" = "Bearbeiten";
 "Imprimer…" = "Drucken …";
-"Utiliser pdf-svd pour ouvrir les PDF…" = "pdf-svd zum Öffnen von PDFs verwenden …";
+"Utiliser ed-pdf pour ouvrir les PDF…" = "ed-pdf zum Öffnen von PDFs verwenden …";
 "Quitter" = "Beenden";
 "Copier" = "Kopieren";
 "Tout sélectionner" = "Alles auswählen";
@@ -672,6 +672,6 @@
 "%@ Mo" = "%@ MB";
 "%@ Ko" = "%@ KB";
 "Signatures, tampons, notes et champs sont intégrés à la page : ils ne peuvent plus être sélectionnés, déplacés ni modifiés." = "Unterschriften, Stempel, Notizen und Felder werden Teil der Seite: Sie können nicht mehr ausgewählt, verschoben oder bearbeitet werden.";
-"pdf-svd inscrit le nom de votre compte Windows dans chaque annotation." = "pdf-svd speichert den Namen Ihres Windows-Kontos in jeder Anmerkung.";
+"ed-pdf inscrit le nom de votre compte Windows dans chaque annotation." = "ed-pdf speichert den Namen Ihres Windows-Kontos in jeder Anmerkung.";
 
 "Le contenu sous les %d zones marquées sera supprimé du document. Les %d pages concernées sont reconstruites : leur texte restant reste sélectionnable, mais leurs annotations et liens sont intégrés à la page. Vous pouvez annuler (Ctrl+Z) tant que le document est ouvert ; une fois enregistré, le contenu caviardé est perdu." = "Der Inhalt unter den %d markierten Bereichen wird aus dem Dokument entfernt. Die %d betroffenen Seiten werden neu aufgebaut: Ihr restlicher Text bleibt auswählbar, ihre Anmerkungen und Links werden jedoch in die Seite integriert. Du kannst dies widerrufen (Ctrl+Z), solange das Dokument geöffnet ist; nach dem Sichern ist der geschwärzte Inhalt verloren.";

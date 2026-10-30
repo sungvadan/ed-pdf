@@ -1,4 +1,4 @@
-# pdf-svd
+# ed-pdf
 
 *[English version](README.en.md)*
 
@@ -32,7 +32,7 @@ Les fichiers se trouvent dans les [*Releases*](../../releases) du dépôt.
 
 ### macOS
 
-Télécharger le `.dmg`, l'ouvrir et glisser **pdf-svd** dans **Applications**.
+Télécharger le `.dmg`, l'ouvrir et glisser **ed-pdf** dans **Applications**.
 
 L'app n'est pas signée par un compte développeur Apple : à la première ouverture, macOS la bloque. Il faut alors
 aller dans **Réglages Système › Confidentialité et sécurité** et cliquer sur **« Ouvrir quand même »** (une seule fois).
@@ -41,7 +41,7 @@ Configuration : Mac à puce Apple, macOS 14 ou plus récent.
 
 ### Windows
 
-Télécharger `pdf-svd-x64.exe` (PC Intel/AMD) ou `pdf-svd-arm64.exe` (PC ARM) et le lancer : rien à installer.
+Télécharger `ed-pdf-x64.exe` (PC Intel/AMD) ou `ed-pdf-arm64.exe` (PC ARM) et le lancer : rien à installer.
 
 L'exe n'est pas signé : Windows SmartScreen affiche « Windows a protégé votre ordinateur ». Cliquer sur
 **Informations complémentaires › Exécuter quand même** (une seule fois).
@@ -74,7 +74,7 @@ Le script :
 
 1. télécharge PDFium dans `Vendor/pdfium` (version épinglée, empreinte SHA-256 vérifiée ; une seule fois) ;
 2. compile l'app avec `swift build` ;
-3. assemble le bundle `build/pdf-svd.app` (exécutable, `Info.plist`, icône, PDFium, licences) et le signe en ad hoc ;
+3. assemble le bundle `build/ed-pdf.app` (exécutable, `Info.plist`, icône, PDFium, licences) et le signe en ad hoc ;
 4. l'ouvre si `--open` est passé.
 
 Pour une compilation plus rapide pendant le développement :
@@ -89,9 +89,9 @@ scripts/build-app.sh debug --open
 scripts/install.sh
 ```
 
-Compile en mode release, quitte l'app si elle est ouverte, remplace `/Applications/pdf-svd.app` et l'enregistre
+Compile en mode release, quitte l'app si elle est ouverte, remplace `/Applications/ed-pdf.app` et l'enregistre
 auprès du Finder (menu « Ouvrir avec »). À relancer après chaque modification pour mettre à jour l'app installée :
-`build/pdf-svd.app` seul ne remplace pas la version des Applications.
+`build/ed-pdf.app` seul ne remplace pas la version des Applications.
 
 ### Créer l'image disque
 
@@ -99,7 +99,7 @@ auprès du Finder (menu « Ouvrir avec »). À relancer après chaque modificati
 scripts/make-dmg.sh
 ```
 
-Produit `build/pdf-svd-<version>.dmg` (la version vient de `Resources/Info.plist`), avec un raccourci vers
+Produit `build/ed-pdf-<version>.dmg` (la version vient de `Resources/Info.plist`), avec un raccourci vers
 Applications et un fichier « Lisez-moi », prêt à partager.
 
 ### Version Windows
@@ -110,17 +110,17 @@ Compilée sur le Mac (pas besoin de Windows) avec le SDK .NET 10 (`brew install 
 scripts/build-windows.sh
 ```
 
-Produit `build/windows/pdf-svd-x64.exe` et `build/windows/pdf-svd-arm64.exe` (fichiers uniques, PDFium et .NET
+Produit `build/windows/ed-pdf-x64.exe` et `build/windows/ed-pdf-arm64.exe` (fichiers uniques, PDFium et .NET
 inclus). Pour l'essayer sur le Mac : `cd windows && dotnet run -- fichier.pdf`.
 
 ### Récapitulatif des commandes
 
 | Commande | Résultat |
 |---|---|
-| `scripts/build-app.sh [debug\|release] [--open]` | `build/pdf-svd.app` (release par défaut) |
+| `scripts/build-app.sh [debug\|release] [--open]` | `build/ed-pdf.app` (release par défaut) |
 | `scripts/install.sh` | app installée dans `/Applications` |
-| `scripts/make-dmg.sh` | `build/pdf-svd-<version>.dmg` |
-| `scripts/build-windows.sh` | `build/windows/pdf-svd-x64.exe` et `pdf-svd-arm64.exe` |
+| `scripts/make-dmg.sh` | `build/ed-pdf-<version>.dmg` |
+| `scripts/build-windows.sh` | `build/windows/ed-pdf-x64.exe` et `ed-pdf-arm64.exe` |
 | `scripts/fetch-pdfium.sh` | PDFium seul, dans `Vendor/pdfium` (appelé automatiquement) |
 | `swift build --product textlab` | outil en ligne de commande du moteur de texte |
 
@@ -143,7 +143,7 @@ inclus). Pour l'essayer sur le Mac : `cd windows && dotnet run -- fichier.pdf`.
 
 ### Comment fonctionne l'édition du texte
 
-PDFKit ne sait pas modifier le texte d'une page. pdf-svd utilise PDFium pour repérer les paragraphes (police, taille,
+PDFKit ne sait pas modifier le texte d'une page. ed-pdf utilise PDFium pour repérer les paragraphes (police, taille,
 couleur, position) et écrire le nouveau texte, puis retire l'ancien texte directement dans les instructions de dessin
 de la page, opérateur par opérateur : le reste de la page reste identique au pixel près. Chaque modification est
 relue et vérifiée avant d'être appliquée. Détails dans [docs/text-editing.md](docs/text-editing.md).
@@ -154,7 +154,7 @@ relue et vérifiée avant d'être appliquée. Détails dans [docs/text-editing.m
 swift build --product textlab
 swift scripts/make-fixtures.swift      # génère des PDF de test dans build/fixtures
 scripts/textlab-suite.sh               # scénarios d'édition du texte
-build/pdf-svd.app/Contents/MacOS/Folio --selftest-edit build/fixtures/lettre.pdf "trois mois" "deux mois" /tmp/out.pdf
+build/ed-pdf.app/Contents/MacOS/Folio --selftest-edit build/fixtures/lettre.pdf "trois mois" "deux mois" /tmp/out.pdf
 ```
 
 ## Limites connues
@@ -167,12 +167,12 @@ build/pdf-svd.app/Contents/MacOS/Folio --selftest-edit build/fixtures/lettre.pdf
 
 ## Avertissement
 
-pdf-svd est fourni **« tel quel », sans aucune garantie**, comme le prévoit sa [licence](LICENSE). Ses auteurs ne
+ed-pdf est fourni **« tel quel », sans aucune garantie**, comme le prévoit sa [licence](LICENSE). Ses auteurs ne
 peuvent être tenus responsables d'aucun dommage lié à son utilisation, notamment une perte ou une altération de
 données.
 
 - **Gardez une copie de vos fichiers originaux** et vérifiez le résultat avant de l'envoyer.
-- **Vous êtes seul responsable de l'usage que vous faites du logiciel et des documents que vous modifiez.** pdf-svd
+- **Vous êtes seul responsable de l'usage que vous faites du logiciel et des documents que vous modifiez.** ed-pdf
   sert à corriger et compléter vos propres documents, ou ceux que vous êtes autorisé à modifier. Modifier un document
   sans en avoir le droit (contrat, facture, bulletin de paie, diplôme, pièce officielle…) ou utiliser un document
   ainsi modifié peut constituer un faux, puni par la loi (en France, articles 441-1 et suivants du Code pénal).
@@ -193,14 +193,14 @@ Code sous licence [MIT](LICENSE) : vous pouvez l'utiliser, le modifier et le red
 projet commercial, à condition de conserver la mention de copyright et le texte de la licence. Il n'est assorti
 d'aucune garantie.
 
-pdf-svd embarque [PDFium](https://pdfium.googlesource.com/pdfium/) (licence BSD) compilé par
+ed-pdf embarque [PDFium](https://pdfium.googlesource.com/pdfium/) (licence BSD) compilé par
 [pdfium-binaries](https://github.com/bblanchon/pdfium-binaries), qui contient d'autres bibliothèques (FreeType,
 libjpeg-turbo, zlib, ICU…), et, sous Windows, le runtime .NET, Avalonia et SkiaSharp (licence MIT). Tous sont sous
 licence permissive ; la liste complète est dans [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) et leurs licences
 sont livrées avec l'app (macOS : `Contents/Resources/Licenses` ; Windows : intégrées à l'exe).
 
-Lors d'une modification du texte, pdf-svd peut incorporer dans le PDF une police installée sur l'ordinateur, comme le
+Lors d'une modification du texte, ed-pdf peut incorporer dans le PDF une police installée sur l'ordinateur, comme le
 font les traitements de texte ; les polices dont la licence interdit l'incorporation ne sont jamais utilisées.
 
 PDF est une marque d'Adobe ; Apple, Mac et macOS sont des marques d'Apple Inc. ; Windows est une marque de Microsoft.
-pdf-svd est un projet indépendant, sans lien avec ces sociétés.
+ed-pdf est un projet indépendant, sans lien avec ces sociétés.

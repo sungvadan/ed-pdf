@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace PdfSvd;
+namespace EdPdf;
 
 /// Translated UI text, shared with the Mac app: the French source text is the key, translations come from
 /// Resources/Localizations/<lang>.lproj/Localizable.strings (embedded). Values use `%d`/`%@` like on the Mac.

@@ -1,11 +1,11 @@
 using System;
 using Avalonia;
 
-namespace PdfSvd;
+namespace EdPdf;
 
 static class Program
 {
-    /// pdf-svd.exe [file.pdf]
+    /// ed-pdf.exe [file.pdf]
     [STAThread]
     public static void Main(string[] args) =>
         AppBuilder.Configure<App>().UsePlatformDetect().LogToTrace().StartWithClassicDesktopLifetime(args);

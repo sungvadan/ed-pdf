@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Copies the license files of everything shipped in the Windows exe into one folder (embedded in the exe by
-windows/PdfSvd.csproj): pdf-svd, PDFium, the NuGet packages of the last restore and the .NET runtime pack.
+windows/EdPdf.csproj): ed-pdf, PDFium, the NuGet packages of the last restore and the .NET runtime pack.
 Usage: scripts/collect-licenses-windows.py <dest>   (after `dotnet restore -r win-x64`)"""
 import glob, json, os, re, shutil, sys
 
@@ -9,7 +9,7 @@ dest = sys.argv[1]
 shutil.rmtree(dest, ignore_errors=True)
 os.makedirs(dest)
 
-shutil.copy(os.path.join(root, "LICENSE"), os.path.join(dest, "pdf-svd.txt"))
+shutil.copy(os.path.join(root, "LICENSE"), os.path.join(dest, "ed-pdf.txt"))
 shutil.copy(os.path.join(root, "THIRD-PARTY-NOTICES.md"), os.path.join(dest, "THIRD-PARTY-NOTICES.md"))
 for path in glob.glob(os.path.join(root, "Vendor/pdfium-windows/licenses/*")):
     shutil.copy(path, dest)

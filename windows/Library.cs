@@ -6,9 +6,9 @@ using System.Text.Json;
 using Avalonia;
 using Avalonia.Media;
 
-namespace PdfSvd;
+namespace EdPdf;
 
-/// A saved signature: strokes drawn in pdf-svd (points in a y-down space, bounding box at the origin),
+/// A saved signature: strokes drawn in ed-pdf (points in a y-down space, bounding box at the origin),
 /// or a transparent PNG taken from a scanned or photographed signature.
 public sealed class SavedSignature
 {
@@ -48,10 +48,10 @@ public sealed class CustomStamp
     public string Color { get; set; } = "#E5322D";
 }
 
-/// Signatures and custom stamps, kept in %APPDATA%\pdf-svd (each user's own).
+/// Signatures and custom stamps, kept in %APPDATA%\ed-pdf (each user's own).
 public static class Library
 {
-    static readonly string Folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "pdf-svd");
+    static readonly string Folder = MoveFromPreviousName(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ed-pdf"));
     static readonly JsonSerializerOptions Options = new() { WriteIndented = true };
 
     public static List<SavedSignature> Signatures { get; } = Load<SavedSignature>("signatures.json");
@@ -59,6 +59,15 @@ public static class Library
 
     public static void SaveSignatures() => Save("signatures.json", Signatures);
     public static void SaveStamps() => Save("stamps.json", Stamps);
+
+    /// The app was called pdf-svd before: its folder is renamed once.
+    static string MoveFromPreviousName(string folder)
+    {
+        var old = Path.Combine(Path.GetDirectoryName(folder)!, "pdf-svd");
+        try { if (Directory.Exists(old) && !Directory.Exists(folder)) Directory.Move(old, folder); }
+        catch (Exception) { }
+        return folder;
+    }
 
     static List<T> Load<T>(string name)
     {

@@ -3,9 +3,9 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
-using PdfSvd.Pdf;
+using EdPdf.Pdf;
 
-namespace PdfSvd;
+namespace EdPdf;
 
 /// Printing through the Windows print dialog and GDI: PDFium draws each page into the printer's device context.
 [SupportedOSPlatform("windows")]

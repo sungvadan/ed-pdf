@@ -119,7 +119,7 @@
 "Ce paragraphe ne peut pas être modifié (texte pivoté ou imbriqué)." = "This paragraph can’t be edited (rotated or nested text).";
 
 /* TextEditing.swift:360 */
-"Ce PDF utilise une structure que pdf-svd ne sait pas encore modifier." = "This PDF uses a structure that pdf-svd can’t edit yet.";
+"Ce PDF utilise une structure qu'ed-pdf ne sait pas encore modifier." = "This PDF uses a structure that ed-pdf can’t edit yet.";
 
 /* Annotations.swift:86 */
 "Champ de formulaire" = "Form Field";
@@ -281,7 +281,7 @@
 "Italique" = "Italic";
 
 /* SignatureCapture.swift:132 */
-"L'accès à la caméra est refusé. Autorisez pdf-svd dans Réglages Système › Confidentialité et sécurité › Caméra, ou choisissez une image." = "Camera access is denied. Allow pdf-svd in System Settings › Privacy & Security › Camera, or choose an image.";
+"L'accès à la caméra est refusé. Autorisez ed-pdf dans Réglages Système › Confidentialité et sécurité › Caméra, ou choisissez une image." = "Camera access is denied. Allow ed-pdf in System Settings › Privacy & Security › Camera, or choose an image.";
 
 /* ReduceSize.swift:34 */
 "la copie ne sera pas protégée par mot de passe" = "the copy won’t be password protected";
@@ -290,7 +290,7 @@
 "La modification du texte n'est pas encore possible sur un document protégé par mot de passe." = "Text editing isn’t available yet for password-protected documents.";
 
 /* Settings.swift:28 */
-"La nouvelle langue sera utilisée au prochain lancement de pdf-svd." = "The new language will be used the next time pdf-svd opens.";
+"La nouvelle langue sera utilisée au prochain lancement d'ed-pdf." = "The new language will be used the next time ed-pdf opens.";
 
 /* Settings.swift:21 */
 "Langue" = "Language";
@@ -404,7 +404,7 @@
 "PAYÉ" = "PAID";
 
 /* TextEditing.swift:353 */
-"pdf-svd n'a pas pu écrire ce texte fidèlement avec les polices disponibles." = "pdf-svd couldn’t render this text faithfully with the available fonts.";
+"ed-pdf n'a pas pu écrire ce texte fidèlement avec les polices disponibles." = "ed-pdf couldn’t render this text faithfully with the available fonts.";
 
 /* ContentView.swift:103 */
 "Pivoter à droite" = "Rotate Right";
@@ -461,7 +461,7 @@
 "Reprendre" = "Retake";
 
 /* SendExport.swift:183 */
-"Retirer les données d'édition de pdf-svd" = "Remove pdf-svd editing data";
+"Retirer les données d'édition d'ed-pdf" = "Remove ed-pdf editing data";
 
 /* SendExport.swift:178 */
 "Retirer mon nom d'auteur" = "Remove my author name";
@@ -524,7 +524,7 @@
 "Souligné" = "Underline";
 
 /* SendExport.swift:184 */
-"Supprime la copie de l'image conservée pour la rééditer dans pdf-svd. L'image reste visible." = "Removes the copy of the image kept for re-editing in pdf-svd. The image stays visible.";
+"Supprime la copie de l'image conservée pour la rééditer dans ed-pdf. L'image reste visible." = "Removes the copy of the image kept for re-editing in ed-pdf. The image stays visible.";
 
 /* Bookmarks.swift:156 */
 "Supprimer" = "Delete";
@@ -639,7 +639,7 @@
 "Fichier" = "File";
 "Édition" = "Edit";
 "Imprimer…" = "Print…";
-"Utiliser pdf-svd pour ouvrir les PDF…" = "Use pdf-svd to Open PDFs…";
+"Utiliser ed-pdf pour ouvrir les PDF…" = "Use ed-pdf to Open PDFs…";
 "Quitter" = "Quit";
 "Copier" = "Copy";
 "Tout sélectionner" = "Select All";
@@ -672,6 +672,6 @@
 "%@ Mo" = "%@ MB";
 "%@ Ko" = "%@ KB";
 "Signatures, tampons, notes et champs sont intégrés à la page : ils ne peuvent plus être sélectionnés, déplacés ni modifiés." = "Signatures, stamps, notes and fields become part of the page: they can no longer be selected, moved or edited.";
-"pdf-svd inscrit le nom de votre compte Windows dans chaque annotation." = "pdf-svd records your Windows account name in each annotation.";
+"ed-pdf inscrit le nom de votre compte Windows dans chaque annotation." = "ed-pdf records your Windows account name in each annotation.";
 
 "Le contenu sous les %d zones marquées sera supprimé du document. Les %d pages concernées sont reconstruites : leur texte restant reste sélectionnable, mais leurs annotations et liens sont intégrés à la page. Vous pouvez annuler (Ctrl+Z) tant que le document est ouvert ; une fois enregistré, le contenu caviardé est perdu." = "The content under the %d marked areas will be removed from the document. The %d affected pages are rebuilt: their remaining text stays selectable, but their annotations and links become part of the page. You can undo (Ctrl+Z) while the document is open; once it’s saved, the redacted content is gone.";

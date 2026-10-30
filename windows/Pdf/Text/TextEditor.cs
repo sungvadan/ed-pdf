@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Avalonia;
 
-namespace PdfSvd.Pdf.Text;
+namespace EdPdf.Pdf.Text;
 
 /// Rewrites a paragraph of a PDF and returns the new file (port of TextEditor.swift).
 ///

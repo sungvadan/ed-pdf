@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Avalonia;
 
-namespace PdfSvd.Pdf.Text;
+namespace EdPdf.Pdf.Text;
 
 /// One operator of a content stream with its operands and byte range.
 public sealed record ContentOperation(string Name, List<PdfObject> Operands, int Start, int End);

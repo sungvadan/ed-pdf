@@ -119,7 +119,7 @@
 "Ce paragraphe ne peut pas être modifié (texte pivoté ou imbriqué)." = "Este parágrafo não pode ser modificado (texto girado ou aninhado).";
 
 /* TextEditing.swift:360 */
-"Ce PDF utilise une structure que pdf-svd ne sait pas encore modifier." = "Este PDF usa uma estrutura que o pdf-svd ainda não consegue modificar.";
+"Ce PDF utilise une structure qu'ed-pdf ne sait pas encore modifier." = "Este PDF usa uma estrutura que o ed-pdf ainda não consegue modificar.";
 
 /* Annotations.swift:86 */
 "Champ de formulaire" = "Campo de formulário";
@@ -281,7 +281,7 @@
 "Italique" = "Itálico";
 
 /* SignatureCapture.swift:132 */
-"L'accès à la caméra est refusé. Autorisez pdf-svd dans Réglages Système › Confidentialité et sécurité › Caméra, ou choisissez une image." = "O acesso à câmera foi negado. Permita o pdf-svd em Ajustes do Sistema › Privacidade e Segurança › Câmera, ou escolha uma imagem.";
+"L'accès à la caméra est refusé. Autorisez ed-pdf dans Réglages Système › Confidentialité et sécurité › Caméra, ou choisissez une image." = "O acesso à câmera foi negado. Permita o ed-pdf em Ajustes do Sistema › Privacidade e Segurança › Câmera, ou escolha uma imagem.";
 
 /* ReduceSize.swift:34 */
 "la copie ne sera pas protégée par mot de passe" = "a cópia não será protegida por senha";
@@ -290,7 +290,7 @@
 "La modification du texte n'est pas encore possible sur un document protégé par mot de passe." = "Ainda não é possível modificar o texto de um documento protegido por senha.";
 
 /* Settings.swift:28 */
-"La nouvelle langue sera utilisée au prochain lancement de pdf-svd." = "O novo idioma será usado na próxima vez que o pdf-svd for aberto.";
+"La nouvelle langue sera utilisée au prochain lancement d'ed-pdf." = "O novo idioma será usado na próxima vez que o ed-pdf for aberto.";
 
 /* Settings.swift:21 */
 "Langue" = "Idioma";
@@ -404,7 +404,7 @@
 "PAYÉ" = "PAGO";
 
 /* TextEditing.swift:353 */
-"pdf-svd n'a pas pu écrire ce texte fidèlement avec les polices disponibles." = "O pdf-svd não conseguiu escrever este texto fielmente com as fontes disponíveis.";
+"ed-pdf n'a pas pu écrire ce texte fidèlement avec les polices disponibles." = "O ed-pdf não conseguiu escrever este texto fielmente com as fontes disponíveis.";
 
 /* ContentView.swift:103 */
 "Pivoter à droite" = "Girar para a direita";
@@ -461,7 +461,7 @@
 "Reprendre" = "Tirar novamente";
 
 /* SendExport.swift:183 */
-"Retirer les données d'édition de pdf-svd" = "Remover dados de edição do pdf-svd";
+"Retirer les données d'édition d'ed-pdf" = "Remover dados de edição do ed-pdf";
 
 /* SendExport.swift:178 */
 "Retirer mon nom d'auteur" = "Remover meu nome de autor";
@@ -524,7 +524,7 @@
 "Souligné" = "Sublinhado";
 
 /* SendExport.swift:184 */
-"Supprime la copie de l'image conservée pour la rééditer dans pdf-svd. L'image reste visible." = "Remove a cópia da imagem guardada para reeditá-la no pdf-svd. A imagem continua visível.";
+"Supprime la copie de l'image conservée pour la rééditer dans ed-pdf. L'image reste visible." = "Remove a cópia da imagem guardada para reeditá-la no ed-pdf. A imagem continua visível.";
 
 /* Bookmarks.swift:156 */
 "Supprimer" = "Apagar";
@@ -639,7 +639,7 @@
 "Fichier" = "Arquivo";
 "Édition" = "Editar";
 "Imprimer…" = "Imprimir…";
-"Utiliser pdf-svd pour ouvrir les PDF…" = "Usar o pdf-svd para abrir PDFs…";
+"Utiliser ed-pdf pour ouvrir les PDF…" = "Usar o ed-pdf para abrir PDFs…";
 "Quitter" = "Sair";
 "Copier" = "Copiar";
 "Tout sélectionner" = "Selecionar tudo";
@@ -672,6 +672,6 @@
 "%@ Mo" = "%@ MB";
 "%@ Ko" = "%@ KB";
 "Signatures, tampons, notes et champs sont intégrés à la page : ils ne peuvent plus être sélectionnés, déplacés ni modifiés." = "Assinaturas, carimbos, notas e campos passam a fazer parte da página: não podem mais ser selecionados, movidos nem editados.";
-"pdf-svd inscrit le nom de votre compte Windows dans chaque annotation." = "O pdf-svd registra o nome da sua conta do Windows em cada anotação.";
+"ed-pdf inscrit le nom de votre compte Windows dans chaque annotation." = "O ed-pdf registra o nome da sua conta do Windows em cada anotação.";
 
 "Le contenu sous les %d zones marquées sera supprimé du document. Les %d pages concernées sont reconstruites : leur texte restant reste sélectionnable, mais leurs annotations et liens sont intégrés à la page. Vous pouvez annuler (Ctrl+Z) tant que le document est ouvert ; une fois enregistré, le contenu caviardé est perdu." = "O conteúdo sob as %d áreas marcadas será removido do documento. As %d páginas afetadas serão reconstruídas: o texto restante continua selecionável, mas as anotações e os links são incorporados à página. Você pode desfazer (Ctrl+Z) enquanto o documento estiver aberto; depois de salvo, o conteúdo ocultado é perdido.";

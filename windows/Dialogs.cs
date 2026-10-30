@@ -2,9 +2,9 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Layout;
-using static PdfSvd.L10n;
+using static EdPdf.L10n;
 
-namespace PdfSvd;
+namespace EdPdf;
 
 /// Small modal dialogs (Avalonia has no message box).
 static class Dialogs
@@ -29,7 +29,7 @@ static class Dialogs
         text.Children.Add(new TextBlock { Text = message, FontWeight = Avalonia.Media.FontWeight.SemiBold, TextWrapping = Avalonia.Media.TextWrapping.Wrap });
         text.Children.Add(new TextBlock { Text = detail, Opacity = 0.7, TextWrapping = Avalonia.Media.TextWrapping.Wrap });
         var ok = new Button { Content = "OK", IsDefault = true, IsCancel = true };
-        var window = Make("pdf-svd", text, ok);
+        var window = Make("ed-pdf", text, ok);
         ok.Click += (_, _) => window.Close();
         return window.ShowDialog(owner);
     }
@@ -44,7 +44,7 @@ static class Dialogs
         if (wrong) content.Children.Add(new TextBlock { Text = Tr("Mot de passe incorrect."), Foreground = Avalonia.Media.Brushes.Red });
         var cancel = new Button { Content = Tr("Annuler"), IsCancel = true };
         var unlock = new Button { Content = Tr("Déverrouiller"), IsDefault = true, Classes = { "accent" } };
-        var window = Make("pdf-svd", content, cancel, unlock);
+        var window = Make("ed-pdf", content, cancel, unlock);
         cancel.Click += (_, _) => window.Close(null);
         unlock.Click += (_, _) => window.Close(field.Text ?? "");
         window.Opened += (_, _) => field.Focus(NavigationMethod.Tab);
@@ -59,7 +59,7 @@ static class Dialogs
         text.Children.Add(new TextBlock { Text = detail, Opacity = 0.7, TextWrapping = Avalonia.Media.TextWrapping.Wrap });
         var cancel = new Button { Content = Tr("Annuler"), IsCancel = true, IsDefault = true };
         var ok = new Button { Content = action, Classes = { "accent" } };
-        var window = Make("pdf-svd", text, cancel, ok);
+        var window = Make("ed-pdf", text, cancel, ok);
         window.Width = 440;
         cancel.Click += (_, _) => window.Close(false);
         ok.Click += (_, _) => window.Close(true);
@@ -79,7 +79,7 @@ static class Dialogs
         var discard = new Button { Content = Tr("Ne pas enregistrer") };
         var cancel = new Button { Content = Tr("Annuler"), IsCancel = true };
         var save = new Button { Content = Tr("Enregistrer"), IsDefault = true, Classes = { "accent" } };
-        var window = Make("pdf-svd", text, discard, cancel, save);
+        var window = Make("ed-pdf", text, discard, cancel, save);
         discard.Click += (_, _) => window.Close(SaveChoice.Discard);
         cancel.Click += (_, _) => window.Close(SaveChoice.Cancel);
         save.Click += (_, _) => window.Close(SaveChoice.Save);
@@ -95,7 +95,7 @@ static class Dialogs
         content.Children.Add(field);
         var cancel = new Button { Content = Tr("Annuler"), IsCancel = true };
         var ok = new Button { Content = "OK", Classes = { "accent" } };
-        var window = Make("pdf-svd", content, cancel, ok);
+        var window = Make("ed-pdf", content, cancel, ok);
         cancel.Click += (_, _) => window.Close(null);
         ok.Click += (_, _) => window.Close(field.Text ?? "");
         window.Opened += (_, _) => { field.Focus(NavigationMethod.Tab); field.CaretIndex = field.Text?.Length ?? 0; };

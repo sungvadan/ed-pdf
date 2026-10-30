@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using Avalonia;
 using Avalonia.Media;
 
-namespace PdfSvd.Pdf;
+namespace EdPdf.Pdf;
 
 /// fpdf_annot.h and fpdf_save.h.
 internal static partial class Native
@@ -66,7 +66,7 @@ internal static partial class Native
     public const int PageObjectImage = 3;
 }
 
-/// Annotation types pdf-svd can create and edit (PDF subtype numbers in PDFium).
+/// Annotation types ed-pdf can create and edit (PDF subtype numbers in PDFium).
 public enum AnnotationKind { Note = 1, TextBox = 3, Rectangle = 5, Ellipse = 6, Highlight = 9, Underline = 10, Squiggly = 11, StrikeOut = 12, Stamp = 13, Ink = 15 }
 
 /// An editable annotation, in page space: PDF points with the origin at the bottom left (so `Bounds.Y` is the bottom edge).
@@ -157,7 +157,7 @@ public sealed partial class PdfDocument
 
     // MARK: Annotations
 
-    /// The annotations of a page that pdf-svd can edit, bottom to top.
+    /// The annotations of a page that ed-pdf can edit, bottom to top.
     public List<Annotation> Annotations(int index) => WithPage(index, new List<Annotation>(), page =>
     {
         var list = new List<Annotation>();
@@ -198,7 +198,7 @@ public sealed partial class PdfDocument
         Native.FPDFImageObj_SetMatrix(image, bounds.Width, 0, 0, bounds.Height, bounds.X, bounds.Y);
         Native.FPDFAnnot_AppendObject(annot, image);
         Native.FPDFBitmap_Destroy(bitmap);
-        // Also kept as PNG, like the Mac version (which draws it from there): lets pdf-svd place it again after an undo.
+        // Also kept as PNG, like the Mac version (which draws it from there): lets ed-pdf place it again after an undo.
         Native.FPDFAnnot_SetStringValue(annot, ImageKey, Convert.ToBase64String(png));
     }
 
@@ -289,11 +289,11 @@ public sealed partial class PdfDocument
         var name = GetString(annot, "NM");
         if (name.Length == 0)
         {
-            name = "pdf-svd-" + Guid.NewGuid().ToString("N");
+            name = "ed-pdf-" + Guid.NewGuid().ToString("N");
             Native.FPDFAnnot_SetStringValue(annot, "NM", name);
         }
         Native.FPDFAnnot_GetRect(annot, out var r);
-        // PDFium only gives the colour of annotations without an appearance: pdf-svd also keeps it in /FolioColor.
+        // PDFium only gives the colour of annotations without an appearance: ed-pdf also keeps it in /FolioColor.
         var color = Colors.Black;
         if (Native.FPDFAnnot_GetColor(annot, Native.ColorStroke, out var red, out var green, out var blue, out _) != 0)
             color = Color.FromRgb((byte)red, (byte)green, (byte)blue);
@@ -426,7 +426,7 @@ public sealed partial class PdfDocument
     /// Writes the document (with its changes) to `path`, through a temporary file so a failure leaves the original intact.
     public void Save(string path, IEnumerable<int> changedPages)
     {
-        var temporary = path + ".pdf-svd-tmp";
+        var temporary = path + ".ed-pdf-tmp";
         try
         {
             using (var stream = File.Create(temporary))
