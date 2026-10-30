@@ -30,14 +30,17 @@ public partial class MainWindow
         Name = NewName(), Kind = AnnotationKind.Rectangle, RedactionMark = true, Color = RedactionColor, LineWidth = 1, Bounds = bounds,
     };
 
-    /// One mark per line of the selected text.
+    /// One mark per line of the selected text (on each page it spans), undone together.
     void AddRedactionMarks()
     {
-        if (document == null || selectionPage < 0 || selectionCount == 0) return;
-        var page = selectionPage;
-        var rects = document.TextRects(page, selectionStart, selectionCount);
+        if (document is not { } doc || !HasTextSelection) return;
+        var ranges = textSelection;
         SetSelection(-1, 0, 0);
-        AddAnnotations(page, rects.Select(r => RedactionMark(ToPage(page, r.Inflate(1)))).ToList());
+        undo.Group(() =>
+        {
+            foreach (var (page, start, count) in ranges)
+                AddAnnotations(page, doc.TextRects(page, start, count).Select(r => RedactionMark(ToPage(page, r.Inflate(1)))).ToList());
+        });
     }
 
     /// Adds annotations to a page as one undoable change.

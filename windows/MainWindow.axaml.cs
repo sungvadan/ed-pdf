@@ -40,11 +40,13 @@ public partial class MainWindow : Window
     int matchIndex = -1;
     CancellationTokenSource? searchCancel;
 
-    // Text selection: characters [selectionStart, selectionStart + selectionCount) of page selectionPage.
-    int selectionPage = -1, selectionStart, selectionCount;
-    /// Page being selected with the mouse, and the character where the drag started (-1: not on text yet).
+    /// Selected text: characters [Start, Start + Count) of each page, in page order (it can span several pages).
+    List<(int Page, int Start, int Count)> textSelection = [];
+    bool HasTextSelection => textSelection.Any(r => r.Count > 0);
+    /// While selecting with the mouse: the view pressed, and the page and character where the drag started
+    /// (-1: not on text yet).
     PageView? selectingView;
-    int selectionAnchor = -1;
+    int anchorPage = -1, selectionAnchor = -1;
 
     public MainWindow() : this(null) { }
 
@@ -210,7 +212,7 @@ public partial class MainWindow : Window
         BuildPageItems();
         EmptyText.IsVisible = false;
         currentPage = 0;
-        selectionPage = -1;
+        textSelection = [];
         matches = [];
         matchIndex = -1;
         SetScale(Math.Min(FitWidthScale(), 2 * ActualSize));
@@ -291,7 +293,7 @@ public partial class MainWindow : Window
         PrintItem.IsEnabled = SelectAllItem.IsEnabled = SaveItem.IsEnabled = SaveAsItem.IsEnabled = hasDocument;
         SendExportItem.IsEnabled = ImageExportItem.IsEnabled = ReduceSizeItem.IsEnabled = PagesMenu.IsEnabled = hasDocument;
         foreach (var item in pageItems) item.IsEnabled = hasDocument;
-        CopyItem.IsEnabled = selectionPage >= 0 && selectionCount > 0;
+        CopyItem.IsEnabled = HasTextSelection;
         PageCountText.Text = hasDocument ? $"/ {pages.Count}" : "";
         ZoomText.Text = hasDocument ? $"{Math.Round(scale / ActualSize * 100)} %" : "";
         updatingSelection = true;
@@ -451,28 +453,64 @@ public partial class MainWindow : Window
             return;
         }
         selectingView = view;
+        anchorPage = item.Index;
         selectionAnchor = index;
         e.Pointer.Capture(view);
     }
 
-    void ExtendTextSelection(PointerEventArgs e)
+    /// The page under the pointer, or the nearest one (between pages, above or below the list).
+    PageView? PageViewUnder(PointerEventArgs e)
     {
-        if (selectingView is not { DataContext: PageItem item } view) return;
-        var index = CharIndexAt(view, e, near: true);
-        if (index < 0) return;
-        if (selectionAnchor < 0) selectionAnchor = index;
-        int start = Math.Min(selectionAnchor, index), end = Math.Max(selectionAnchor, index);
-        SetSelection(item.Index, start, end - start + 1);
+        PageView? nearest = null;
+        var distance = double.MaxValue;
+        for (var i = 0; i < pages.Count; i++)
+        {
+            if (PageViewOf(i) is not { } view) continue;
+            var y = e.GetPosition(view).Y;
+            var d = y < 0 ? -y : y > view.Bounds.Height ? y - view.Bounds.Height : 0;
+            if (d < distance) (nearest, distance) = (view, d);
+        }
+        return nearest;
     }
 
-    void SetSelection(int page, int start, int count)
+    void ExtendTextSelection(PointerEventArgs e)
     {
-        if (selectionPage >= 0 && selectionPage < pages.Count && selectionPage != page) pages[selectionPage].Selection = [];
-        selectionPage = page;
-        selectionStart = start;
-        selectionCount = count;
-        if (page >= 0 && document != null) pages[page].Selection = document.TextRects(page, start, count);
-        CopyItem.IsEnabled = page >= 0 && count > 0;
+        if (selectingView == null || document == null || PageViewUnder(e) is not { DataContext: PageItem item } view) return;
+        // Scrolls when the pointer is near the top or bottom edge, to select across pages.
+        var y = e.GetPosition(Scroller).Y;
+        if (y < 20) Scroller.Offset = Scroller.Offset.WithY(Math.Max(0, Scroller.Offset.Y - 20));
+        else if (y > Scroller.Viewport.Height - 20) Scroller.Offset = Scroller.Offset.WithY(Scroller.Offset.Y + 20);
+        var page = item.Index;
+        var index = CharIndexAt(view, e, near: true);
+        if (index < 0)
+        {
+            // Off the text of another page: from its start (going down) or to its end (going up).
+            if (page == anchorPage || anchorPage < 0) return;
+            index = page > anchorPage ? 0 : Math.Max(0, document.CharCount(page) - 1);
+        }
+        if (selectionAnchor < 0) (anchorPage, selectionAnchor) = (page, index);
+        var (fromPage, from, toPage, to) = (anchorPage, selectionAnchor, page, index);
+        if (toPage < fromPage || (toPage == fromPage && to < from)) (fromPage, from, toPage, to) = (toPage, to, fromPage, from);
+        var ranges = new List<(int, int, int)>();
+        for (var p = fromPage; p <= toPage; p++)
+        {
+            var start = p == fromPage ? from : 0;
+            var end = p == toPage ? to : document.CharCount(p) - 1;
+            if (end >= start) ranges.Add((p, start, end - start + 1));
+        }
+        SetSelection(ranges);
+    }
+
+    void SetSelection(int page, int start, int count) => SetSelection(page < 0 ? [] : [(page, start, count)]);
+
+    void SetSelection(List<(int Page, int Start, int Count)> ranges)
+    {
+        foreach (var (page, _, _) in textSelection)
+            if (page < pages.Count && ranges.All(r => r.Page != page)) pages[page].Selection = [];
+        textSelection = ranges;
+        if (document != null)
+            foreach (var (page, start, count) in ranges) pages[page].Selection = document.TextRects(page, start, count);
+        CopyItem.IsEnabled = HasTextSelection;
     }
 
     void SelectAllOnPage()
@@ -482,8 +520,8 @@ public partial class MainWindow : Window
 
     async Task CopySelection()
     {
-        if (document == null || selectionPage < 0 || selectionCount == 0 || Clipboard == null) return;
-        await Clipboard.SetTextAsync(document.Text(selectionPage, selectionStart, selectionCount));
+        if (document is not { } doc || !HasTextSelection || Clipboard == null) return;
+        await Clipboard.SetTextAsync(string.Join("\n", textSelection.Select(r => doc.Text(r.Page, r.Start, r.Count))));
     }
 
     // MARK: Printing

@@ -186,7 +186,7 @@ public partial class MainWindow
         EndTextEditing(commit: true);
         if (t != Tool.EditText) HideTextHover();
         // A markup tool with text already selected: mark it up at once.
-        if (t is Tool.Highlight or Tool.Underline or Tool.StrikeOut or Tool.Redact && selectionPage >= 0 && selectionCount > 0)
+        if (t is Tool.Highlight or Tool.Underline or Tool.StrikeOut or Tool.Redact && HasTextSelection)
         {
             if (t == Tool.Redact) AddRedactionMarks();
             else AddMarkup(t);
@@ -383,19 +383,26 @@ public partial class MainWindow
     Rect ToPage(int page, Rect view) => view.TransformToAABB(document!.ViewToPage(page));
     Rect ToView(int page, Rect bounds) => bounds.TransformToAABB(document!.PageToView(page));
 
+    /// Marks up the selected text, one annotation per page, undone together.
     void AddMarkup(Tool markup)
     {
-        if (document == null || selectionPage < 0 || selectionCount == 0) return;
-        var page = selectionPage;
-        var rects = document.TextRects(page, selectionStart, selectionCount);
+        if (document is not { } doc || !HasTextSelection) return;
+        var ranges = textSelection;
         SetSelection(-1, 0, 0);
-        if (rects.Length == 0) return;
-        var quads = rects.Select(r => new[] { ToPage(page, r.TopLeft), ToPage(page, r.TopRight), ToPage(page, r.BottomLeft), ToPage(page, r.BottomRight) }).ToArray();
-        var bounds = rects.Skip(1).Aggregate(rects[0], (all, r) => all.Union(r));
-        AddAnnotation(page, new Annotation
+        undo.Group(() =>
         {
-            Name = NewName(), Quads = quads, Bounds = ToPage(page, bounds), Color = toolColors[markup],
-            Kind = markup switch { Tool.Highlight => AnnotationKind.Highlight, Tool.Underline => AnnotationKind.Underline, _ => AnnotationKind.StrikeOut },
+            foreach (var (page, start, count) in ranges)
+            {
+                var rects = doc.TextRects(page, start, count);
+                if (rects.Length == 0) continue;
+                var quads = rects.Select(r => new[] { ToPage(page, r.TopLeft), ToPage(page, r.TopRight), ToPage(page, r.BottomLeft), ToPage(page, r.BottomRight) }).ToArray();
+                var bounds = rects.Skip(1).Aggregate(rects[0], (all, r) => all.Union(r));
+                AddAnnotation(page, new Annotation
+                {
+                    Name = NewName(), Quads = quads, Bounds = ToPage(page, bounds), Color = toolColors[markup],
+                    Kind = markup switch { Tool.Highlight => AnnotationKind.Highlight, Tool.Underline => AnnotationKind.Underline, _ => AnnotationKind.StrikeOut },
+                });
+            }
         });
     }
 

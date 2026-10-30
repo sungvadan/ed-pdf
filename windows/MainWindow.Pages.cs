@@ -159,8 +159,7 @@ public partial class MainWindow
         documentVersion++;
         selected = null;
         selectedPage = -1;
-        selectionPage = -1;
-        selectionCount = 0;
+        textSelection = [];
         BuildPageItems();
         Scroller.UpdateLayout();
         GoTo(show);
