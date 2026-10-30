@@ -1,0 +1,100 @@
+{
+  "meta": {
+    "title": "ed-pdf — free PDF editor for Mac and Windows: edit text, annotate, sign",
+    "description": "ed-pdf is a free, open-source PDF editor for Mac and Windows. Edit the text of a PDF while keeping its font, annotate, sign, fill in forms and rearrange pages. No account, no subscription, nothing is uploaded.",
+    "locale": "en_US",
+    "language_name": "English"
+  },
+  "nav": {"label": "Main navigation", "features": "Features", "download": "Download", "faq": "FAQ"},
+  "hero": {
+    "eyebrow": "Free · Open source · Mac and Windows",
+    "title": "Edit the text of your PDFs, like in a word processor.",
+    "lead": "ed-pdf fixes a word or rewrites a paragraph while keeping the original font, size and color. It also annotates, signs, fills in forms and rearranges pages, with no account and no subscription.",
+    "mac": "Download for Mac",
+    "windows": "Download for Windows",
+    "fineprint": "Free, no ads, open source (MIT license)",
+    "source": "see the code on GitHub"
+  },
+  "demo": {
+    "label": "Example: a word replaced in a PDF",
+    "file": "contract.pdf",
+    "heading": "Section 3 — Term",
+    "before": "This agreement is entered into for a period of",
+    "old": "three months",
+    "new": "six months",
+    "after": "from the date of signature.",
+    "more": "It may be renewed by written agreement of both parties.",
+    "sign": "Signed in Boston, March 12",
+    "caption": "Click in the paragraph and type: the font and layout are kept."
+  },
+  "features": {
+    "title": "Everything you need to work on a PDF",
+    "lead": "One app to read, correct, complete and send your documents.",
+    "items": [
+      {"icon": "text", "title": "Edit text", "text": "Click in a paragraph and edit it in place. Font, size, color and bold are kept and lines reflow; the rest of the page stays untouched."},
+      {"icon": "highlight", "title": "Annotate", "text": "Highlight, underline, strike through, add notes, formatted text boxes, drawings, shapes and arrows."},
+      {"icon": "sign", "title": "Sign", "text": "Draw your signature or photograph it on paper: the background is removed automatically. Add stamps (Approved, Paid…) and images too."},
+      {"icon": "pages", "title": "Organize pages", "text": "Reorder by drag and drop, rotate, delete, duplicate, insert other PDFs or images, extract pages."},
+      {"icon": "form", "title": "Fill in forms", "text": "Complete the fields of PDF forms, with undo at every step."},
+      {"icon": "redact", "title": "Redact", "text": "Hide confidential information: redacted text is really removed from the file, not just covered up."},
+      {"icon": "send", "title": "Get ready to send", "text": "Create a flattened, lighter copy without your author name, password-protected on Mac. Export pages as images too."},
+      {"icon": "read", "title": "Read comfortably", "text": "Thumbnails, zoom, single page or continuous scrolling, text search, bookmarks. Undo and redo everywhere."}
+    ]
+  },
+  "privacy": [
+    {"title": "Your files stay with you", "text": "Everything happens on your computer. ed-pdf does not connect to the Internet and sends nothing."},
+    {"title": "No account, no subscription", "text": "No sign-up, no ads, no trial version: every feature is free."},
+    {"title": "Open and transparent", "text": "The source code is public on GitHub under the MIT license: anyone can check what the software does."},
+    {"title": "In 8 languages", "text": "English, French, German, Spanish, Italian, Portuguese (Brazil), Japanese and Simplified Chinese."}
+  ],
+  "download": {
+    "title": "Download ed-pdf",
+    "lead": "Free, with no complicated setup.",
+    "mac_req": "Mac with Apple silicon (M1 or later), macOS 14 or later",
+    "mac_button": "Download for Mac (.dmg)",
+    "win_req": "Windows 10 or 11, 64-bit — a single file, nothing to install",
+    "win_x64_button": "Windows (Intel / AMD PC)",
+    "win_arm_button": "Windows on ARM",
+    "first_open": "The first time you open it",
+    "mac_steps": [
+      "Open the .dmg file and drag ed-pdf into the Applications folder.",
+      "Open ed-pdf: macOS blocks it, because the app is not signed with a paid Apple developer account.",
+      "Go to System Settings › Privacy & Security and click “Open Anyway”. You only need to do this once."
+    ],
+    "win_steps": [
+      "Run the downloaded file.",
+      "If Windows shows “Windows protected your PC”, click “More info”, then “Run anyway”. You only need to do this once.",
+      "To open your PDFs with ed-pdf: File menu › “Use ed-pdf to open PDFs…”."
+    ],
+    "all_versions": "All versions and what's new:",
+    "releases": "releases page on GitHub",
+    "version": "Current version:"
+  },
+  "support": {
+    "title": "Support the project",
+    "text": "ed-pdf is developed on a volunteer basis and will stay free. If you find it useful, a donation, even a small one, helps keep improving it.",
+    "sponsors": "Donate with GitHub Sponsors",
+    "paypal": "Donate with PayPal",
+    "star": "Star it on GitHub"
+  },
+  "faq": {
+    "title": "Frequently asked questions",
+    "items": [
+      {"q": "Is ed-pdf really free?", "a": "Yes. Every feature is free, with no ads and no subscription. It is open-source software under the MIT license. Donations are optional."},
+      {"q": "Are my documents uploaded to the Internet?", "a": "No. ed-pdf works only on your computer and does not connect to the Internet. Your files are not sent anywhere."},
+      {"q": "How do I edit the text of a PDF?", "a": "Choose the “Edit text” tool, click in a paragraph and type your correction. Click elsewhere to confirm; ⌘Z (Mac) or Ctrl+Z (Windows) undoes the change."},
+      {"q": "Can I edit the text of a scanned PDF?", "a": "No: a scanned document is an image and contains no editable text. You can still add text boxes, annotate it and sign it."},
+      {"q": "Is the signature legally binding?", "a": "The signature placed by ed-pdf is an image of your signature. It is fine for many everyday documents, but it is not a certified electronic signature (such as a qualified signature under the EU eIDAS regulation). For documents that require one, use a qualified electronic signature service."},
+      {"q": "Why does my Mac or Windows show a warning?", "a": "ed-pdf is not signed with a paid developer certificate. The warning only appears the first time you open it; the source code is public and can be checked on GitHub."},
+      {"q": "Can I edit any PDF?", "a": "Only edit your own documents, or documents you are authorized to edit. Altering a contract, invoice, diploma or official document without the right to do so is forgery, which is a criminal offense."}
+    ]
+  },
+  "footer": {
+    "disclaimer_title": "Disclaimer:",
+    "disclaimer": "ed-pdf is provided “as is”, without warranty of any kind. Keep a copy of your originals and check the result. You alone are responsible for how you use the software and for the documents you modify.",
+    "license": "Open-source software, license:",
+    "notices": "Third-party components",
+    "issues": "Report a problem",
+    "trademarks": "PDF is a trademark of Adobe; Apple, Mac and macOS are trademarks of Apple Inc.; Windows is a trademark of Microsoft. ed-pdf is an independent project, not affiliated with these companies."
+  }
+}

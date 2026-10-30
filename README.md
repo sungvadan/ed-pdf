@@ -1,6 +1,6 @@
 # ed-pdf
 
-*[English version](README.en.md)*
+*[English version](README.en.md)* · Site : https://sungvadan.github.io/ed-pdf/
 
 Éditeur PDF gratuit et libre pour macOS et Windows : lire, annoter, signer, réorganiser les pages… et **modifier le
 texte existant d'un PDF comme dans un traitement de texte**, en gardant sa police, sa taille et sa couleur.
@@ -99,7 +99,7 @@ auprès du Finder (menu « Ouvrir avec »). À relancer après chaque modificati
 scripts/make-dmg.sh
 ```
 
-Produit `build/ed-pdf-<version>.dmg` (la version vient de `Resources/Info.plist`), avec un raccourci vers
+Produit `build/ed-pdf.dmg` (nom fixe, pour le lien de téléchargement du site), avec un raccourci vers
 Applications et un fichier « Lisez-moi », prêt à partager.
 
 ### Version Windows
@@ -119,7 +119,7 @@ inclus). Pour l'essayer sur le Mac : `cd windows && dotnet run -- fichier.pdf`.
 |---|---|
 | `scripts/build-app.sh [debug\|release] [--open]` | `build/ed-pdf.app` (release par défaut) |
 | `scripts/install.sh` | app installée dans `/Applications` |
-| `scripts/make-dmg.sh` | `build/ed-pdf-<version>.dmg` |
+| `scripts/make-dmg.sh` | `build/ed-pdf.dmg` |
 | `scripts/build-windows.sh` | `build/windows/ed-pdf-x64.exe` et `ed-pdf-arm64.exe` |
 | `scripts/fetch-pdfium.sh` | PDFium seul, dans `Vendor/pdfium` (appelé automatiquement) |
 | `swift build --product textlab` | outil en ligne de commande du moteur de texte |
@@ -137,6 +137,7 @@ inclus). Pour l'essayer sur le Mac : `cd windows && dotnet run -- fichier.pdf`.
 | `windows/` | La version Windows (C# + Avalonia), dont le portage du moteur de texte dans `windows/Pdf/Text` |
 | `Resources/Localizations` | Traductions (le texte français sert de clé), partagées par les deux versions |
 | `scripts/` | Compilation, installation, image disque, icône, PDF de test, suite de tests |
+| `site/` | Le site web (`python3 site/build.py` → `build/site`, publié par `.github/workflows/pages.yml`) |
 | `docs/text-editing.md` | Conception détaillée de l'édition du texte et pièges rencontrés |
 
 `Folio` est le nom de code interne du projet.

@@ -38,3 +38,7 @@
   `DOTNET_ROOT=/opt/homebrew/opt/dotnet/libexec windows/bin/Debug/net10.0/ed-pdf fichier.pdf` (après `dotnet build`),
   `EDPDF_LANG=en` pour une autre langue. L'utilisateur teste dans une VM Windows 11 ARM (VMware) par glisser-déposer de l'exe.
 - Avancement et étapes suivantes : voir `ROADMAP.md` (avancer une étape à la fois, commiter à la fin de chacune).
+- Site web : `site/` (textes `site/i18n/<lang>.json`, mêmes clés partout ; `site/template.html` ; `python3 site/build.py`
+  → `build/site`), publié sur https://sungvadan.github.io/ed-pdf/ par `.github/workflows/pages.yml`. Liens de
+  téléchargement = `releases/latest/download/ed-pdf.dmg`, `ed-pdf-x64.exe`, `ed-pdf-arm64.exe` (noms fixes des fichiers
+  de la Release). Dons : GitHub Sponsors + PayPal (`PAYPAL` dans `site/build.py`).

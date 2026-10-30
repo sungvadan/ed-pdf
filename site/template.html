@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="{{lang}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{meta.title}}</title>
+<meta name="description" content="{{meta.description}}">
+<link rel="canonical" href="{{url}}">
+{{alternates}}
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ed-pdf">
+<meta property="og:title" content="{{meta.title}}">
+<meta property="og:description" content="{{meta.description}}">
+<meta property="og:url" content="{{url}}">
+<meta property="og:image" content="{{base}}assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="{{meta.locale}}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#e2433f">
+<link rel="icon" type="image/png" href="{{root}}assets/favicon.png">
+<link rel="apple-touch-icon" href="{{root}}assets/apple-touch-icon.png">
+<link rel="stylesheet" href="{{root}}assets/style.css">
+<script type="application/ld+json">{{jsonld}}</script>
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-inner">
+    <a class="brand" href="{{root}}{{lang_path}}"><img src="{{root}}assets/icon-192.png" alt="" width="32" height="32"> ed-pdf</a>
+    <nav aria-label="{{nav.label}}">
+      <a href="#features">{{nav.features}}</a>
+      <a href="#download">{{nav.download}}</a>
+      <a href="#faq">{{nav.faq}}</a>
+      <a href="{{repo}}">GitHub</a>
+      {{languages}}
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <div class="hero-text">
+        <p class="eyebrow">{{hero.eyebrow}}</p>
+        <h1>{{hero.title}}</h1>
+        <p class="lead">{{hero.lead}}</p>
+        <div class="cta">
+          <a class="button primary" href="{{download.mac_url}}">{{hero.mac}}</a>
+          <a class="button primary" href="{{download.win_x64_url}}">{{hero.windows}}</a>
+        </div>
+        <p class="fineprint">{{hero.fineprint}} · <a href="{{repo}}">{{hero.source}}</a></p>
+      </div>
+      <figure class="demo" aria-label="{{demo.label}}">
+        <div class="window">
+          <div class="titlebar"><span></span><span></span><span></span><b>{{demo.file}}</b></div>
+          <div class="sheet">
+            <p class="demo-head">{{demo.heading}}</p>
+            <p class="demo-body">{{demo.before}} <span class="swap"><span class="old">{{demo.old}}</span><span class="new">{{demo.new}}</span></span> {{demo.after}}</p>
+            <p class="demo-body muted">{{demo.more}}</p>
+            <p class="demo-sign">{{demo.sign}}</p>
+            <svg class="ink" viewBox="0 0 160 40" aria-hidden="true"><path d="M5 28c10-22 20-22 26 0s16 6 22-10 14-14 18 4 12 14 22-2 16-14 24 0 14 10 30-6" /></svg>
+          </div>
+        </div>
+        <figcaption>{{demo.caption}}</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="features" class="features">
+    <div class="wrap">
+      <h2>{{features.title}}</h2>
+      <p class="section-lead">{{features.lead}}</p>
+      <div class="grid">
+        {{feature_cards}}
+      </div>
+    </div>
+  </section>
+
+  <section class="privacy">
+    <div class="wrap privacy-inner">
+      {{privacy_points}}
+    </div>
+  </section>
+
+  <section id="download" class="download">
+    <div class="wrap">
+      <h2>{{download.title}}</h2>
+      <p class="section-lead">{{download.lead}}</p>
+      <div class="platforms">
+        <article class="platform">
+          <h3>macOS</h3>
+          <p class="req">{{download.mac_req}}</p>
+          <a class="button primary" href="{{download.mac_url}}">{{download.mac_button}}</a>
+          <h4>{{download.first_open}}</h4>
+          <ol>{{download.mac_steps}}</ol>
+        </article>
+        <article class="platform">
+          <h3>Windows</h3>
+          <p class="req">{{download.win_req}}</p>
+          <div class="buttons">
+            <a class="button primary" href="{{download.win_x64_url}}">{{download.win_x64_button}}</a>
+            <a class="button" href="{{download.win_arm_url}}">{{download.win_arm_button}}</a>
+          </div>
+          <h4>{{download.first_open}}</h4>
+          <ol>{{download.win_steps}}</ol>
+        </article>
+      </div>
+      <p class="center small">{{download.all_versions}} <a href="{{repo}}/releases">{{download.releases}}</a> · {{download.version}} {{version}}</p>
+    </div>
+  </section>
+
+  <section id="support" class="support">
+    <div class="wrap support-inner">
+      <h2>{{support.title}}</h2>
+      <p>{{support.text}}</p>
+      <div class="buttons center-buttons">
+        {{donate_buttons}}
+        <a class="button" href="{{repo}}">{{support.star}}</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" class="faq">
+    <div class="wrap narrow">
+      <h2>{{faq.title}}</h2>
+      {{faq_items}}
+    </div>
+  </section>
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p><strong>{{footer.disclaimer_title}}</strong> {{footer.disclaimer}}</p>
+    <p>{{footer.license}} <a href="{{repo}}/blob/main/LICENSE">MIT</a> · <a href="{{repo}}/blob/main/THIRD-PARTY-NOTICES.md">{{footer.notices}}</a> · <a href="{{repo}}/issues">{{footer.issues}}</a></p>
+    <p class="small">{{footer.trademarks}}</p>
+  </div>
+</footer>
+</body>
+</html>

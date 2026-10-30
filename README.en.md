@@ -1,6 +1,6 @@
 # ed-pdf
 
-*[Version française](README.md)*
+*[Version française](README.md)* · Website: https://sungvadan.github.io/ed-pdf/
 
 A free, open-source PDF editor for macOS and Windows: read, annotate, sign, rearrange pages… and **edit the existing
 text of a PDF like in a word processor**, keeping its font, size and color.
@@ -58,7 +58,7 @@ not needed: `xcode-select --install`), and an Internet connection for the first 
 ```sh
 scripts/build-app.sh release --open    # build/ed-pdf.app (debug for faster builds)
 scripts/install.sh                     # installs into /Applications
-scripts/make-dmg.sh                    # build/ed-pdf-<version>.dmg
+scripts/make-dmg.sh                    # build/ed-pdf.dmg
 ```
 
 `build-app.sh` downloads PDFium into `Vendor/pdfium` (pinned version, SHA-256 checked), builds with `swift build`,
@@ -85,6 +85,7 @@ Single files, PDFium and .NET included. To try it on the Mac: `cd windows && dot
 | `windows/` | The Windows version (C# + Avalonia), including the port of the text engine in `windows/Pdf/Text` |
 | `Resources/Localizations` | Translations (French text is the key), shared by both versions |
 | `scripts/` | Build, install, disk image, icon, test PDFs, test suite |
+| `site/` | The website (`python3 site/build.py` → `build/site`, published by `.github/workflows/pages.yml`) |
 | `docs/text-editing.md` | Detailed design of text editing and pitfalls (in French) |
 
 `Folio` is the project's internal code name.

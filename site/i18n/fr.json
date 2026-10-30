@@ -1,0 +1,100 @@
+{
+  "meta": {
+    "title": "ed-pdf — éditeur PDF gratuit pour Mac et Windows : modifier le texte, annoter, signer",
+    "description": "ed-pdf est un éditeur PDF gratuit et libre pour Mac et Windows. Modifiez le texte d'un PDF en gardant sa police, annotez, signez, remplissez des formulaires et réorganisez les pages. Sans compte, sans abonnement, rien n'est envoyé sur Internet.",
+    "locale": "fr_FR",
+    "language_name": "Français"
+  },
+  "nav": {"label": "Navigation principale", "features": "Fonctions", "download": "Télécharger", "faq": "Questions"},
+  "hero": {
+    "eyebrow": "Gratuit · Libre · Mac et Windows",
+    "title": "Modifiez le texte de vos PDF, comme dans un traitement de texte.",
+    "lead": "ed-pdf corrige un mot ou réécrit un paragraphe en gardant la police, la taille et la couleur d'origine. Il sait aussi annoter, signer, remplir des formulaires et réorganiser les pages, sans compte ni abonnement.",
+    "mac": "Télécharger pour Mac",
+    "windows": "Télécharger pour Windows",
+    "fineprint": "Gratuit, sans publicité, code source ouvert (licence MIT)",
+    "source": "voir le code sur GitHub"
+  },
+  "demo": {
+    "label": "Exemple : un mot remplacé dans un PDF",
+    "file": "contrat.pdf",
+    "heading": "Article 3 — Durée",
+    "before": "Le présent contrat est conclu pour une durée de",
+    "old": "trois mois",
+    "new": "six mois",
+    "after": "à compter de sa signature.",
+    "more": "Il pourra être renouvelé par accord écrit des deux parties.",
+    "sign": "Fait à Lyon, le 12 mars",
+    "caption": "Cliquez dans le paragraphe, tapez : la police et la mise en page sont conservées."
+  },
+  "features": {
+    "title": "Tout ce qu'il faut pour travailler sur un PDF",
+    "lead": "Un seul logiciel pour lire, corriger, compléter et envoyer vos documents.",
+    "items": [
+      {"icon": "text", "title": "Modifier le texte", "text": "Cliquez dans un paragraphe et modifiez-le sur place. Police, taille, couleur et gras sont conservés, les lignes se réorganisent ; le reste de la page ne bouge pas."},
+      {"icon": "highlight", "title": "Annoter", "text": "Surlignez, soulignez, barrez, ajoutez des notes, des zones de texte mises en forme, des dessins, des formes et des flèches."},
+      {"icon": "sign", "title": "Signer", "text": "Dessinez votre signature ou photographiez-la sur papier : le fond est retiré automatiquement. Ajoutez aussi des tampons (Approuvé, Payé…) et des images."},
+      {"icon": "pages", "title": "Organiser les pages", "text": "Réordonnez par glisser-déposer, pivotez, supprimez, dupliquez, insérez d'autres PDF ou des images, extrayez des pages."},
+      {"icon": "form", "title": "Remplir les formulaires", "text": "Complétez les champs des formulaires PDF, avec annulation à chaque étape."},
+      {"icon": "redact", "title": "Caviarder", "text": "Masquez des informations confidentielles : le texte caviardé est réellement supprimé du fichier, pas seulement recouvert."},
+      {"icon": "send", "title": "Préparer l'envoi", "text": "Créez une copie aplatie et plus légère, sans votre nom d'auteur, protégée par mot de passe sur Mac. Exportez aussi les pages en images."},
+      {"icon": "read", "title": "Lire confortablement", "text": "Miniatures, zoom, page seule ou défilement continu, recherche dans le texte, signets. Annuler et rétablir partout."}
+    ]
+  },
+  "privacy": [
+    {"title": "Vos fichiers restent chez vous", "text": "Tout se passe sur votre ordinateur. ed-pdf ne se connecte pas à Internet et n'envoie rien."},
+    {"title": "Sans compte, sans abonnement", "text": "Pas d'inscription, pas de publicité, pas de version d'essai : toutes les fonctions sont gratuites."},
+    {"title": "Libre et transparent", "text": "Le code source est public sur GitHub, sous licence MIT : chacun peut vérifier ce que fait le logiciel."},
+    {"title": "En 8 langues", "text": "Français, anglais, allemand, espagnol, italien, portugais (Brésil), japonais et chinois simplifié."}
+  ],
+  "download": {
+    "title": "Télécharger ed-pdf",
+    "lead": "Gratuit, sans installation compliquée.",
+    "mac_req": "Mac à puce Apple (M1 ou plus récent), macOS 14 ou plus récent",
+    "mac_button": "Télécharger pour Mac (.dmg)",
+    "win_req": "Windows 10 ou 11, 64 bits — un seul fichier, rien à installer",
+    "win_x64_button": "Windows (PC Intel / AMD)",
+    "win_arm_button": "Windows sur ARM",
+    "first_open": "À la première ouverture",
+    "mac_steps": [
+      "Ouvrez le fichier .dmg et glissez ed-pdf dans le dossier Applications.",
+      "Ouvrez ed-pdf : macOS le bloque, car l'app n'est pas signée par un compte développeur Apple payant.",
+      "Allez dans Réglages Système › Confidentialité et sécurité, puis cliquez sur « Ouvrir quand même ». C'est à faire une seule fois."
+    ],
+    "win_steps": [
+      "Lancez le fichier téléchargé.",
+      "Si Windows affiche « Windows a protégé votre ordinateur », cliquez sur « Informations complémentaires », puis « Exécuter quand même ». C'est à faire une seule fois.",
+      "Pour ouvrir vos PDF avec ed-pdf : menu Fichier › « Utiliser ed-pdf pour ouvrir les PDF… »."
+    ],
+    "all_versions": "Toutes les versions et leurs nouveautés :",
+    "releases": "page des versions sur GitHub",
+    "version": "Version actuelle :"
+  },
+  "support": {
+    "title": "Soutenir le projet",
+    "text": "ed-pdf est développé bénévolement et restera gratuit. Si le logiciel vous est utile, un don, même petit, aide à continuer à l'améliorer.",
+    "sponsors": "Faire un don avec GitHub Sponsors",
+    "paypal": "Faire un don avec PayPal",
+    "star": "Mettre une étoile sur GitHub"
+  },
+  "faq": {
+    "title": "Questions fréquentes",
+    "items": [
+      {"q": "ed-pdf est-il vraiment gratuit ?", "a": "Oui. Toutes les fonctions sont gratuites, sans publicité ni abonnement. C'est un logiciel libre sous licence MIT. Les dons sont facultatifs."},
+      {"q": "Mes documents sont-ils envoyés sur Internet ?", "a": "Non. ed-pdf travaille uniquement sur votre ordinateur et ne se connecte pas à Internet. Vos fichiers ne sont envoyés nulle part."},
+      {"q": "Comment modifier le texte d'un PDF ?", "a": "Choisissez l'outil « Modifier le texte », cliquez dans un paragraphe et tapez votre correction. Cliquez ailleurs pour valider ; ⌘Z (Mac) ou Ctrl+Z (Windows) annule la modification."},
+      {"q": "Puis-je modifier le texte d'un PDF scanné ?", "a": "Non : un document scanné est une image, il ne contient pas de texte modifiable. Vous pouvez en revanche y ajouter des zones de texte, l'annoter et le signer."},
+      {"q": "La signature a-t-elle une valeur légale ?", "a": "La signature placée par ed-pdf est une image de votre signature. Elle convient à beaucoup de documents courants, mais ce n'est pas une signature électronique certifiée au sens du règlement européen eIDAS. Pour un acte qui l'exige, utilisez un service de signature électronique qualifiée."},
+      {"q": "Pourquoi mon Mac ou Windows affiche-t-il un avertissement ?", "a": "ed-pdf n'est pas signé avec un certificat de développeur payant. L'avertissement n'apparaît qu'à la première ouverture ; le code source est public et vérifiable sur GitHub."},
+      {"q": "Puis-je modifier n'importe quel PDF ?", "a": "Modifiez uniquement vos propres documents, ou ceux que vous êtes autorisé à modifier. Altérer un contrat, une facture, un diplôme ou un document officiel sans en avoir le droit est un faux, puni par la loi."}
+    ]
+  },
+  "footer": {
+    "disclaimer_title": "Avertissement :",
+    "disclaimer": "ed-pdf est fourni « tel quel », sans aucune garantie. Gardez une copie de vos originaux et vérifiez le résultat. Vous êtes seul responsable de l'usage du logiciel et des documents que vous modifiez.",
+    "license": "Logiciel libre, licence",
+    "notices": "Composants tiers",
+    "issues": "Signaler un problème",
+    "trademarks": "PDF est une marque d'Adobe ; Apple, Mac et macOS sont des marques d'Apple Inc. ; Windows est une marque de Microsoft. ed-pdf est un projet indépendant, sans lien avec ces sociétés."
+  }
+}

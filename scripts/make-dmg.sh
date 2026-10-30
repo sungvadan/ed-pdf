@@ -1,11 +1,11 @@
 #!/bin/bash
-# Builds ed-pdf in release mode and packages it as a drag-and-drop disk image: build/ed-pdf-<version>.dmg
+# Builds ed-pdf in release mode and packages it as a drag-and-drop disk image: build/ed-pdf.dmg
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 scripts/build-app.sh release
 VERSION=$(defaults read "$PWD/build/ed-pdf.app/Contents/Info.plist" CFBundleShortVersionString)
-DMG="build/ed-pdf-$VERSION.dmg"
+DMG="build/ed-pdf.dmg"  # fixed name: the site links to releases/latest/download/ed-pdf.dmg
 STAGING="$(mktemp -d)"
 trap 'rm -rf "$STAGING"' EXIT
 
@@ -41,4 +41,4 @@ TXT
 
 rm -f "$DMG"
 hdiutil create -volname "ed-pdf" -srcfolder "$STAGING" -fs HFS+ -format UDZO -imagekey zlib-level=9 "$DMG" >/dev/null
-echo "Créé : $DMG ($(du -h "$DMG" | cut -f1))"
+echo "Créé : $DMG (version $VERSION, $(du -h "$DMG" | cut -f1))"
