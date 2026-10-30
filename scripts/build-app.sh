@@ -19,6 +19,7 @@ cp Vendor/pdfium/lib/libpdfium.dylib "$APP/Contents/Frameworks/"
 # PDFium and the libraries it contains require their notices to ship with the binary.
 mkdir -p "$APP/Contents/Resources/Licenses"
 cp LICENSE "$APP/Contents/Resources/Licenses/pdf-svd.txt"
+cp THIRD-PARTY-NOTICES.md "$APP/Contents/Resources/Licenses/"
 cp Vendor/pdfium/LICENSE "$APP/Contents/Resources/Licenses/pdfium-binaries.txt"
 cp Vendor/pdfium/licenses/* "$APP/Contents/Resources/Licenses/"
 codesign --force --sign - "$APP/Contents/Frameworks/libpdfium.dylib" >/dev/null

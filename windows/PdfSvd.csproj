@@ -34,7 +34,8 @@
     <!-- Same translations as the Mac app (French source text = key). -->
     <EmbeddedResource Include="../Resources/Localizations/*.lproj/Localizable.strings"
                       LogicalName="l10n/%(RecursiveDir)%(Filename)%(Extension)" />
-    <EmbeddedResource Include="../Vendor/pdfium-windows/licenses/*" LogicalName="licenses/%(Filename)%(Extension)" />
+    <!-- Third-party licenses gathered by scripts/build-windows.sh (scripts/collect-licenses-windows.py). -->
+    <EmbeddedResource Include="../build/windows/licenses/*" LogicalName="licenses/%(Filename)%(Extension)" />
   </ItemGroup>
 
   <!-- PDFium: the Windows DLL for the target, or the Mac dylib for `dotnet run` on the Mac. -->

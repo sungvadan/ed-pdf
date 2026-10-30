@@ -30,6 +30,13 @@ première fois (« Apple n'a pas pu vérifier… »). Pour l'autoriser :
 C'est à faire une seule fois. Ensuite, pdf-svd s'ouvre normalement.
 
 Configuration requise : Mac avec puce Apple (M1 ou plus récent), macOS 14 ou plus récent.
+
+Licence
+-------
+pdf-svd est un logiciel libre sous licence MIT, fourni « tel quel », sans aucune garantie.
+Gardez une copie de vos fichiers originaux. Vous êtes seul responsable des documents que vous
+modifiez : ne modifiez que vos propres documents ou ceux que vous êtes autorisé à modifier.
+Licences des composants tiers : pdf-svd.app/Contents/Resources/Licenses.
 TXT
 
 rm -f "$DMG"

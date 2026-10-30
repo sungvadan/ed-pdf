@@ -31,7 +31,8 @@
   et `Folio --selftest-edit`.
 - Version Windows : `windows/` (C# .NET 10 + Avalonia 11.3 + PDFium via P/Invoke, `Pdf/Pdfium.cs` ; tout appel PDFium
   sous `Pdfium.Lock`). Textes : `Tr("…")` (clés françaises, mêmes fichiers `.strings`, vérifiés par `scripts/l10n.py`),
-  jamais de texte dans les .axaml. Build : `scripts/build-windows.sh` ; essai sur le Mac :
+  jamais de texte dans les .axaml. Build : `scripts/build-windows.sh` (licences tierces rassemblées par
+  `scripts/collect-licenses-windows.py` et intégrées à l'exe ; toute nouvelle dépendance → `THIRD-PARTY-NOTICES.md`) ; essai sur le Mac :
   `DOTNET_ROOT=/opt/homebrew/opt/dotnet/libexec windows/bin/Debug/net10.0/pdf-svd fichier.pdf` (après `dotnet build`),
   `PDFSVD_LANG=en` pour une autre langue. L'utilisateur teste dans une VM Windows 11 ARM (VMware) par glisser-déposer de l'exe.
 - Avancement et étapes suivantes : voir `ROADMAP.md` (avancer une étape à la fois, commiter à la fin de chacune).
